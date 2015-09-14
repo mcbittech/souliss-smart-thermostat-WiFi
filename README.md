@@ -1,4 +1,4 @@
-# souliss-smart-thermostat
+# souliss-smart-thermostat-WiFi
 Wi-Fi Smart Thermostat based on Souliss IoT Framework
 # Bill of Material:
 -Olimex ESP8266-EVB  
