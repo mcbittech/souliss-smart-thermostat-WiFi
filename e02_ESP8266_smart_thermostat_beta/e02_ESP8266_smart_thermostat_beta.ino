@@ -73,8 +73,8 @@ float hyst = 0.2;
 //DISPLAY
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #include <SPI.h>
-#include <Souliss_SmartT_ILI9341_GFX_Library.h>
 #include <Arduino.h>
+#include <Souliss_SmartT_ILI9341_GFX_Library.h>
 #include <Souliss_SmartT_ILI9341.h>
 
 
