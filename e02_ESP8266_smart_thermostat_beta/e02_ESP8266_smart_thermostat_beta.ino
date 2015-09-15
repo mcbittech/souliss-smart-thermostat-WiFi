@@ -73,9 +73,9 @@ float hyst = 0.2;
 //DISPLAY
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #include <SPI.h>
-#include <Adafruit_GFX.h>
+#include <Souliss_SmartT_ILI9341_GFX_Library.h>
 #include <Arduino.h>
-#include <Adafruit_ILI9341.h>
+#include <Souliss_SmartT_ILI9341.h>
 
 
 //PIN Display
@@ -83,7 +83,7 @@ float hyst = 0.2;
 #define TFT_CS 15
 
 // Use hardware SPI
-Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
+Souliss_SmartT_ILI9341 tft = Souliss_SmartT_ILI9341(TFT_CS, TFT_DC);
 
 #define SERIAL_OUT Serial
 int backLED = 16;
