@@ -1,229 +1,180 @@
 /**************************************************************************
-    Souliss - Hello World for Expressif ESP8266 with TFT SPI ILI9341
+   Souliss - Web Configuration
     
-    This is the basic example, create a software push-button on Android
-    using SoulissApp (get it from Play Store).  
-    
-    Load this code on ESP8266 board using the porting of the Arduino core
-    for this platform.
+    This example demonstrate a complete web configuration of ESP8266 based
+	nodes, the node starts as access point and allow though a web interface
+	the configuration of IP and Souliss parameters.
 
-        
+	This example is only supported on ESP8266.
 ***************************************************************************/
 
-// Configure the framework
-#include "bconf/MCU_ESP8266.h"              // Load the code directly on the ESP8266
-#include "conf/IPBroadcast.h"
-
-// **** Define the WiFi name and password ****
-#define WIFICONF_INSKETCH
-#define WiFi_SSID               ""
-#define WiFi_Password           ""    
-
-// Include framework code and libraries
 #include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
 #include <EEPROM.h>
-#include "Souliss.h"
+#include <WiFiUdp.h>
 #include <DHT.h>
 
-// Define the network configuration
-uint8_t ip_address[4]  = {192, 168, 1, 25};
-uint8_t subnet_mask[4] = {255, 255, 255, 0};
-uint8_t ip_gateway[4]  = {192, 168, 1, 1};
-#define Gateway_address 18
-#define  PEER4           25
-#define myvNet_address  ip_address[3]       // The last byte of the IP address (18) is also the vNet address
-#define myvNet_subnet   0xFF00
-#define myvNet_supern   Gateway_address
+// Configure the Souliss framework
+#include "bconf/MCU_ESP8266.h"              // Load the code directly on the ESP8266
+#include "conf/RuntimeGateway.h"            // This node is a Peer and can became a Gateway at runtime
+#include "conf/DynamicAddressing.h"         // Use dynamically assigned addresses
+#include "conf/WEBCONFinterface.h"          // Enable the WebConfig interface
 
-//SLOT
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// This identify the number of the LED logic
-#define TEMPERATURA               0
-#define UMIDITA                   2
-#define CALDAIA                   4
-         
-// **** Define here the right pin for your ESP module **** 
-#define RELE                      5
+#include "Souliss.h"
 
+#include "t_encoder.h"
+#include "t_constants.h"
 
-
-//DeadBand
-#define DEADBAND                  0.05
-
-//DHT22
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define DHTPIN 12 
-#define DHTTYPE DHT22 
-
+//*************************************************************************
+//*************************************************************************
 DHT dht(DHTPIN, DHTTYPE);
 float temperature = 0;
 float humidity = 0;
-float hyst = 0.2;
+float setpoint = 0;
 
-//ENCODER
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
- int val; 
- int encoder0PinA = 3;
- int encoder0PinB = 4;
- int encoder0Pos = 220;
- int encoder0PinALast = LOW;
- int n = LOW;
-
-
-//DISPLAY
+ //DISPLAY
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #include <SPI.h>
 #include <Arduino.h>
 #include <Souliss_SmartT_ILI9341_GFX_Library.h>
 #include <Souliss_SmartT_ILI9341.h>
 
-
-//PIN Display
-#define TFT_DC 2
-#define TFT_CS 15
-
 // Use hardware SPI
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 Souliss_SmartT_ILI9341 tft = Souliss_SmartT_ILI9341(TFT_CS, TFT_DC);
 
-#define SERIAL_OUT Serial
-int backLED = 16;
+
 bool dbackLED = 0;
-float setpoint=22.0;
+//*************************************************************************
+//*************************************************************************
 
 
 void setup()
-{   
-  //SOULISS
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////
-    Souliss_SetIPAddress(ip_address, subnet_mask, ip_gateway);                    
-
-    // This is the vNet address for this node, used to communicate with other
-    // nodes in your Souliss network
-    SetAddress(0xAB02, 0xFF00, 0xAB01);
+{
+    SERIAL_OUT.begin(115200);
+    Initialize();
     
-    Set_SimpleLight(CALDAIA);                     // Define a simple LED light logic
-    Souliss_SetT52(memory_map, TEMPERATURA);
-    Souliss_SetT53(memory_map, UMIDITA);
-    pinMode(RELE, OUTPUT);                        // Use pin as output 
-    pinMode(backLED, OUTPUT);                     // Background Display LED
+    // Read the IP configuration from the EEPROM, if not available start
+    // the node as access point
+    if(!ReadIPConfiguration()) 
+	{	
+		// Start the node as access point with a configuration WebServer
+		SetAccessPoint();
+		startWebServer();
 
-    dht.begin();
-  
-/////////////////////////////////////////////////////////////////////////////////////////////////////////  
-  SERIAL_OUT.begin(115200);
-  //SERIAL_OUT.begin(921600);
-  SERIAL_OUT.println("Souliss T31 Test!");
+		// We have nothing more than the WebServer for the configuration
+		// to run, once configured the node will quit this.
+		while(1)
+		{
+			yield();
+			runWebServer(); 
+		}
 
-  tft.begin();
-  // read diagnostics (optional but can help debug problems)
-  uint8_t x = tft.readcommand8(ILI9341_RDMODE);
-  SERIAL_OUT.print("Display Power Mode: 0x"); SERIAL_OUT.println(x, HEX);
-  x = tft.readcommand8(ILI9341_RDMADCTL);
-  SERIAL_OUT.print("MADCTL Mode: 0x"); SERIAL_OUT.println(x, HEX);
-  x = tft.readcommand8(ILI9341_RDPIXFMT);
-  SERIAL_OUT.print("Pixel Format: 0x"); SERIAL_OUT.println(x, HEX);
-  x = tft.readcommand8(ILI9341_RDIMGFMT);
-  SERIAL_OUT.print("Image Format: 0x"); SERIAL_OUT.println(x, HEX);
-  x = tft.readcommand8(ILI9341_RDSELFDIAG);
-  SERIAL_OUT.print("Self Diagnostic: 0x"); SERIAL_OUT.println(x, HEX);
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	}
 
+    if (IsRuntimeGateway())
+    {
+        // Connect to the WiFi network and get an address from DHCP                      
+        SetAsGateway(myvNet_dhcp);       // Set this node as gateway for SoulissApp  
+        SetAddressingServer();
+    }
+    else 
+    {
+        // This board request an address to the gateway at runtime, no need
+        // to configure any parameter here.
+        SetDynamicAddressing();  
+        GetAddress();
+    }
+    
+//*************************************************************************
+//*************************************************************************
+ // Set the typical to use in slot 0
+ Set_Thermostat(SLOT_THERMOSTAT);
+ Set_T52(SLOT_TEMPERATURE);
+ Set_T53(SLOT_HUMIDITY);
+ // Define output pins
+ pinMode(RELE, OUTPUT);    // Heater
+ dht.begin();
+ 
 //ENCODER
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-   pinMode (encoder0PinA,INPUT);
-   pinMode (encoder0PinB,INPUT);
+   pinMode (ENCODER_PIN_A,INPUT);
+   pinMode (ENCODER_PIN_B,INPUT);
+//*************************************************************************
+//*************************************************************************
+    
 }
 
 void loop()
-{ 
-    // Here we start to play
+{  
     EXECUTEFAST() {                     
-        UPDATEFAST();   
-        FAST_10ms() {
-            n = digitalRead(encoder0PinA);
-            if ((encoder0PinALast == LOW) && (n == HIGH)) {
-            if (digitalRead(encoder0PinB) == LOW) {
-            //dbackLED=0;
-            encoder0Pos--;
-              } else {
-            encoder0Pos++;
-              }
-            setpoint=encoder0Pos/10.0;
-            tft.setRotation(1);
-            tft.setTextSize(2);
-            tft.setCursor(190, 205);
-            tft.setTextColor(ILI9341_WHITE);
-            tft.print("NEW:"); tft.print("     ");     
-            tft.setCursor(190, 205);  
-            
-            tft.print("NEW:"); tft.print(setpoint);     
-             } 
-            encoder0PinALast = n; 
-            digitalWrite(backLED,dbackLED);
-        }
+        UPDATEFAST(); 
+          
+         FAST_10ms() {
+          tickEncoder();   
+          SERIAL_OUT.print("Encoder: "); SERIAL_OUT.println(getEncoderValue());   
+         }
+         
         FAST_50ms() {   // We process the logic and relevant input and output every 50 milliseconds
-            Logic_SimpleLight(CALDAIA);
-            DigOut(RELE, Souliss_T1n_Coil,CALDAIA);
-            
-            Souliss_Logic_T52(memory_map, TEMPERATURA, DEADBAND, &data_changed);
-            Souliss_Logic_T53(memory_map, UMIDITA, DEADBAND, &data_changed);
-            /////////////////////////////////////////////////////////////////////////////////////////////
-             
-            } 
-            
-              
-        // Here we handle here the communication with Android
-        FAST_PeerComms();
-                                    
-    }
-       EXECUTESLOW()
-  {
-    UPDATESLOW();
-    
-      SLOW_10s(){
-        temperature = dht.readTemperature();
-        humidity = dht.readHumidity();
-        Souliss_ImportAnalog(memory_map, TEMPERATURA, &temperature);
-        Souliss_ImportAnalog(memory_map, UMIDITA, &humidity);
-        tft.setRotation(1);
-        tft.fillScreen(ILI9341_BLACK);  
-        tft.setTextColor(ILI9341_WHITE);
-        tft.setTextSize(8);
-        //tft.print("Temp Attuale:"); tft.println(randNumber = random(10, 320));
-        tft.setCursor(20, 10);
-        tft.print(temperature);
-        tft.setTextSize(4); 
-        tft.print("C");
-        tft.setTextSize(2); 
-        tft.println("o");
-        tft.setTextSize(4);
-        tft.setCursor(20, 80);
-        tft.print(humidity);
-        tft.setTextSize(3); 
-        tft.println("%");
-        tft.setCursor(20, 200);
-        tft.setTextColor(ILI9341_RED);  
-        tft.setTextSize(3);
-        tft.print("SET:"); tft.print(setpoint);
-        dbackLED=1;
+          //*************************************************************************
+          //*************************************************************************
+             Logic_Thermostat(SLOT_THERMOSTAT);                        
+             // Start the heater and the fans
+             nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
+          //*************************************************************************
+          //*************************************************************************
+        }
+
+      FAST_510ms() {
+          // Compare the acquired input with the stored one, send the new value to the
+         // user interface if the difference is greater than the deadband
+         Logic_T52(SLOT_TEMPERATURE);
+         Logic_T53(SLOT_HUMIDITY); 
+
+      //   SERIAL_OUT.print("Encoder setpoint: "); SERIAL_OUT.println(getEncoderValue());     
       }
 
-      //
-      SLOW_50s(){
-        if(temperature<setpoint-hyst){
-          //Souliss_Input(memory_map, CALDAIA) = Souliss_T1n_OnCmd;
-          mInput(CALDAIA) = Souliss_T1n_OnCmd;
-          }
-        if(temperature>setpoint+hyst){
-          mInput(CALDAIA) = Souliss_T1n_OffCmd;
-          }
-            
+        // Run communication as Gateway or Peer
+        if (IsRuntimeGateway())
+            FAST_GatewayComms(); 
+        else 
+            FAST_PeerComms();   
+    }
+
+    EXECUTESLOW() {
+        UPDATESLOW();
+
+        SLOW_10s() { 
+          //*************************************************************************
+          //*************************************************************************
+ 
+      // Read temperature value from DHT sensor and convert from single-precision to half-precision
+      temperature = dht.readTemperature();
+      ImportAnalog(SLOT_TEMPERATURE, &temperature);
+  
+      // Read humidity value from DHT sensor and convert from single-precision to half-precision
+      humidity = dht.readHumidity();
+      ImportAnalog(SLOT_HUMIDITY, &humidity);     
+
+       //Import temperature into T31 Thermostat
+       ImportAnalog(SLOT_THERMOSTAT + 1, &temperature);
+      
+       setpoint = Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3);
+       
+       SERIAL_OUT.print("Temperature: "); SERIAL_OUT.println(temperature);
+       SERIAL_OUT.print("Humidity: "); SERIAL_OUT.println(humidity);
+       SERIAL_OUT.print("Set point: "); SERIAL_OUT.println(setpoint);
+       
+
+         //*************************************************************************
+         //*************************************************************************
         }
-      }       
-} 
-
-
-
+        
+        // If running as Peer
+        if (!IsRuntimeGateway())
+            SLOW_PeerJoin();
+    } 
+}    
 
 
 
