@@ -120,6 +120,8 @@ void loop()
     FAST_30ms() {
       //set point attuale
       setpoint = Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3);
+      
+SERIAL_OUT.print("encoder: "); SERIAL_OUT.println(getEncoderValue());
 
       //Stampa il setpoint solo se il valore dell'encoder è diverso da quello impostato nel T31
       if (arrotonda(getEncoderValue()) != arrotonda(setpoint)) {
@@ -199,7 +201,7 @@ void loop()
 
 float arrotonda(const float v)
 {
-  return (int(v*10))/10; //100=10^2 per 2 cifre decimali 
+  return (int(v*100))/100; //100=10^2 per 2 cifre decimali 
 }
 
 
