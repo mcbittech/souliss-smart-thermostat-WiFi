@@ -33,7 +33,6 @@ DHT dht(DHTPIN, DHTTYPE);
 float temperature = 0;
 float humidity = 0;
 float setpoint = 0;
-float setpoint_prec = 0;
 
 //DISPLAY
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -96,6 +95,8 @@ void setup()
   //*************************************************************************
   // Set the typical to use in slot 0
   Set_Thermostat(SLOT_THERMOSTAT);
+ // set_ThermostatMode(SLOT_THERMOSTAT);
+  
   Set_T52(SLOT_TEMPERATURE);
   Set_T53(SLOT_HUMIDITY);
   // Define output pins
@@ -124,20 +125,17 @@ void loop()
       //set point attuale
       setpoint = Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3);
       
-SERIAL_OUT.print("encoder: "); SERIAL_OUT.println(getEncoderValue());
-
       //Stampa il setpoint solo se il valore dell'encoder è diverso da quello impostato nel T31
       if (arrotonda(getEncoderValue()) != arrotonda(setpoint)) {
-        display_print_setpoint(tft, getEncoderValue());
+        setpointPage(tft, getEncoderValue(), temperature);
+        
         setpoint = getEncoderValue();
         //memorizza il setpoint nel T31
-        SERIAL_OUT.print("getEncoderValue arrotondato: "); SERIAL_OUT.println(arrotonda(getEncoderValue()));
-        SERIAL_OUT.print("setpoint Souliss arrotondato: "); SERIAL_OUT.println(arrotonda(setpoint));
-          
         Souliss_HalfPrecisionFloating((memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3), &setpoint);
-      }
+        SERIAL_OUT.print("setpoint: "); SERIAL_OUT.println(setpoint);
+        }
 
- setpoint = floor(setpoint);
+ //setpoint = floor(setpoint);
     }
 
     FAST_50ms() {   // We process the logic and relevant input and output every 50 milliseconds
@@ -219,4 +217,7 @@ float arrotonda(const float v)
   }
 }
 
+void set_ThermostatMode(U8 slot) {
+  memory_map[MaCaco_OUT_s + slot] |= Souliss_T3n_HeatingMode | Souliss_T3n_SystemOn;
+}
 
