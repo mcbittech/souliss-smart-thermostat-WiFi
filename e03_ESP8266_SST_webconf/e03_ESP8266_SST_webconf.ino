@@ -25,6 +25,7 @@
 #include "t_encoder.h"
 #include "t_constants.h"
 #include "display.h"
+#include "language.h"
 
 //*************************************************************************
 //*************************************************************************
@@ -54,6 +55,7 @@ bool dbackLED = 0;
 void setup()
 {
   SERIAL_OUT.begin(115200);
+  tft.begin();
   Initialize();
 
   // Read the IP configuration from the EEPROM, if not available start
@@ -63,11 +65,11 @@ void setup()
     // Start the node as access point with a configuration WebServer
     SetAccessPoint();
     startWebServer();
-
+    display_print_splash_waiting_need_configuration(tft);
     // We have nothing more than the WebServer for the configuration
     // to run, once configured the node will quit this.
     while (1)
-    {
+    { 
       yield();
       runWebServer();
     }
@@ -76,12 +78,14 @@ void setup()
 
   if (IsRuntimeGateway())
   {
+    display_print_splash_waiting_connection_gateway(tft);
     // Connect to the WiFi network and get an address from DHCP
     SetAsGateway(myvNet_dhcp);       // Set this node as gateway for SoulissApp
     SetAddressingServer();
   }
   else
   {
+    display_print_splash_waiting_connection_peer(tft);
     // This board request an address to the gateway at runtime, no need
     // to configure any parameter here.
     SetDynamicAddressing();
@@ -97,8 +101,7 @@ void setup()
   // Define output pins
   pinMode(RELE, OUTPUT);    // Heater
   dht.begin();
-  tft.begin();
-
+  
   //ENCODER
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   pinMode (ENCODER_PIN_A, INPUT);
@@ -201,7 +204,19 @@ SERIAL_OUT.print("encoder: "); SERIAL_OUT.println(getEncoderValue());
 
 float arrotonda(const float v)
 {
-  return (int(v*100))/100; //100=10^2 per 2 cifre decimali 
+  float vX10=v*10;
+  //Serial.print("vX10: "); Serial.println(vX10);
+   
+  int vInt=(int) vX10;
+  //Serial.print("vInt: "); Serial.println(vInt);
+  
+  float diff=abs(vX10-vInt);
+  //Serial.print("diff: "); Serial.println(diff);
+  if (diff<0.5) {
+    return (float) vInt/10;
+  }else {
+    return (float)(vInt+1)/10;
+  }
 }
 
 
