@@ -127,16 +127,16 @@ void loop()
       
       //Stampa il setpoint solo se il valore dell'encoder è diverso da quello impostato nel T31
       if (arrotonda(getEncoderValue()) != arrotonda(setpoint)) {
-        setpointPage(tft, getEncoderValue(), temperature);
+        setpointPage(tft, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1));
         
         setpoint = getEncoderValue();
         //memorizza il setpoint nel T31
         Souliss_HalfPrecisionFloating((memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3), &setpoint);
+
+        SERIAL_OUT.print("temp: "); SERIAL_OUT.println(Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1));
         SERIAL_OUT.print("setpoint: "); SERIAL_OUT.println(setpoint);
         }
-
- //setpoint = floor(setpoint);
-    }
+   }
 
     FAST_50ms() {   // We process the logic and relevant input and output every 50 milliseconds
       //*************************************************************************
@@ -153,8 +153,6 @@ void loop()
       // user interface if the difference is greater than the deadband
       Logic_T52(SLOT_TEMPERATURE);
       Logic_T53(SLOT_HUMIDITY);
-
-      //   SERIAL_OUT.print("Encoder setpoint: "); SERIAL_OUT.println(getEncoderValue());
     }
 
     // Run communication as Gateway or Peer
@@ -173,22 +171,18 @@ void loop()
 
       // Read temperature value from DHT sensor and convert from single-precision to half-precision
       temperature = dht.readTemperature();
+      //Import temperature into T31 Thermostat
+      ImportAnalog(SLOT_THERMOSTAT + 1, &temperature);
       ImportAnalog(SLOT_TEMPERATURE, &temperature);
-
+      
       // Read humidity value from DHT sensor and convert from single-precision to half-precision
       humidity = dht.readHumidity();
       ImportAnalog(SLOT_HUMIDITY, &humidity);
 
-      //Import temperature into T31 Thermostat
-      ImportAnalog(SLOT_THERMOSTAT + 1, &temperature);
-
-      setpoint = Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3);
-
-      SERIAL_OUT.print("Temperature: "); SERIAL_OUT.println(temperature);
-      SERIAL_OUT.print("Humidity: "); SERIAL_OUT.println(humidity);
-      SERIAL_OUT.print("Set point: "); SERIAL_OUT.println(setpoint);
-
-
+     
+      SERIAL_OUT.print("aquisizione Temperature: "); SERIAL_OUT.println(temperature);
+      SERIAL_OUT.print("aquisizione Humidity: "); SERIAL_OUT.println(humidity);
+     
       //*************************************************************************
       //*************************************************************************
     }
@@ -218,6 +212,7 @@ float arrotonda(const float v)
 }
 
 void set_ThermostatMode(U8 slot) {
-  memory_map[MaCaco_OUT_s + slot] |= Souliss_T3n_HeatingMode | Souliss_T3n_SystemOn;
+  memory_map[MaCaco_OUT_s + slot] |= Souliss_T3n_SystemOn ;
+  
 }
 
