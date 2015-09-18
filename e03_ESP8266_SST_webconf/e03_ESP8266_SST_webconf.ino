@@ -68,7 +68,7 @@ void setup()
     // We have nothing more than the WebServer for the configuration
     // to run, once configured the node will quit this.
     while (1)
-    { 
+    {
       yield();
       runWebServer();
     }
@@ -95,20 +95,22 @@ void setup()
   //*************************************************************************
   // Set the typical to use in slot 0
   Set_Thermostat(SLOT_THERMOSTAT);
- // set_ThermostatMode(SLOT_THERMOSTAT);
-  
+  set_ThermostatMode(SLOT_THERMOSTAT);
+
   Set_T52(SLOT_TEMPERATURE);
   Set_T53(SLOT_HUMIDITY);
   // Define output pins
   pinMode(RELE, OUTPUT);    // Heater
   dht.begin();
-  
+
   //ENCODER
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   pinMode (ENCODER_PIN_A, INPUT);
   pinMode (ENCODER_PIN_B, INPUT);
   //*************************************************************************
   //*************************************************************************
+
+  display_HomeScreen(tft, temperature);
 
 }
 
@@ -124,26 +126,28 @@ void loop()
     FAST_30ms() {
       //set point attuale
       setpoint = Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3);
-      
+
       //Stampa il setpoint solo se il valore dell'encoder è diverso da quello impostato nel T31
       if (arrotonda(getEncoderValue()) != arrotonda(setpoint)) {
-        setpointPage(tft, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1));
+        display_setpointPage(tft, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1));
+        
+        //TICK TIMER
+        timerDisplay_setpoint_Tick();
         
         setpoint = getEncoderValue();
         //memorizza il setpoint nel T31
         Souliss_HalfPrecisionFloating((memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3), &setpoint);
-
-        SERIAL_OUT.print("temp: "); SERIAL_OUT.println(Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1));
-        SERIAL_OUT.print("setpoint: "); SERIAL_OUT.println(setpoint);
-        }
-   }
+        //SERIAL_OUT.print("temp: "); SERIAL_OUT.println(Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1));
+        //SERIAL_OUT.print("setpoint: "); SERIAL_OUT.println(setpoint);
+      }
+    }
 
     FAST_50ms() {   // We process the logic and relevant input and output every 50 milliseconds
       //*************************************************************************
       //*************************************************************************
       Logic_Thermostat(SLOT_THERMOSTAT);
       // Start the heater and the fans
-      nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
+      nLowDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
       //*************************************************************************
       //*************************************************************************
     }
@@ -153,6 +157,14 @@ void loop()
       // user interface if the difference is greater than the deadband
       Logic_T52(SLOT_TEMPERATURE);
       Logic_T53(SLOT_HUMIDITY);
+    }
+
+    FAST_910ms() {
+
+      if (timerDisplay_setpoint()) {
+        display_HomeScreen(tft, temperature);
+      }
+
     }
 
     // Run communication as Gateway or Peer
@@ -174,15 +186,15 @@ void loop()
       //Import temperature into T31 Thermostat
       ImportAnalog(SLOT_THERMOSTAT + 1, &temperature);
       ImportAnalog(SLOT_TEMPERATURE, &temperature);
-      
+
       // Read humidity value from DHT sensor and convert from single-precision to half-precision
       humidity = dht.readHumidity();
       ImportAnalog(SLOT_HUMIDITY, &humidity);
 
-     
+
       SERIAL_OUT.print("aquisizione Temperature: "); SERIAL_OUT.println(temperature);
       SERIAL_OUT.print("aquisizione Humidity: "); SERIAL_OUT.println(humidity);
-     
+
       //*************************************************************************
       //*************************************************************************
     }
@@ -196,23 +208,23 @@ void loop()
 
 float arrotonda(const float v)
 {
-  float vX10=v*10;
+  float vX10 = v * 10;
   //Serial.print("vX10: "); Serial.println(vX10);
-   
-  int vInt=(int) vX10;
+
+  int vInt = (int) vX10;
   //Serial.print("vInt: "); Serial.println(vInt);
-  
-  float diff=abs(vX10-vInt);
+
+  float diff = abs(vX10 - vInt);
   //Serial.print("diff: "); Serial.println(diff);
-  if (diff<0.5) {
-    return (float) vInt/10;
-  }else {
-    return (float)(vInt+1)/10;
+  if (diff < 0.5) {
+    return (float) vInt / 10;
+  } else {
+    return (float)(vInt + 1) / 10;
   }
 }
 
 void set_ThermostatMode(U8 slot) {
-  memory_map[MaCaco_OUT_s + slot] |= Souliss_T3n_SystemOn ;
-  
+  memory_map[MaCaco_OUT_s + slot] |= Souliss_T3n_SystemOn | Souliss_T3n_HeatingMode;
+
 }
 
