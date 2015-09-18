@@ -110,7 +110,7 @@ void setup()
   //*************************************************************************
   //*************************************************************************
 
-  display_HomeScreen(tft, temperature);
+  display_HomeScreen(tft, temperature, setpoint);
 
 }
 
@@ -162,7 +162,7 @@ void loop()
     FAST_910ms() {
 
       if (timerDisplay_setpoint()) {
-        display_HomeScreen(tft, temperature);
+        display_HomeScreen(tft, temperature, setpoint);
       }
 
     }
@@ -202,24 +202,6 @@ void loop()
     // If running as Peer
     if (!IsRuntimeGateway())
       SLOW_PeerJoin();
-  }
-}
-
-
-float arrotonda(const float v)
-{
-  float vX10 = v * 10;
-  //Serial.print("vX10: "); Serial.println(vX10);
-
-  int vInt = (int) vX10;
-  //Serial.print("vInt: "); Serial.println(vInt);
-
-  float diff = abs(vX10 - vInt);
-  //Serial.print("diff: "); Serial.println(diff);
-  if (diff < 0.5) {
-    return (float) vInt / 10;
-  } else {
-    return (float)(vInt + 1) / 10;
   }
 }
 
