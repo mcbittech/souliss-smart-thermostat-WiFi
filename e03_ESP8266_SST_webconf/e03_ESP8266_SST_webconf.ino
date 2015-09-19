@@ -131,7 +131,6 @@ void loop()
     FAST_30ms() {
       //set point attuale
       setpoint = Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3);
-
       //Stampa il setpoint solo se il valore dell'encoder è diverso da quello impostato nel T31
       if (arrotonda(getEncoderValue()) != arrotonda(setpoint)) {
         display_setpointPage(tft, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1));
@@ -142,6 +141,9 @@ void loop()
         setpoint = getEncoderValue();
         //memorizza il setpoint nel T31
         Souliss_HalfPrecisionFloating((memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3), &setpoint);
+        // Trig the next change of the state
+       data_changed = Souliss_TRIGGED;
+      
         //SERIAL_OUT.print("temp: "); SERIAL_OUT.println(Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1));
         //SERIAL_OUT.print("setpoint: "); SERIAL_OUT.println(setpoint);
       }
