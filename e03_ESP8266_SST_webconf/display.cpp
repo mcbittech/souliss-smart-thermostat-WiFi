@@ -45,6 +45,32 @@ float arrotonda(const float v)
 }
 
 
+long lastClickTime = 0;  // the last time the output pin was toggled
+//return 1 for timeout
+boolean timerDisplay_setpoint() {
+  if ((millis() - lastClickTime) > TIMER_DISPLAY_SETPOINT) {
+     lastClickTime = millis();
+    return 1;
+  } else {
+   
+    return 0;
+  }
+}
+
+void timerDisplay_setpoint_Tick() {
+   lastClickTime = millis();
+}
+
+
+
+
+
+
+
+
+
+
+
 void display_print_setpoint(Souliss_SmartT_ILI9341 tft, float setpoint) {
   tft.setRotation(1);
   tft.fillScreen(ILI9341_BLACK);
@@ -67,7 +93,7 @@ void display_print_setpoint(Souliss_SmartT_ILI9341 tft, float setpoint) {
 boolean flag_onetime_HomeScreen=false;
 void display_setpointPage(Souliss_SmartT_ILI9341 tft, float setpoint, float temp) {
   //TICK TIMER
-    //timerDisplay_setpoint_Tick();  
+  timerDisplay_setpoint_Tick();  
   
   flag_onetime_HomeScreen=false;
   display_print_setpoint(tft, setpoint);
@@ -124,10 +150,11 @@ void display_print_B3(Souliss_SmartT_ILI9341 tft, String text, float temp) {
 }
 
 float temp_prec=0;
+float setpoint_prec=0;
 void display_HomeScreen(Souliss_SmartT_ILI9341 tft, float temp, float setpoint) {
   //uso flag_onetime per visualizzare almeno una volta la schermata, anche in assenza di variazione di temperatura
   //flag_onetime_HomeScreen è rimessa a false display_setpointPage
- if(!flag_onetime_HomeScreen || arrotonda(temp)!=arrotonda(temp_prec)){
+ if(!flag_onetime_HomeScreen || arrotonda(temp)!=arrotonda(temp_prec) || (arrotonda(setpoint)!= arrotonda(setpoint_prec))){
  tft.setRotation(1);
   tft.fillScreen(ILI9341_BLACK);
 
@@ -141,30 +168,13 @@ void display_HomeScreen(Souliss_SmartT_ILI9341 tft, float temp, float setpoint) 
   tft.setTextSize(2);
   tft.println("o");
   temp_prec=temp;
+  setpoint_prec=setpoint;
   flag_onetime_HomeScreen=true;
   display_print_B3(tft, SETPOINT_TEXT, setpoint);
  }
 }
 
 
-long lastClickTime = 0;  // the last time the output pin was toggled
-//return 1 for timeout
-boolean timerDisplay_setpoint() {
-    Serial.print("lastClickTime: ");Serial.println(lastClickTime);
-     Serial.print("(millis() - lastClickTime): ");Serial.println(millis() - lastClickTime);
-  if ((millis() - lastClickTime) > TIMER_DISPLAY_SETPOINT) {
-    Serial.println("Return to home screen");
-     lastClickTime = millis();
-    return 1;
-  } else {
-   
-    return 0;
-  }
-}
-
-void timerDisplay_setpoint_Tick() {
-   lastClickTime = millis();
-}
 
 
 

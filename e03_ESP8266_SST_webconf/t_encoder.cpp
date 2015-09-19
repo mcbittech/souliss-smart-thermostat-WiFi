@@ -27,4 +27,6 @@ float getEncoderValue() {
   return encoderValue;
 }
 
-
+void setEncoderValue(float val) {
+ encoderValue=val;
+}
