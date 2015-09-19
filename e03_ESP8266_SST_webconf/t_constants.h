@@ -25,7 +25,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // **** Define here the right pin for your ESP module **** 
 #define RELE                  5
-#define BACKLED  16;
+#define BACKLED  16
 
 //TIMER DISPLAY
 #define TIMER_DISPLAY_SETPOINT 3000

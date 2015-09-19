@@ -27,6 +27,23 @@
 // ILI9341_ORANGE
 // ILI9341_GREENYELLOW
 // ILI9341_PINK
+float arrotonda(const float v)
+{
+  float vX10 = v * 10;
+  //Serial.print("vX10: "); Serial.println(vX10);
+
+  int vInt = (int) vX10;
+  //Serial.print("vInt: "); Serial.println(vInt);
+
+  float diff = abs(vX10 - vInt);
+  //Serial.print("diff: "); Serial.println(diff);
+  if (diff < 0.5) {
+    return (float) vInt / 10;
+  } else {
+    return (float)(vInt + 1) / 10;
+  }
+}
+
 
 void display_print_setpoint(Souliss_SmartT_ILI9341 tft, float setpoint) {
   tft.setRotation(1);
@@ -110,7 +127,7 @@ float temp_prec=0;
 void display_HomeScreen(Souliss_SmartT_ILI9341 tft, float temp, float setpoint) {
   //uso flag_onetime per visualizzare almeno una volta la schermata, anche in assenza di variazione di temperatura
   //flag_onetime_HomeScreen è rimessa a false display_setpointPage
- if(!flag_onetime_HomeScreen || temp!=temp_prec){
+ if(!flag_onetime_HomeScreen || arrotonda(temp)!=arrotonda(temp_prec)){
  tft.setRotation(1);
   tft.fillScreen(ILI9341_BLACK);
 
@@ -124,7 +141,7 @@ void display_HomeScreen(Souliss_SmartT_ILI9341 tft, float temp, float setpoint) 
   tft.setTextSize(2);
   tft.println("o");
   temp_prec=temp;
-  
+  flag_onetime_HomeScreen=true;
   display_print_B3(tft, SETPOINT_TEXT, setpoint);
  }
 }
@@ -149,19 +166,5 @@ void timerDisplay_setpoint_Tick() {
    lastClickTime = millis();
 }
 
-float arrotonda(const float v)
-{
-  float vX10 = v * 10;
-  //Serial.print("vX10: "); Serial.println(vX10);
 
-  int vInt = (int) vX10;
-  //Serial.print("vInt: "); Serial.println(vInt);
 
-  float diff = abs(vX10 - vInt);
-  //Serial.print("diff: "); Serial.println(diff);
-  if (diff < 0.5) {
-    return (float) vInt / 10;
-  } else {
-    return (float)(vInt + 1) / 10;
-  }
-}

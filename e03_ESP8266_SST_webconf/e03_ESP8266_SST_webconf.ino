@@ -45,8 +45,6 @@ float setpoint = 0;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 Souliss_SmartT_ILI9341 tft = Souliss_SmartT_ILI9341(TFT_CS, TFT_DC);
 
-
-bool dbackLED = 0;
 //*************************************************************************
 //*************************************************************************
 
@@ -55,6 +53,11 @@ void setup()
 {
   SERIAL_OUT.begin(115200);
   tft.begin();
+ //BACK LED
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+pinMode(BACKLED, OUTPUT);                     // Background Display LED
+analogWrite(BACKLED,1023);
+  
   Initialize();
 
   // Read the IP configuration from the EEPROM, if not available start
@@ -107,6 +110,8 @@ void setup()
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   pinMode (ENCODER_PIN_A, INPUT);
   pinMode (ENCODER_PIN_B, INPUT);
+
+
   //*************************************************************************
   //*************************************************************************
 
@@ -147,9 +152,10 @@ void loop()
       //*************************************************************************
       Logic_Thermostat(SLOT_THERMOSTAT);
       // Start the heater and the fans
-      nLowDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
+      nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
       //*************************************************************************
       //*************************************************************************
+      
     }
 
     FAST_510ms() {
@@ -204,6 +210,9 @@ void loop()
       SLOW_PeerJoin();
   }
 }
+
+
+
 
 void set_ThermostatMode(U8 slot) {
   memory_map[MaCaco_OUT_s + slot] |= Souliss_T3n_SystemOn | Souliss_T3n_HeatingMode;

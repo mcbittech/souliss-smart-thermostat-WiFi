@@ -17,3 +17,4 @@ void display_print_splash_waiting_connection_peer(Souliss_SmartT_ILI9341);
 boolean timerDisplay_setpoint();
 void timerDisplay_setpoint_Tick();
 float arrotonda(const float);
+
