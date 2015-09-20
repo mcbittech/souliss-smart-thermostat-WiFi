@@ -49,11 +49,10 @@ long lastClickTime = 0;  // the last time the output pin was toggled
 //return 1 for timeout
 boolean timerDisplay_setpoint() {
   if ((millis() - lastClickTime) > TIMER_DISPLAY_SETPOINT) {
-     lastClickTime = millis();
+     //lastClickTime = millis();
     return 1;
   } else {
-   
-    return 0;
+      return 0;
   }
 }
 

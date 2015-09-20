@@ -18,9 +18,9 @@ void tickEncoder() {
     } else {
       encoder0Pos++;
     }
-     encoderValue = encoder0Pos / 10.0;
+    encoderValue = encoder0Pos / 10.0;
   }
-    encoder_PinALast = n;
+  encoder_PinALast = n;
 }
 
 float getEncoderValue() {
@@ -28,5 +28,6 @@ float getEncoderValue() {
 }
 
 void setEncoderValue(float val) {
- encoderValue=val;
+  encoder0Pos = val * 10;
+
 }

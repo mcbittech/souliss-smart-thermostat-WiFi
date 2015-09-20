@@ -33,6 +33,7 @@ DHT dht(DHTPIN, DHTTYPE);
 float temperature = 0;
 float humidity = 0;
 float setpoint = 0;
+float encoderValue_prec = 0;
 
 //DISPLAY
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,11 +54,11 @@ void setup()
 {
   SERIAL_OUT.begin(115200);
   tft.begin();
- //BACK LED
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-pinMode(BACKLED, OUTPUT);                     // Background Display LED
-analogWrite(BACKLED,1023);
-  
+  //BACK LED
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////
+  pinMode(BACKLED, OUTPUT);                     // Background Display LED
+  analogWrite(BACKLED, 1023);
+
   Initialize();
 
   // Read the IP configuration from the EEPROM, if not available start
@@ -132,21 +133,22 @@ void loop()
       //set point attuale
       setpoint = Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3);
       //Stampa il setpoint solo se il valore dell'encoder è diverso da quello impostato nel T31
-      if (arrotonda(getEncoderValue()) != arrotonda(setpoint)) {
+
+      if (arrotonda(getEncoderValue()) != arrotonda(encoderValue_prec)) {
         display_setpointPage(tft, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1));
-        
-        //TICK TIMER
-        timerDisplay_setpoint_Tick();
-        
+      }
+      if (timerDisplay_setpoint()) {
+        //timeout scaduto
+        setEncoderValue(setpoint);
+      } else {
+        //timer non scaduto. Memorizzo
         setpoint = getEncoderValue();
         //memorizza il setpoint nel T31
         Souliss_HalfPrecisionFloating((memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3), &setpoint);
         // Trig the next change of the state
-       data_changed = Souliss_TRIGGED;
-      
-        //SERIAL_OUT.print("temp: "); SERIAL_OUT.println(Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1));
-        //SERIAL_OUT.print("setpoint: "); SERIAL_OUT.println(setpoint);
+        data_changed = Souliss_TRIGGED;
       }
+      encoderValue_prec = getEncoderValue();
     }
 
     FAST_50ms() {   // We process the logic and relevant input and output every 50 milliseconds
@@ -157,7 +159,7 @@ void loop()
       nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
       //*************************************************************************
       //*************************************************************************
-      
+
     }
 
     FAST_510ms() {
