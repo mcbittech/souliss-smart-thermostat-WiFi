@@ -215,11 +215,7 @@ void loop()
   }
 }
 
-
-
-
 void set_ThermostatMode(U8 slot) {
   memory_map[MaCaco_OUT_s + slot] |= Souliss_T3n_SystemOn | Souliss_T3n_HeatingMode;
 
 }
-
