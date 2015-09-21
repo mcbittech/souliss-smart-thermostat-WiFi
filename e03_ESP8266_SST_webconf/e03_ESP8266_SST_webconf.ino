@@ -180,7 +180,6 @@ void loop()
       if (timerDisplay_setpoint()) {
         display_HomeScreen(tft, temperature, setpoint);
       }
-
     }
 
     // Run communication as Gateway or Peer
@@ -210,12 +209,16 @@ void loop()
 
       SERIAL_OUT.print("aquisizione Temperature: "); SERIAL_OUT.println(temperature);
       SERIAL_OUT.print("aquisizione Humidity: "); SERIAL_OUT.println(humidity);
-  //NTP
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////
-  initNTP();
+  
       //*************************************************************************
       //*************************************************************************
     }
+    
+  SLOW_15m(){
+  //NTP
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////
+  initNTP();  
+  }
 
     // If running as Peer
     if (!IsRuntimeGateway())

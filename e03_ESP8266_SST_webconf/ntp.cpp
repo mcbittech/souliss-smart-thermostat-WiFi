@@ -23,7 +23,7 @@ byte packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming & outgoing packets
 void sendNTPpacket(IPAddress &address)
 {
   // set all bytes in the buffer to 0
-  memset(packetBuffer, MEMSET_NTP_START, NTP_PACKET_SIZE);
+  //memset(packetBuffer, MEMSET_NTP_START, NTP_PACKET_SIZE);
   // Initialize values needed to form NTP request
   // (see URL above for details on the packets)
   packetBuffer[0] = 0b11100011;   // LI, Version, Mode
@@ -80,7 +80,7 @@ String printDigits(int digits) {
 
 String digitalClockDisplay() {
   // digital clock display of the time
-  return hour() + ":" + printDigits(minute()) + ":" + printDigits(second()) +  " " + day() + "/" + month() + "/" + year();
+  return printDigits(hour()) + ":" + printDigits(minute()) + ":" + printDigits(second()) +  " " + day() + "/" + month() + "/" + year();
 }
 
 

@@ -63,13 +63,6 @@ void timerDisplay_setpoint_Tick() {
 
 
 
-
-
-
-
-
-
-
 void display_print_setpoint(Souliss_SmartT_ILI9341 tft, float setpoint) {
   tft.setRotation(1);
   tft.fillScreen(ILI9341_BLACK);
@@ -154,50 +147,58 @@ void display_print_DateTime(Souliss_SmartT_ILI9341 tft, String text) {
 }
 
 time_t prevDisplay = 0; // when the digital clock was displayed
+String sPrevDisplay;
 void display_print_B1(Souliss_SmartT_ILI9341 tft) {
   //NTP
   String dateAndTime = "";
-  if (timeStatus() != timeNotSet) {
-    if (now() != prevDisplay) { //update the display only if time has changed
-      prevDisplay = now();
-      SERIAL_OUT.print("now(): "); SERIAL_OUT.println(now());
-      dateAndTime = digitalClockDisplay();
-      SERIAL_OUT.print("now(): "); SERIAL_OUT.println(digitalClockDisplay());
-    }
-  } else
-    SERIAL_OUT.println("Time Not Set ");
+  if (now() != prevDisplay) { //update the display only if time has changed
+    prevDisplay = now();
+    SERIAL_OUT.print("now(): "); SERIAL_OUT.println(now());
+    dateAndTime = digitalClockDisplay();
 
-  tft.setCursor(20, 10);
-  tft.setTextColor(ILI9341_WHITE);
-  display_print_DateTime(tft, dateAndTime);
-}
-
-
-float temp_prec = 0;
-float setpoint_prec = 0;
-void display_HomeScreen(Souliss_SmartT_ILI9341 tft, float temp, float setpoint) {
-  //uso flag_onetime per visualizzare almeno una volta la schermata, anche in assenza di variazione di temperatura
-  //flag_onetime_HomeScreen è rimessa a false display_setpointPage
-  if (!flag_onetime_HomeScreen || arrotonda(temp) != arrotonda(temp_prec) || (arrotonda(setpoint) != arrotonda(setpoint_prec))) {
-    tft.setRotation(1);
-    tft.fillScreen(ILI9341_BLACK);
-
-    tft.setTextSize(10);
-    tft.setCursor(15, 80);
-
+    tft.setCursor(20, 10);
+    tft.setTextColor(ILI9341_BLACK);
+    display_print_DateTime(tft, sPrevDisplay);
+   
+    delay(50);
+    tft.setCursor(20, 10);
     tft.setTextColor(ILI9341_WHITE);
-    tft.print(temp, 1);
-    tft.setTextSize(4);
-    tft.print("C");
-    tft.setTextSize(2);
-    tft.println("o");
-    temp_prec = temp;
-    setpoint_prec = setpoint;
-    flag_onetime_HomeScreen = true;
-    display_print_B3(tft, SETPOINT_TEXT, setpoint);
-    display_print_B1(tft);
+    display_print_DateTime(tft, dateAndTime);
+   
+    sPrevDisplay = digitalClockDisplay();
   }
 }
+
+
+  float temp_prec = 0;
+  float setpoint_prec = 0;
+  void display_HomeScreen(Souliss_SmartT_ILI9341 tft, float temp, float setpoint) {
+
+   //la funzione display_print_B1 aggiorna soltanto se l'orario è cambiato
+    display_print_B1(tft);
+    
+    //uso flag_onetime per visualizzare almeno una volta la schermata, anche in assenza di variazione di temperatura
+    //flag_onetime_HomeScreen è rimessa a false display_setpointPage
+    if (!flag_onetime_HomeScreen || arrotonda(temp) != arrotonda(temp_prec) || (arrotonda(setpoint) != arrotonda(setpoint_prec))) {
+      tft.setRotation(1);
+      tft.fillScreen(ILI9341_BLACK);
+
+      tft.setTextSize(10);
+      tft.setCursor(15, 80);
+
+      tft.setTextColor(ILI9341_WHITE);
+      tft.print(temp, 1);
+      tft.setTextSize(4);
+      tft.print("C");
+      tft.setTextSize(2);
+      tft.println("o");
+      temp_prec = temp;
+      setpoint_prec = setpoint;
+      flag_onetime_HomeScreen = true;
+      display_print_B3(tft, SETPOINT_TEXT, setpoint);
+ //     display_print_B1(tft);
+    }
+  }
 
 
 
