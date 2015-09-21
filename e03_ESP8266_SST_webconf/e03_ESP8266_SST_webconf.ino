@@ -11,7 +11,6 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <EEPROM.h>
-#include <WiFiUdp.h>
 #include <DHT.h>
 
 // Configure the Souliss framework
@@ -26,6 +25,8 @@
 #include "t_constants.h"
 #include "display.h"
 #include "language.h"
+#include "ntp.h"
+#include <Time.h> 
 
 //*************************************************************************
 //*************************************************************************
@@ -42,6 +43,8 @@ float encoderValue_prec = 0;
 #include <Souliss_SmartT_ILI9341_GFX_Library.h>
 #include <Souliss_SmartT_ILI9341.h>
 
+
+
 // Use hardware SPI
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 Souliss_SmartT_ILI9341 tft = Souliss_SmartT_ILI9341(TFT_CS, TFT_DC);
@@ -54,11 +57,12 @@ void setup()
 {
   SERIAL_OUT.begin(115200);
   tft.begin();
+
   //BACK LED
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   pinMode(BACKLED, OUTPUT);                     // Background Display LED
-  analogWrite(BACKLED, 1023);
-
+ // analogWrite(BACKLED, 1023);
+ digitalWrite(BACKLED, HIGH);
   Initialize();
 
   // Read the IP configuration from the EEPROM, if not available start
@@ -112,12 +116,13 @@ void setup()
   pinMode (ENCODER_PIN_A, INPUT);
   pinMode (ENCODER_PIN_B, INPUT);
 
-
+  //NTP
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////
+  initNTP();
   //*************************************************************************
   //*************************************************************************
 
-  display_HomeScreen(tft, temperature, setpoint);
-
+display_HomeScreen(tft, temperature, setpoint);
 }
 
 void loop()
@@ -159,6 +164,7 @@ void loop()
       nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
       //*************************************************************************
       //*************************************************************************
+
 
     }
 
@@ -204,7 +210,9 @@ void loop()
 
       SERIAL_OUT.print("aquisizione Temperature: "); SERIAL_OUT.println(temperature);
       SERIAL_OUT.print("aquisizione Humidity: "); SERIAL_OUT.println(humidity);
-
+  //NTP
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////
+  initNTP();
       //*************************************************************************
       //*************************************************************************
     }
@@ -219,3 +227,5 @@ void set_ThermostatMode(U8 slot) {
   memory_map[MaCaco_OUT_s + slot] |= Souliss_T3n_SystemOn | Souliss_T3n_HeatingMode;
 
 }
+
+
