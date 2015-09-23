@@ -81,7 +81,6 @@ Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ 2 , /*cs=*/ 15);
 
 #define SERIAL_OUT Serial
 int backLED = 16;
-bool dbackLED = 0;
 float setpoint=22.0;
 
 
@@ -100,7 +99,7 @@ void setup()
     Souliss_SetT53(memory_map, UMIDITA);
     pinMode(RELE, OUTPUT);                        // Use pin as output 
     pinMode(backLED, OUTPUT);                     // Background Display LED
-
+    analogWrite(backLED,50);
     dht.begin();
   
 /////////////////////////////////////////////////////////////////////////////////////////////////////////  
@@ -125,7 +124,7 @@ void loop()
             n = digitalRead(encoder0PinA);
             if ((encoder0PinALast == LOW) && (n == HIGH)) {
             if (digitalRead(encoder0PinB) == LOW) {
-            //dbackLED=0;
+            analogWrite(backLED,1023);
             encoder0Pos--;
               } else {
             encoder0Pos++;
@@ -146,7 +145,7 @@ void loop()
              
              } 
             encoder0PinALast = n; 
-            digitalWrite(backLED,dbackLED);
+            //digitalWrite(backLED,dbackLED);
         }
         FAST_50ms() {   // We process the logic and relevant input and output every 50 milliseconds
             Logic_SimpleLight(CALDAIA);
@@ -180,6 +179,7 @@ void loop()
             ucg.setFontMode(UCG_FONT_MODE_SOLID);
             ucg.setPrintPos(15,75);
             ucg.setScale2x2();
+            //ucg.setFont(ucg_font_logisoso38_tf);
             ucg.setFont(ucg_font_inb38_mr);
             ucg.print(temperature,1);
             ucg.undoScale();
@@ -198,7 +198,6 @@ void loop()
             ucg.setPrintPos(248,210);
             ucg.print("UMIDITA'");
         
-        dbackLED=1;
       }
 
       //
@@ -210,7 +209,7 @@ void loop()
         if(temperature>setpoint+hyst){
           mInput(CALDAIA) = Souliss_T1n_OffCmd;
           }
-            
+        analogWrite(backLED,50);
         }
       }       
 } 
