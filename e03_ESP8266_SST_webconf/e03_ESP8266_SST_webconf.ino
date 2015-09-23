@@ -12,6 +12,7 @@
 #include <ESP8266WebServer.h>
 #include <EEPROM.h>
 #include <DHT.h>
+#include <MenuSystem.h>
 
 // Configure the Souliss framework
 #include "bconf/MCU_ESP8266.h"              // Load the code directly on the ESP8266
@@ -26,6 +27,8 @@
 #include "display.h"
 #include "language.h"
 #include "ntp.h"
+#include "menu.h"
+
 #include <Time.h> 
 
 //*************************************************************************
@@ -43,11 +46,11 @@ float encoderValue_prec = 0;
 #include <Souliss_SmartT_ILI9341_GFX_Library.h>
 #include <Souliss_SmartT_ILI9341.h>
 
-
-
-// Use hardware SPI
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
 Souliss_SmartT_ILI9341 tft = Souliss_SmartT_ILI9341(TFT_CS, TFT_DC);
+
+
+//MENU
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //*************************************************************************
 //*************************************************************************
@@ -123,6 +126,9 @@ void setup()
   //*************************************************************************
 
 display_HomeScreen(tft, temperature, setpoint);
+ //MENU
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////
+initMenu();
 }
 
 void loop()
@@ -212,12 +218,33 @@ void loop()
   
       //*************************************************************************
       //*************************************************************************
+      MenuSystem m=getMenu();
+
+  printMenu();
+  // Simulate using the menu by walking over the entire structure.
+  m.select();
+
+
+  
+  if (getbRanCallback())
+  {
+    if (getbForward())
+      m.next();
+    else
+      m.prev();
+    setbRanCallback(false);
+  }
+  
+  // Wait for two seconds so the output is viewable
+  delay(2000);
+
     }
     
   SLOW_15m(){
   //NTP
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   initNTP();  
+  
   }
 
     // If running as Peer

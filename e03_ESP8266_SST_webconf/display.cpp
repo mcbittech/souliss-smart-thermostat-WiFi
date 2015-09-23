@@ -153,7 +153,6 @@ void display_print_B1(Souliss_SmartT_ILI9341 tft) {
   String dateAndTime = "";
   if (now() != prevDisplay) { //update the display only if time has changed
     prevDisplay = now();
-    SERIAL_OUT.print("now(): "); SERIAL_OUT.println(now());
     dateAndTime = digitalClockDisplay();
 
     tft.setCursor(20, 10);
