@@ -49,15 +49,14 @@ void display_print_setpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint)
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
 
   ucg.setPrintPos(4, 28);
-  ucg.setFont(ucg_font_inb21_mr);
-  ucg.setScale2x2();
-  ucg.setFont(ucg_font_inb38_mr);
+  //ucg.setScale2x2();
+  ucg.setFont(ucg_font_inb53_mr);
   ucg.print(setpoint, 1);
 
-  ucg.undoScale();
-  ucg.setPrintPos(280, 90);
+ // ucg.undoScale();
+ // ucg.setPrintPos(280, 90);
   ucg.setFont(ucg_font_inb21_mr);
-  ucg.print("o");
+  ucg.print("°");
 }
 
 boolean flag_onetime_HomeScreen = false;
@@ -69,10 +68,10 @@ void display_setpointPage(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint, f
   flag_onetime_HomeScreen = false;
   display_print_setpoint(ucg, setpoint);
 
-  ucg.setColor(111, 0, 255);    // Blu Elettrico
+  ucg.setColor(0, 255, 255, 255);    // Bianco
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
-  ucg.setFont(ucg_font_inb21_mr);
-  ucg.setPrintPos(4, 210);
+  ucg.setFont(ucg_font_inb16_mr);
+  ucg.setPrintPos(4, 220);
 
   ucg.print(TEMP_TEXT);
   ucg.print(temp, 1);
@@ -122,10 +121,10 @@ void display_print_splash_waiting_connection_peer(Ucglib_ILI9341_18x240x320_HWSP
 
 void display_print_B3(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text, float temp) {
 
-  ucg.setPrintPos(20, 200);
+  ucg.setPrintPos(20, 220);
   ucg.setColor(102, 255, 0);    // Verde Chiaro
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
-  ucg.setFont(ucg_font_inb21_mr);
+  ucg.setFont(ucg_font_inb16_mr);
   ucg.print(text);
   ucg.print(temp, 1);
 }
@@ -136,6 +135,7 @@ void display_print_DateTime(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text) {
 
 time_t prevDisplay = 0; // when the digital clock was displayed
 String sPrevDisplay;
+//Stampa l'orologio. La zona B1 è quella in alto a sinistra
 void display_print_B1(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   //NTP
   String dateAndTime = "";
@@ -143,10 +143,10 @@ void display_print_B1(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
     prevDisplay = now();
 
     dateAndTime = digitalClockDisplay();
-    ucg.setPrintPos(20, 10);
+    ucg.setPrintPos(10, 20);
     ucg.setColor(0, 255, 255, 255);    // Bianco
     ucg.setFontMode(UCG_FONT_MODE_SOLID);
-    ucg.setFont(ucg_font_inb21_mr);
+    ucg.setFont(ucg_font_inb16_mr);
     display_print_DateTime(ucg, dateAndTime);
   }
 }
@@ -166,13 +166,14 @@ void display_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp, float s
 
     ucg.setColor(102, 255, 0);    // Verde Chiaro
     ucg.setFontMode(UCG_FONT_MODE_SOLID);
-    ucg.setFont(ucg_font_inb21_mr);
+   // ucg.setFont(ucg_font_inb21_mr);
     ucg.setPrintPos(15, 80);
-    ucg.setScale2x2();
+   // ucg.setScale2x2();
     //ucg.setFont(ucg_font_logisoso38_tf);
     ucg.setFont(ucg_font_inb38_mr);
     ucg.print(temp, 1);
-    ucg.undoScale();
+    //ucg.undoScale();
+    ucg.setFont(ucg_font_inb16_mr);
     ucg.print("o");
 
     temp_prec = temp;

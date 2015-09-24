@@ -147,6 +147,7 @@ void loop()
 
       if (arrotonda(getEncoderValue()) != arrotonda(encoderValue_prec)) {
         analogWrite(BACKLED,1023);
+        SERIAL_OUT.println("display_setpointPage");
         display_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1));
       }
       if (timerDisplay_setpoint()) {
@@ -185,6 +186,7 @@ void loop()
     FAST_910ms() {
 
       if (timerDisplay_setpoint()) {
+        SERIAL_OUT.println("display_HomeScreen");
         display_HomeScreen(ucg, temperature, setpoint);
       }
     }
