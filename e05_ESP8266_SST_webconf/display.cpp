@@ -5,28 +5,8 @@
 #include "language.h"
 #include "ntp.h"
 
-#include <Souliss_SmartT_ILI9341.h>
-#include <Souliss_SmartT_ILI9341_GFX_Library.h>
-// Color definitions
-// ILI9341_BLACK
-// ILI9341_NAVY
-// ILI9341_DARKGREEN
-// ILI9341_DARKCYAN
-// ILI9341_MAROON
-// ILI9341_PURPLE
-// ILI9341_OLIVE
-// ILI9341_LIGHTGREY
-// ILI9341_DARKGREY
-// ILI9341_BLUE
-// ILI9341_GREEN
-// ILI9341_CYAN
-// ILI9341_RED
-// ILI9341_MAGENTA
-// ILI9341_YELLOW
-// ILI9341_WHITE
-// ILI9341_ORANGE
-// ILI9341_GREENYELLOW
-// ILI9341_PINK
+#include "Ucglib.h"
+
 float arrotonda(const float v)
 {
   float vX10 = v * 10;
@@ -62,143 +42,146 @@ void timerDisplay_setpoint_Tick() {
 
 
 
+//Stampa soltanto il setpoint grande al centro del display
+void display_print_setpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint) {
 
-void display_print_setpoint(Souliss_SmartT_ILI9341 tft, float setpoint) {
-  tft.setRotation(1);
-  tft.fillScreen(ILI9341_BLACK);
+  ucg.setColor(0, 255, 255, 255);    // Bianco
+  ucg.setFontMode(UCG_FONT_MODE_SOLID);
 
-  tft.setTextSize(10);
-  tft.setCursor(4, 30);
+  ucg.setPrintPos(4, 28);
+  ucg.setFont(ucg_font_inb21_mr);
+  ucg.setScale2x2();
+  ucg.setFont(ucg_font_inb38_mr);
+  ucg.print(setpoint, 1);
 
-  tft.setTextColor(ILI9341_DARKGREEN);
-  tft.print(setpoint, 1);
-  tft.setTextSize(4);
-  tft.print("C");
-  tft.setTextSize(2);
-  tft.println("o");
-  tft.setTextSize(5);
-  tft.setCursor(4, 110);
-  tft.setTextColor(ILI9341_WHITE);
-  tft.print(SETPOINT_TEXT_SETPOINT_SCREEN);
+  ucg.undoScale();
+  ucg.setPrintPos(280, 90);
+  ucg.setFont(ucg_font_inb21_mr);
+  ucg.print("o");
 }
 
 boolean flag_onetime_HomeScreen = false;
-void display_setpointPage(Souliss_SmartT_ILI9341 tft, float setpoint, float temp) {
+//compone la pagina dedicata al setpoint
+void display_setpointPage(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint, float temp) {
   //TICK TIMER
   timerDisplay_setpoint_Tick();
 
   flag_onetime_HomeScreen = false;
-  display_print_setpoint(tft, setpoint);
+  display_print_setpoint(ucg, setpoint);
 
-  tft.setCursor(4, 210);
-  tft.setTextColor(ILI9341_WHITE);
-  tft.setTextSize(2);
-  tft.print(TEMP_TEXT);
-  tft.print(temp, 1);
+  ucg.setColor(111, 0, 255);    // Blu Elettrico
+  ucg.setFontMode(UCG_FONT_MODE_SOLID);
+  ucg.setFont(ucg_font_inb21_mr);
+  ucg.setPrintPos(4, 210);
+
+  ucg.print(TEMP_TEXT);
+  ucg.print(temp, 1);
+  ucg.print("°");
+
+
 
 }
 
-void display_print_splash_waiting_need_configuration(Souliss_SmartT_ILI9341 tft) {
-  tft.setRotation(1);
-  tft.fillScreen(ILI9341_BLACK);
-  tft.setTextColor(ILI9341_WHITE);
-  tft.setTextSize(2);
-  tft.setCursor(2, 10);
-  tft.println(SPLASH_NEED_CONFIGURATION);
-  tft.print("IP ");
-  tft.print(WiFi.softAPIP());
+void display_print_splash_waiting_need_configuration(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
+
+  ucg.setColor(0, 255, 255, 255);    // Bianco
+  ucg.setFontMode(UCG_FONT_MODE_SOLID);
+  ucg.setFont(ucg_font_inb21_mr);
+  ucg.setPrintPos(4, 28);
+
+  ucg.println(SPLASH_NEED_CONFIGURATION);
+  ucg.print("IP ");
+  ucg.print(WiFi.softAPIP());
 }
 
-void display_print_splash_waiting_connection_gateway(Souliss_SmartT_ILI9341 tft) {
-  tft.setRotation(1);
-  tft.fillScreen(ILI9341_BLACK);
-  tft.setTextColor(ILI9341_WHITE);
-  tft.setTextSize(2);
-  tft.setCursor(2, 10);
-  tft.println(SPLASH_GW_LINE1);
-  tft.println(SPLASH_GW_LINE2);
-  tft.print("IP ");
-  tft.print(WiFi.localIP());
+void display_print_splash_waiting_connection_gateway(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
+
+  ucg.setColor(0, 255, 255, 255);    // Bianco
+  ucg.setFontMode(UCG_FONT_MODE_SOLID);
+  ucg.setFont(ucg_font_inb21_mr);
+  ucg.setPrintPos(4, 28);
+  ucg.println(SPLASH_GW_LINE1);
+  ucg.println(SPLASH_GW_LINE2);
+  ucg.print("IP ");
+  ucg.print(WiFi.localIP());
 }
 
-void display_print_splash_waiting_connection_peer(Souliss_SmartT_ILI9341 tft) {
-  tft.setRotation(1);
-  tft.fillScreen(ILI9341_BLACK);
-  tft.setTextColor(ILI9341_WHITE);
-  tft.setTextSize(2);
-  tft.setCursor(2, 10);
-  tft.println(SPLASH_PEER_LINE1);
-  tft.println(SPLASH_PEER_LINE2);
-  tft.print("IP ");
-  tft.print(WiFi.localIP());
+void display_print_splash_waiting_connection_peer(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
+
+  ucg.setColor(0, 255, 255, 255);    // Bianco
+  ucg.setFontMode(UCG_FONT_MODE_SOLID);
+  ucg.setFont(ucg_font_inb21_mr);
+  ucg.setPrintPos(4, 28);
+  ucg.println(SPLASH_PEER_LINE1);
+  ucg.setPrintPos(4, 58);
+  ucg.println(SPLASH_PEER_LINE2);
+  ucg.setPrintPos(4, 88);
+  ucg.print("IP ");
+  ucg.print(WiFi.localIP());
 }
 
-void display_print_B3(Souliss_SmartT_ILI9341 tft, String text, float temp) {
-  tft.setCursor(20, 200);
-  tft.setTextColor(ILI9341_RED);
-  tft.setTextSize(2);
-  tft.print(text);
-  tft.print(temp, 1);
+void display_print_B3(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text, float temp) {
+
+  ucg.setPrintPos(20, 200);
+  ucg.setColor(102, 255, 0);    // Verde Chiaro
+  ucg.setFontMode(UCG_FONT_MODE_SOLID);
+  ucg.setFont(ucg_font_inb21_mr);
+  ucg.print(text);
+  ucg.print(temp, 1);
 }
 
-void display_print_DateTime(Souliss_SmartT_ILI9341 tft, String text) {
-  tft.setTextSize(2);
-  tft.print(text);
+void display_print_DateTime(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text) {
+  ucg.print(text);
 }
 
 time_t prevDisplay = 0; // when the digital clock was displayed
 String sPrevDisplay;
-void display_print_B1(Souliss_SmartT_ILI9341 tft) {
+void display_print_B1(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   //NTP
   String dateAndTime = "";
   if (now() != prevDisplay) { //update the display only if time has changed
     prevDisplay = now();
-    SERIAL_OUT.print("now(): "); SERIAL_OUT.println(now());
-    dateAndTime = digitalClockDisplay();
 
-    tft.setCursor(20, 10);
-    tft.setTextColor(ILI9341_BLACK);
-    display_print_DateTime(tft, sPrevDisplay);
-   
-    delay(50);
-    tft.setCursor(20, 10);
-    tft.setTextColor(ILI9341_WHITE);
-    display_print_DateTime(tft, dateAndTime);
-   
-    sPrevDisplay = digitalClockDisplay();
+    dateAndTime = digitalClockDisplay();
+    ucg.setPrintPos(20, 10);
+    ucg.setColor(0, 255, 255, 255);    // Bianco
+    ucg.setFontMode(UCG_FONT_MODE_SOLID);
+    ucg.setFont(ucg_font_inb21_mr);
+    display_print_DateTime(ucg, dateAndTime);
   }
 }
 
 
-  float temp_prec = 0;
-  float setpoint_prec = 0;
-  void display_HomeScreen(Souliss_SmartT_ILI9341 tft, float temp, float setpoint) {
+float temp_prec = 0;
+float setpoint_prec = 0;
+void display_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp, float setpoint) {
 
-   //la funzione display_print_B1 aggiorna soltanto se l'orario è cambiato
-    display_print_B1(tft);
-    
-    //uso flag_onetime per visualizzare almeno una volta la schermata, anche in assenza di variazione di temperatura
-    //flag_onetime_HomeScreen è rimessa a false display_setpointPage
-    if (!flag_onetime_HomeScreen || arrotonda(temp) != arrotonda(temp_prec) || (arrotonda(setpoint) != arrotonda(setpoint_prec))) {
-      tft.setRotation(1);
-      tft.fillScreen(ILI9341_BLACK);
+  //la funzione display_print_B1 aggiorna soltanto se l'orario è cambiato
+  display_print_B1(ucg);
 
-      tft.setTextSize(10);
-      tft.setCursor(15, 80);
+  //uso flag_onetime per visualizzare almeno una volta la schermata, anche in assenza di variazione di temperatura
+  //flag_onetime_HomeScreen è rimessa a false display_setpointPage
+  if (!flag_onetime_HomeScreen || arrotonda(temp) != arrotonda(temp_prec) || (arrotonda(setpoint) != arrotonda(setpoint_prec))) {
 
-      tft.setTextColor(ILI9341_WHITE);
-      tft.print(temp, 1);
-      tft.setTextSize(4);
-      tft.print("C");
-      tft.setTextSize(2);
-      tft.println("o");
-      temp_prec = temp;
-      setpoint_prec = setpoint;
-      flag_onetime_HomeScreen = true;
-      display_print_B3(tft, SETPOINT_TEXT, setpoint);
- //     display_print_B1(tft);
-    }
+
+    ucg.setColor(102, 255, 0);    // Verde Chiaro
+    ucg.setFontMode(UCG_FONT_MODE_SOLID);
+    ucg.setFont(ucg_font_inb21_mr);
+    ucg.setPrintPos(15, 80);
+    ucg.setScale2x2();
+    //ucg.setFont(ucg_font_logisoso38_tf);
+    ucg.setFont(ucg_font_inb38_mr);
+    ucg.print(temp, 1);
+    ucg.undoScale();
+    ucg.print("o");
+
+    temp_prec = temp;
+    setpoint_prec = setpoint;
+    flag_onetime_HomeScreen = true;
+    display_print_B3(ucg, SETPOINT_TEXT, setpoint);
+    //     display_print_B1(ucg);
   }
+}
 
 
 

@@ -40,14 +40,11 @@ float encoderValue_prec = 0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #include <SPI.h>
 #include <Arduino.h>
-#include <Souliss_SmartT_ILI9341_GFX_Library.h>
-#include <Souliss_SmartT_ILI9341.h>
-
-
+#include "Ucglib.h"
 
 // Use hardware SPI
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-Souliss_SmartT_ILI9341 tft = Souliss_SmartT_ILI9341(TFT_CS, TFT_DC);
+Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ 2 , /*cs=*/ 15);
 
 //*************************************************************************
 //*************************************************************************
@@ -56,13 +53,19 @@ Souliss_SmartT_ILI9341 tft = Souliss_SmartT_ILI9341(TFT_CS, TFT_DC);
 void setup()
 {
   SERIAL_OUT.begin(115200);
-  tft.begin();
+   //DISPLAY INIT
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+   ucg.begin(UCG_FONT_MODE_SOLID);
+   ucg.setColor(0, 0, 0);
+   ucg.drawBox(0, 0, ucg.getWidth(), ucg.getHeight());
+   ucg.setRotate90();
 
   //BACK LED
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   pinMode(BACKLED, OUTPUT);                     // Background Display LED
- // analogWrite(BACKLED, 1023);
- digitalWrite(BACKLED, HIGH);
+  analogWrite(BACKLED,50);
+  
   Initialize();
 
   // Read the IP configuration from the EEPROM, if not available start
@@ -72,7 +75,8 @@ void setup()
     // Start the node as access point with a configuration WebServer
     SetAccessPoint();
     startWebServer();
-    display_print_splash_waiting_need_configuration(tft);
+    SERIAL_OUT.println("display_print_splash_waiting_need_configuration");
+    display_print_splash_waiting_need_configuration(ucg);
     // We have nothing more than the WebServer for the configuration
     // to run, once configured the node will quit this.
     while (1)
@@ -85,14 +89,16 @@ void setup()
 
   if (IsRuntimeGateway())
   {
-    display_print_splash_waiting_connection_gateway(tft);
+    SERIAL_OUT.println("display_print_splash_waiting_connection_gateway");
+    display_print_splash_waiting_connection_gateway(ucg);
     // Connect to the WiFi network and get an address from DHCP
     SetAsGateway(myvNet_dhcp);       // Set this node as gateway for SoulissApp
     SetAddressingServer();
   }
   else
   {
-    display_print_splash_waiting_connection_peer(tft);
+    SERIAL_OUT.println("display_print_splash_waiting_connection_peer");
+    display_print_splash_waiting_connection_peer(ucg);
     // This board request an address to the gateway at runtime, no need
     // to configure any parameter here.
     SetDynamicAddressing();
@@ -122,7 +128,7 @@ void setup()
   //*************************************************************************
   //*************************************************************************
 
-display_HomeScreen(tft, temperature, setpoint);
+display_HomeScreen(ucg, temperature, setpoint);
 }
 
 void loop()
@@ -140,7 +146,8 @@ void loop()
       //Stampa il setpoint solo se il valore dell'encoder è diverso da quello impostato nel T31
 
       if (arrotonda(getEncoderValue()) != arrotonda(encoderValue_prec)) {
-        display_setpointPage(tft, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1));
+        analogWrite(BACKLED,1023);
+        display_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1));
       }
       if (timerDisplay_setpoint()) {
         //timeout scaduto
@@ -178,7 +185,7 @@ void loop()
     FAST_910ms() {
 
       if (timerDisplay_setpoint()) {
-        display_HomeScreen(tft, temperature, setpoint);
+        display_HomeScreen(ucg, temperature, setpoint);
       }
     }
 

@@ -1,20 +1,19 @@
 //DISPLAY
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #include <Arduino.h>
-#include <Souliss_SmartT_ILI9341.h>
-#include <Souliss_SmartT_ILI9341_GFX_Library.h>
+#include "Ucglib.h"
 
-void display_setpointPage(Souliss_SmartT_ILI9341, float, float);
-void display_HomeScreen(Souliss_SmartT_ILI9341, float, float);
+void display_setpointPage(Ucglib_ILI9341_18x240x320_HWSPI, float, float);
+void display_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI, float, float);
 
-void display_print_setpoint(Souliss_SmartT_ILI9341, float);
-void display_print_B3(Souliss_SmartT_ILI9341, String , float);
-void display_print_B1(Souliss_SmartT_ILI9341);
-void display_print_DateTime(Souliss_SmartT_ILI9341, String);
+void display_print_setpoint(Ucglib_ILI9341_18x240x320_HWSPI, float);
+void display_print_B3(Ucglib_ILI9341_18x240x320_HWSPI, String , float);
+void display_print_B1(Ucglib_ILI9341_18x240x320_HWSPI);
+void display_print_DateTime(Ucglib_ILI9341_18x240x320_HWSPI, String);
 
-void display_print_splash_waiting_need_configuration(Souliss_SmartT_ILI9341);
-void display_print_splash_waiting_connection_gateway(Souliss_SmartT_ILI9341);
-void display_print_splash_waiting_connection_peer(Souliss_SmartT_ILI9341);
+void display_print_splash_waiting_need_configuration(Ucglib_ILI9341_18x240x320_HWSPI);
+void display_print_splash_waiting_connection_gateway(Ucglib_ILI9341_18x240x320_HWSPI);
+void display_print_splash_waiting_connection_peer(Ucglib_ILI9341_18x240x320_HWSPI);
 
 
 
