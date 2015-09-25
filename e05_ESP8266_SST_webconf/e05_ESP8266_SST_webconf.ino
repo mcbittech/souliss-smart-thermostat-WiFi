@@ -27,6 +27,8 @@
 #include "language.h"
 #include "ntp.h"
 #include <Time.h> 
+#include <MenuSystem.h>
+#include "menu.h"
 
 //*************************************************************************
 //*************************************************************************
@@ -128,6 +130,10 @@ void setup()
   //*************************************************************************
   //*************************************************************************
 
+ //MENU
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////
+initMenu();
+
 display_HomeScreen(ucg, temperature, setpoint);
 }
 
@@ -218,6 +224,32 @@ void loop()
 
       SERIAL_OUT.print("aquisizione Temperature: "); SERIAL_OUT.println(temperature);
       SERIAL_OUT.print("aquisizione Humidity: "); SERIAL_OUT.println(humidity);
+
+      //*************************************************************************
+      //*************************************************************************
+      //*************************************************************************
+      //*****************TEST MENU***********************************************
+
+     MenuSystem m=getMenu();
+
+  printMenu();
+  // Simulate using the menu by walking over the entire structure.
+  m.select();
+
+
+  
+  if (getbRanCallback())
+  {
+    if (getbForward())
+      m.next();
+    else
+      m.prev();
+    setbRanCallback(false);
+  }
+  
+  // Wait for two seconds so the output is viewable
+  delay(2000);
+
   
       //*************************************************************************
       //*************************************************************************
