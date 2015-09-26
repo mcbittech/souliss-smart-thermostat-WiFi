@@ -45,40 +45,54 @@ void timerDisplay_setpoint_Tick() {
 //Stampa soltanto il setpoint grande al centro del display
 void display_print_setpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint) {
 
-  ucg.setColor(0, 255, 255, 255);    // Bianco
-  ucg.setFontMode(UCG_FONT_MODE_SOLID);
+  ucg.setColor(102, 255, 0);    // Verde Chiaro
 
-  ucg.setPrintPos(4, 28);
-  //ucg.setScale2x2();
+  ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(ucg_font_inb53_mr);
+  ucg.setScale2x2();
+  ucg.setFontPosCenter();
+  ucg.setPrintPos(ucg.getWidth() / 2 - 80, ucg.getHeight() / 2 - ucg.getFontAscent() / 2);
+
   ucg.print(setpoint, 1);
 
- // ucg.undoScale();
- // ucg.setPrintPos(280, 90);
+  // ucg.undoScale();
+  // ucg.setPrintPos(280, 90);
   ucg.setFont(ucg_font_inb21_mr);
   ucg.print("°");
 }
 
 boolean flag_onetime_HomeScreen = false;
 //compone la pagina dedicata al setpoint
-void display_setpointPage(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint, float temp) {
+void display_setpointPage(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint, float temp, float hum) {
   //TICK TIMER
   timerDisplay_setpoint_Tick();
 
   flag_onetime_HomeScreen = false;
   display_print_setpoint(ucg, setpoint);
 
-  ucg.setColor(0, 255, 255, 255);    // Bianco
+
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(ucg_font_inb16_mr);
-  ucg.setPrintPos(4, 220);
 
+  ucg.setColor(0, 255, 255, 255);    // Bianco
+  ucg.setFontPosBottom();
+  ucg.setPrintPos(5, ucg.getHeight() - 5);
+  ucg.setColor(111, 0, 255);    // Blu Elettrico
+  ucg.print(HUM_TEXT);
+  ucg.print(hum, 1);
+  ucg.print("%");
+
+  char* s;
+  int i = strlen(TEMP_TEXT) + 5; //5 "00.0 "
+  char charVal[i];
+  strcpy(charVal, TEMP_TEXT);
+  strcat(charVal, "00.00");
+
+  ucg.setColor(0, 255, 255, 255);    // Bianco
+  ucg.setPrintPos(ucg.getWidth() - ucg.getStrWidth(charVal) - 5, ucg.getHeight() - 5);
   ucg.print(TEMP_TEXT);
   ucg.print(temp, 1);
   ucg.print("°");
-
-
-
 }
 
 void display_print_splash_waiting_need_configuration(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
@@ -141,9 +155,10 @@ void display_print_B1(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   String dateAndTime = "";
   if (now() != prevDisplay) { //update the display only if time has changed
     prevDisplay = now();
-
+    ucg.setColor(0, 255, 255, 255);    // Bianco
     dateAndTime = digitalClockDisplay();
-    ucg.setPrintPos(10, 20);
+    ucg.setFontPosTop();
+    ucg.setPrintPos(5, 5);
     ucg.setColor(0, 255, 255, 255);    // Bianco
     ucg.setFontMode(UCG_FONT_MODE_SOLID);
     ucg.setFont(ucg_font_inb16_mr);
@@ -162,19 +177,21 @@ void display_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp, float s
   //uso flag_onetime per visualizzare almeno una volta la schermata, anche in assenza di variazione di temperatura
   //flag_onetime_HomeScreen è rimessa a false display_setpointPage
   if (!flag_onetime_HomeScreen || arrotonda(temp) != arrotonda(temp_prec) || (arrotonda(setpoint) != arrotonda(setpoint_prec))) {
+    ucg.clearScreen();
+    ucg.setColor(0, 255, 255, 255);    // Bianco
 
-
-    ucg.setColor(102, 255, 0);    // Verde Chiaro
     ucg.setFontMode(UCG_FONT_MODE_SOLID);
-   // ucg.setFont(ucg_font_inb21_mr);
-    ucg.setPrintPos(15, 80);
-   // ucg.setScale2x2();
-    //ucg.setFont(ucg_font_logisoso38_tf);
-    ucg.setFont(ucg_font_inb38_mr);
+ 
+    ucg.setFont(ucg_font_inb53_mr);
+    ucg.setScale2x2();
+    ucg.setFontPosCenter();
+    ucg.setPrintPos(ucg.getWidth() / 2 - 80, ucg.getHeight() / 2 - ucg.getFontAscent() / 2);
+    // ucg.setScale2x2();
+
     ucg.print(temp, 1);
     //ucg.undoScale();
-    ucg.setFont(ucg_font_inb16_mr);
-    ucg.print("o");
+    //   ucg.setFont(ucg_font_inb16_mr);
+    ucg.print("°");
 
     temp_prec = temp;
     setpoint_prec = setpoint;

@@ -154,7 +154,7 @@ void loop()
       if (arrotonda(getEncoderValue()) != arrotonda(encoderValue_prec)) {
         analogWrite(BACKLED,1023);
         SERIAL_OUT.println("display_setpointPage");
-        display_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1));
+        display_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity );
       }
       if (timerDisplay_setpoint()) {
         //timeout scaduto
@@ -230,25 +230,23 @@ void loop()
       //*************************************************************************
       //*****************TEST MENU***********************************************
 
-     MenuSystem m=getMenu();
+//     MenuSystem m=getMenu();
+//
+//  printMenu();
+//  // Simulate using the menu by walking over the entire structure.
+//  m.select();
+//
+//
+//  
+//  if (getbRanCallback())
+//  {
+//    if (getbForward())
+//      m.next();
+//    else
+//      m.prev();
+//    setbRanCallback(false);
+//  }
 
-  printMenu();
-  // Simulate using the menu by walking over the entire structure.
-  m.select();
-
-
-  
-  if (getbRanCallback())
-  {
-    if (getbForward())
-      m.next();
-    else
-      m.prev();
-    setbRanCallback(false);
-  }
-  
-  // Wait for two seconds so the output is viewable
-  delay(2000);
 
   
       //*************************************************************************

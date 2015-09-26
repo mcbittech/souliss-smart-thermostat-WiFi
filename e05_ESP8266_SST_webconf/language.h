@@ -12,4 +12,5 @@
 
 #define SETPOINT_TEXT_SETPOINT_SCREEN "SETPOINT"
 #define SETPOINT_TEXT "Setpoint: "
-#define TEMP_TEXT "Temp. attuale: "
+#define TEMP_TEXT "T: "
+#define HUM_TEXT "H: "

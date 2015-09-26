@@ -3,7 +3,7 @@
 #include <Arduino.h>
 #include "Ucglib.h"
 
-void display_setpointPage(Ucglib_ILI9341_18x240x320_HWSPI, float, float);
+void display_setpointPage(Ucglib_ILI9341_18x240x320_HWSPI, float, float, float);
 void display_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI, float, float);
 
 void display_print_setpoint(Ucglib_ILI9341_18x240x320_HWSPI, float);
