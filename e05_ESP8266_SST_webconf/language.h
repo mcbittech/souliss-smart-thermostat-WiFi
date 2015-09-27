@@ -11,6 +11,6 @@
 #define SPLASH_NEED_CONFIGURATION "Eseguire la configurazone via WEB"
 
 #define SETPOINT_TEXT_SETPOINT_SCREEN "SETPOINT"
-#define SETPOINT_TEXT "Setpoint: "
+#define SETPOINT_TEXT "Set: "
 #define TEMP_TEXT "T: "
 #define HUM_TEXT "H: "

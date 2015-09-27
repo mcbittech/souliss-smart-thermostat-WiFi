@@ -37,4 +37,10 @@ const int timeZone = 2;     // Central European Time
 
 #define SERIAL_OUT Serial
 
+//FONT
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#define FONT_BIG ucg_font_inb63_mn
+#define FONT_SMALL ucg_font_inb16_mr
+#define FONT_SMALLEST ucg_font_4x6_mf
+#define FONT_SPLASH_SCREEN ucg_font_inb21_mr
 

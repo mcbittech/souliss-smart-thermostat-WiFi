@@ -134,16 +134,17 @@ void setup()
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
 initMenu();
 
-display_HomeScreen(ucg, temperature, setpoint);
+display_HomeScreen(ucg, temperature, humidity, setpoint);
 }
 
 void loop()
 {
+   tickEncoder();
   EXECUTEFAST() {
     UPDATEFAST();
 
     FAST_10ms() {
-      tickEncoder();
+     
     }
 
     FAST_30ms() {
@@ -193,7 +194,7 @@ void loop()
 
       if (timerDisplay_setpoint()) {
         SERIAL_OUT.println("display_HomeScreen");
-        display_HomeScreen(ucg, temperature, setpoint);
+        display_HomeScreen(ucg, temperature, humidity, setpoint);
       }
     }
 
