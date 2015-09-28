@@ -120,6 +120,7 @@ void setup()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
    pinMode (encoder0PinA,INPUT);
    pinMode (encoder0PinB,INPUT);
+   attachInterrupt(digitalPinToInterrupt(encoder0PinA), encoder, CHANGE);
 
 //DISPLAY
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -153,31 +154,6 @@ void loop()
     EXECUTEFAST() {                     
         UPDATEFAST();   
         FAST_10ms() {
-            n = digitalRead(encoder0PinA);
-            if ((encoder0PinALast == LOW) && (n == HIGH)) {  
-            if (digitalRead(encoder0PinB) == LOW) {
-            encoder0Pos--;
-            analogWrite(backLED,1023);  
-              } else {
-            encoder0Pos++;
-            analogWrite(backLED,1023);  
-              }
-            
-            setpoint=encoder0Pos/10.0;
-            
-            ucg.setColor(0, 255, 255, 255);    // Bianco
-            ucg.setFontMode(UCG_FONT_MODE_SOLID);
-            ucg.setPrintPos(24,52);
-            ucg.setFont(ucg_font_inb21_mr);
-            ucg.print("Sp");ucg.print(setpoint,1);
-            ucg.setFont(ucg_font_profont11_mr);
-            ucg.setPrintPos(135,36);
-            ucg.print("o");
-            //ucg.setPrintPos(55,61);
-            //ucg.print("SETPOINT");            
-             
-             } 
-            encoder0PinALast = n; 
             
         }
         FAST_50ms() {   // We process the logic and relevant input and output every 50 milliseconds
@@ -187,7 +163,15 @@ void loop()
             Souliss_Logic_T52(memory_map, TEMPERATURA, DEADBAND, &data_changed);
             Souliss_Logic_T53(memory_map, UMIDITA, DEADBAND, &data_changed);
             /////////////////////////////////////////////////////////////////////////////////////////////
-             
+            
+            ucg.setColor(0, 255, 255, 255);    // Bianco
+            ucg.setFontMode(UCG_FONT_MODE_SOLID);
+            ucg.setPrintPos(24,52);
+            ucg.setFont(ucg_font_inb21_mr);
+            ucg.print("Sp");ucg.print(setpoint,1);
+            ucg.setFont(ucg_font_profont11_mr);
+            ucg.setPrintPos(135,36);
+            ucg.print("o"); 
             } 
         FAST_910ms(){
             String Time = "";
@@ -356,6 +340,19 @@ int dopovirgola(const float v)
   return result = diff * 10;
 }
 
-
+void encoder(){
+  n = digitalRead(encoder0PinA);
+      if ((encoder0PinALast == LOW) && (n == HIGH)) {  
+          if (digitalRead(encoder0PinB) == LOW) {
+            encoder0Pos--;
+            analogWrite(backLED,1023);  
+              } else {
+            encoder0Pos++;
+            analogWrite(backLED,1023);  
+              }
+            setpoint=encoder0Pos/10.0;          
+              } 
+            encoder0PinALast = n; 
+             }
 
 
