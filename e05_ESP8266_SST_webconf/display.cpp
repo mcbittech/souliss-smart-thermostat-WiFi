@@ -68,7 +68,11 @@ void display_print_setpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint)
   const char *c = str.c_str();
   int vW = ucg.getStrWidth(c);
   ucg.setFont(FONT_BIG_MIN_50_PERCENT);
-  str = ".00";
+  str = ".0";
+  c = str.c_str();
+  vW += ucg.getStrWidth(c);
+  ucg.setFont(FONT_SMALL_CENTIGRAD);
+  str = "0";
   c = str.c_str();
   vW += ucg.getStrWidth(c);
 
@@ -81,18 +85,18 @@ void display_print_setpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint)
   ucg.print(".");
   ucg.print(diff);
 
-//calcolo ingombro testo
-     ucg.setFont(FONT_BIG);
-    str = "00";
-    c = str.c_str();
-    vW = ucg.getStrWidth(c);
-    ucg.setFont(FONT_BIG_MIN_50_PERCENT);
-    str = ".0";
-    c = str.c_str();
-    vW += ucg.getStrWidth(c);
+  //calcolo ingombro testo
+  ucg.setFont(FONT_BIG);
+  str = "00";
+  c = str.c_str();
+  vW = ucg.getStrWidth(c);
+  ucg.setFont(FONT_BIG_MIN_50_PERCENT);
+  str = ".0";
+  c = str.c_str();
+  vW += ucg.getStrWidth(c);
 
-  ucg.setFont(FONT_SMALL);
-  int position_For_Ball = ucg.getWidth() / 2  + vW / 2 ;
+  ucg.setFont(FONT_SMALL_CENTIGRAD);
+  int position_For_Ball = ucg.getWidth() / 2  + vW / 2 - FONT_SHIFT_POSITION_TO_SX_CENTIGRAD ;
   ucg.setPrintPos(position_For_Ball, ucg.getHeight() / 2 - ucg.getFontAscent() / 2);
   ucg.print("o");
 
@@ -109,7 +113,7 @@ void display_print_B3(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text, float te
   String str = text + "00.00";
   const char * c = str.c_str();
 
-  ucg.setColor(0, 255, 255, 255);    // Bianco
+ucg.setColor(102, 255, 0);    // Verde Chiaro
   ucg.setPrintPos(ucg.getWidth() - ucg.getStrWidth(c) - 5, ucg.getHeight() - 5);
   ucg.print(text);
   ucg.print(temp, 1);
@@ -153,6 +157,22 @@ void display_setpointPage(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint, f
 
   display_print_B3(ucg, TEMP_TEXT, temp) ;
   display_print_B4(ucg, HUM_TEXT, hum) ;
+}
+
+
+void display_print_splash_screen(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
+  ucg.clearScreen();
+  ucg.setColor(153, 203, 255);    // Celeste
+  ucg.setFont(ucg_font_fub35_hr);
+  ucg.setPrintPos(50, 100);
+  ucg.print("SST WiFi");
+  ucg.setFont(ucg_font_fub14_hr);
+  ucg.setPrintPos(30, 130);
+  ucg.print("Souliss Smart Thermostat");
+  ucg.setPrintPos(135, 180);
+  ucg.print(VERSION);
+  delay(2000);
+  ucg.clearScreen();
 }
 
 void display_print_splash_waiting_need_configuration(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
@@ -225,8 +245,11 @@ void display_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp, float h
   flag_onetime_clear_SetpointPage = false;
   //uso flag_onetime per visualizzare almeno una volta la schermata, anche in assenza di variazione di temperatura
   //flag_onetime_HomeScreen è rimessa a false display_setpointPage
-  if (!flag_onetime_HomeScreen || arrotonda(temp) != arrotonda(temp_prec) || (arrotonda(setpoint) != arrotonda(setpoint_prec))) {
-    ucg.clearScreen();
+  if (arrotonda(temp) != arrotonda(temp_prec) || (arrotonda(setpoint) != arrotonda(setpoint_prec))) {
+    if (!flag_onetime_HomeScreen) {
+      ucg.clearScreen();
+    }
+
     ucg.setColor(0, 255, 255, 255);    // Bianco
 
     ucg.setFontMode(UCG_FONT_MODE_SOLID);
@@ -242,7 +265,11 @@ void display_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp, float h
     const char *c = str.c_str();
     int vW = ucg.getStrWidth(c);
     ucg.setFont(FONT_BIG_MIN_50_PERCENT);
-    str = ".00";
+    str = ".0";
+    c = str.c_str();
+    vW += ucg.getStrWidth(c);
+    ucg.setFont(FONT_SMALL_CENTIGRAD);
+    str = "0";
     c = str.c_str();
     vW += ucg.getStrWidth(c);
 
@@ -255,8 +282,8 @@ void display_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp, float h
     ucg.print(".");
     ucg.print(diff);
 
-  //calcolo ingombro testo
-     ucg.setFont(FONT_BIG);
+    //calcolo ingombro testo
+    ucg.setFont(FONT_BIG);
     str = "00";
     c = str.c_str();
     vW = ucg.getStrWidth(c);
@@ -265,10 +292,11 @@ void display_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp, float h
     c = str.c_str();
     vW += ucg.getStrWidth(c);
 
-    ucg.setFont(FONT_SMALL);
-    int position_For_Ball = ucg.getWidth() / 2  + vW / 2 ;
+    ucg.setFont(FONT_SMALL_CENTIGRAD);
+    int position_For_Ball = ucg.getWidth() / 2  + vW / 2 - FONT_SHIFT_POSITION_TO_SX_CENTIGRAD ;
     ucg.setPrintPos(position_For_Ball, ucg.getHeight() / 2 - ucg.getFontAscent() / 2);
     ucg.print("o");
+
 
 #if(FONT_BIG_SCALE2x2)
     ucg.undoScale();
@@ -279,6 +307,7 @@ void display_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp, float h
     display_print_B3(ucg, SETPOINT_TEXT, setpoint);
     display_print_B4(ucg, HUM_TEXT, hum) ;
   }
+
   //la funzione display_print_B1 aggiorna soltanto se l'orario è cambiato
   display_print_B1_datetime(ucg);
 }

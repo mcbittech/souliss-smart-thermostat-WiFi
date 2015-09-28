@@ -60,8 +60,8 @@ void setup()
 
    ucg.begin(UCG_FONT_MODE_SOLID);
    ucg.setColor(0, 0, 0);
-   ucg.drawBox(0, 0, ucg.getWidth(), ucg.getHeight());
    ucg.setRotate90();
+display_print_splash_screen(ucg);
 
   //BACK LED
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -148,7 +148,7 @@ void loop()
      
     }
 
-    FAST_30ms() {
+    FAST_50ms() {
       //set point attuale
       setpoint = Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3);
       //Stampa il setpoint solo se il valore dell'encoder è diverso da quello impostato nel T31
@@ -172,7 +172,7 @@ void loop()
       encoderValue_prec = getEncoderValue();
     }
 
-    FAST_50ms() {   // We process the logic and relevant input and output every 50 milliseconds
+    FAST_90ms() {   // We process the logic and relevant input and output every 50 milliseconds
       //*************************************************************************
       //*************************************************************************
       Logic_Thermostat(SLOT_THERMOSTAT);
