@@ -341,14 +341,13 @@ int dopovirgola(const float v)
 }
 
 void encoder(){
+  analogWrite(backLED,1023);
   n = digitalRead(encoder0PinA);
       if ((encoder0PinALast == LOW) && (n == HIGH)) {  
           if (digitalRead(encoder0PinB) == LOW) {
-            encoder0Pos--;
-            analogWrite(backLED,1023);  
+            encoder0Pos--;  
               } else {
-            encoder0Pos++;
-            analogWrite(backLED,1023);  
+            encoder0Pos++;  
               }
             setpoint=encoder0Pos/10.0;          
               } 
