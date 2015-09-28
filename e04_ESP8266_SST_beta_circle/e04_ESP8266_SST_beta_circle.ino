@@ -121,7 +121,7 @@ void setup()
    pinMode (encoder0PinA,INPUT);
    pinMode (encoder0PinB,INPUT);
    attachInterrupt(digitalPinToInterrupt(encoder0PinA), encoder, CHANGE);
-
+   attachInterrupt(digitalPinToInterrupt(encoder0PinB), encoder, CHANGE);
 //DISPLAY
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
    
@@ -339,20 +339,21 @@ int dopovirgola(const float v)
   //Serial.print("diff: "); Serial.println(diff);
   return result = diff * 10;
 }
-
+         
 void encoder(){
-  n = digitalRead(encoder0PinA);
-      if ((encoder0PinALast == LOW) && (n == HIGH)) {  
-          if (digitalRead(encoder0PinB) == LOW) {
-            encoder0Pos--;
-            analogWrite(backLED,1023);  
-              } else {
-            encoder0Pos++;
-            analogWrite(backLED,1023);  
-              }
-            setpoint=encoder0Pos/10.0;          
-              } 
-            encoder0PinALast = n; 
-             }
+  analogWrite(backLED,1023);
+  int MSB = digitalRead(encoder0PinA); //MSB = most significant bit
+  int LSB = digitalRead(encoder0PinB); //LSB = least significant bit
+ 
+  int encoded = (MSB << 1) |LSB; //converting the 2 pin value to single number
+  int sum  = (encoder0PinALast << 2) | encoded; //adding it to the previous encoded value
+ 
+  if(sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011) encoder0Pos ++;
+  if(sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000) encoder0Pos --;
+ 
+  encoder0PinALast = encoded; //store this value for next time
+  setpoint=encoder0Pos/10.0; 
+  
+}
 
 
