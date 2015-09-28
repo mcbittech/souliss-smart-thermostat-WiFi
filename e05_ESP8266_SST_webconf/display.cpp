@@ -24,6 +24,14 @@ float arrotonda(const float v)
   }
 }
 
+int dopovigola(const float v)
+{
+  float vX10 = v * 1;
+  int vInt = (int) vX10;
+  int result;
+  float diff = abs(vX10 - vInt);
+  return result = diff * 10;
+}
 
 long lastClickTime = 0;  // the last time the output pin was toggled
 //return 1 for timeout
@@ -42,27 +50,59 @@ void timerDisplay_setpoint_Tick() {
 
 //Stampa soltanto il setpoint grande al centro del display
 void display_print_setpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint) {
- SERIAL_OUT.println("display_print_setpoint");
+  SERIAL_OUT.println("display_print_setpoint");
   ucg.setColor(102, 255, 0);    // Verde Chiaro
 
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
+
+
+
   ucg.setFont(FONT_BIG);
-  // ucg.setScale2x2();
-  ucg.setFontPosCenter();
-  String str = "00.00";
-  const char * c = str.c_str();
-  int widthFontDiv2 = ucg.getStrWidth(c) / 2;
-  ucg.setPrintPos(ucg.getWidth() / 2 - widthFontDiv2, ucg.getHeight() / 2);
+#if(FONT_BIG_SCALE2x2)
+  ucg.setScale2x2();
+#endif
+  ucg.setFontPosBaseline();
 
-  ucg.print(setpoint, 1);
+  //calcolo ingombro testo
+  String str = "00";
+  const char *c = str.c_str();
+  int vW = ucg.getStrWidth(c);
+  ucg.setFont(FONT_BIG_MIN_50_PERCENT);
+  str = ".00";
+  c = str.c_str();
+  vW += ucg.getStrWidth(c);
 
-  ucg.setFont(FONT_SPLASH_SCREEN);
-  ucg.setFontPosBottom();
+  ucg.setFont(FONT_BIG);
+  ucg.setPrintPos(ucg.getWidth() / 2 - vW / 2, ucg.getHeight() / 2 + ucg.getFontAscent() / 2);
+  ucg.print((int) setpoint);
+
+  ucg.setFont(FONT_BIG_MIN_50_PERCENT);
+  int diff = dopovigola(setpoint);
+  ucg.print(".");
+  ucg.print(diff);
+
+//calcolo ingombro testo
+     ucg.setFont(FONT_BIG);
+    str = "00";
+    c = str.c_str();
+    vW = ucg.getStrWidth(c);
+    ucg.setFont(FONT_BIG_MIN_50_PERCENT);
+    str = ".0";
+    c = str.c_str();
+    vW += ucg.getStrWidth(c);
+
+  ucg.setFont(FONT_SMALL);
+  int position_For_Ball = ucg.getWidth() / 2  + vW / 2 ;
+  ucg.setPrintPos(position_For_Ball, ucg.getHeight() / 2 - ucg.getFontAscent() / 2);
   ucg.print("o");
+
+#if(FONT_BIG_SCALE2x2)
+  ucg.undoScale();
+#endif
 }
 
 void display_print_B3(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text, float temp) {
-   SERIAL_OUT.println("display_print_B3");
+  SERIAL_OUT.println("display_print_B3");
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SMALL);
   ucg.setFontPosBaseline();
@@ -73,7 +113,7 @@ void display_print_B3(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text, float te
   ucg.setPrintPos(ucg.getWidth() - ucg.getStrWidth(c) - 5, ucg.getHeight() - 5);
   ucg.print(text);
   ucg.print(temp, 1);
-    ucg.setFont(ucg_font_inb21_mr);
+  ucg.setFont(ucg_font_inb21_mr);
   ucg.print("°");
 }
 
@@ -96,19 +136,19 @@ boolean flag_onetime_HomeScreen = false;
 boolean flag_onetime_clear_SetpointPage = false;
 //compone la pagina dedicata al setpoint
 void display_setpointPage(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint, float temp, float hum) {
-    SERIAL_OUT.println("display_setpointPage");
+  SERIAL_OUT.println("display_setpointPage");
   //TICK TIMER
   timerDisplay_setpoint_Tick();
-    
-if (!flag_onetime_clear_SetpointPage) {
-  //viene ripristinata in homepage
-  flag_onetime_clear_SetpointPage = true;
-  ucg.clearScreen();
-}
+
+  if (!flag_onetime_clear_SetpointPage) {
+    //viene ripristinata in homepage
+    flag_onetime_clear_SetpointPage = true;
+    ucg.clearScreen();
+  }
 
 
   flag_onetime_HomeScreen = false;
-  
+
   display_print_setpoint(ucg, setpoint);
 
   display_print_B3(ucg, TEMP_TEXT, temp) ;
@@ -116,7 +156,7 @@ if (!flag_onetime_clear_SetpointPage) {
 }
 
 void display_print_splash_waiting_need_configuration(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
-SERIAL_OUT.println("display_print_splash_waiting_need_configuration");
+  SERIAL_OUT.println("display_print_splash_waiting_need_configuration");
   ucg.setColor(0, 255, 255, 255);    // Bianco
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SPLASH_SCREEN);
@@ -128,7 +168,7 @@ SERIAL_OUT.println("display_print_splash_waiting_need_configuration");
 }
 
 void display_print_splash_waiting_connection_gateway(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
-SERIAL_OUT.println("display_print_splash_waiting_connection_gateway");
+  SERIAL_OUT.println("display_print_splash_waiting_connection_gateway");
   ucg.setColor(0, 255, 255, 255);    // Bianco
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SPLASH_SCREEN);
@@ -140,7 +180,7 @@ SERIAL_OUT.println("display_print_splash_waiting_connection_gateway");
 }
 
 void display_print_splash_waiting_connection_peer(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
-SERIAL_OUT.println("display_print_splash_waiting_connection_peer");
+  SERIAL_OUT.println("display_print_splash_waiting_connection_peer");
   ucg.setColor(0, 255, 255, 255);    // Bianco
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SPLASH_SCREEN);
@@ -161,7 +201,7 @@ time_t prevDisplay = 0; // when the digital clock was displayed
 String sPrevDisplay;
 //Stampa l'orologio. La zona B1 è quella in alto a sinistra
 void display_print_B1_datetime(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
-  
+
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SMALL);
   ucg.setFontPosTop();
@@ -179,9 +219,10 @@ void display_print_B1_datetime(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
 
 float temp_prec = 0;
 float setpoint_prec = 0;
+
 void display_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp, float hum, float setpoint) {
   //ripristina la variabile bool. Viene fatto il clear della pagina ogni volta soltato una volta
-flag_onetime_clear_SetpointPage = false;
+  flag_onetime_clear_SetpointPage = false;
   //uso flag_onetime per visualizzare almeno una volta la schermata, anche in assenza di variazione di temperatura
   //flag_onetime_HomeScreen è rimessa a false display_setpointPage
   if (!flag_onetime_HomeScreen || arrotonda(temp) != arrotonda(temp_prec) || (arrotonda(setpoint) != arrotonda(setpoint_prec))) {
@@ -191,32 +232,58 @@ flag_onetime_clear_SetpointPage = false;
     ucg.setFontMode(UCG_FONT_MODE_SOLID);
 
     ucg.setFont(FONT_BIG);
-    //  ucg.setScale2x2();
-    ucg.setFontPosCenter();
+#if(FONT_BIG_SCALE2x2)
+    ucg.setScale2x2();
+#endif
+    ucg.setFontPosBaseline();
 
-    String str = "00.00";
-    const char * c = str.c_str();
-    int widthFontDiv2 = ucg.getStrWidth(c) / 2;
-    ucg.setPrintPos(ucg.getWidth() / 2 - widthFontDiv2, ucg.getHeight() / 2);
-    // ucg.setScale2x2();
+    //calcolo ingombro testo
+    String str = "00";
+    const char *c = str.c_str();
+    int vW = ucg.getStrWidth(c);
+    ucg.setFont(FONT_BIG_MIN_50_PERCENT);
+    str = ".00";
+    c = str.c_str();
+    vW += ucg.getStrWidth(c);
 
-    ucg.print(temp, 1);
-    //ucg.undoScale();
-    ucg.setFont(ucg_font_inb21_mr);
-  ucg.print("°");
+    ucg.setFont(FONT_BIG);
+    ucg.setPrintPos(ucg.getWidth() / 2 - vW / 2, ucg.getHeight() / 2 + ucg.getFontAscent() / 2);
+    ucg.print((int) temp);
 
+    ucg.setFont(FONT_BIG_MIN_50_PERCENT);
+    int diff = dopovigola(temp);
+    ucg.print(".");
+    ucg.print(diff);
 
+  //calcolo ingombro testo
+     ucg.setFont(FONT_BIG);
+    str = "00";
+    c = str.c_str();
+    vW = ucg.getStrWidth(c);
+    ucg.setFont(FONT_BIG_MIN_50_PERCENT);
+    str = ".0";
+    c = str.c_str();
+    vW += ucg.getStrWidth(c);
+
+    ucg.setFont(FONT_SMALL);
+    int position_For_Ball = ucg.getWidth() / 2  + vW / 2 ;
+    ucg.setPrintPos(position_For_Ball, ucg.getHeight() / 2 - ucg.getFontAscent() / 2);
+    ucg.print("o");
+
+#if(FONT_BIG_SCALE2x2)
+    ucg.undoScale();
+#endif
     temp_prec = temp;
     setpoint_prec = setpoint;
     flag_onetime_HomeScreen = true;
     display_print_B3(ucg, SETPOINT_TEXT, setpoint);
-
-   //la funzione display_print_B1 aggiorna soltanto se l'orario è cambiato
-  display_print_B1_datetime(ucg);
     display_print_B4(ucg, HUM_TEXT, hum) ;
-
   }
+  //la funzione display_print_B1 aggiorna soltanto se l'orario è cambiato
+  display_print_B1_datetime(ucg);
 }
+
+
 
 
 

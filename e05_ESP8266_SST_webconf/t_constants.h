@@ -39,7 +39,14 @@ const int timeZone = 2;     // Central European Time
 
 //FONT
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define FONT_BIG ucg_font_inb63_mn
+//#define FONT_BIG ucg_font_inb63_mn
+//#define FONT_BIG ucg_font_inb46_mr
+//#define FONT_BIG_MIN_50_PERCENT ucg_font_inb33_mr
+
+#define FONT_BIG ucg_font_inb53_mn
+#define FONT_BIG_MIN_50_PERCENT ucg_font_inb24_mr
+
+#define FONT_BIG_SCALE2x2             1     //1 Scale - 0 Don't Scale
 #define FONT_SMALL ucg_font_inb16_mr
 #define FONT_SMALLEST ucg_font_4x6_mf
 #define FONT_SPLASH_SCREEN ucg_font_inb21_mr
