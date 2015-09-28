@@ -4,6 +4,5 @@
 
 float getEncoderValue();
 void setEncoderValue(float);
-void tickEncoder();
 void encoder();
 

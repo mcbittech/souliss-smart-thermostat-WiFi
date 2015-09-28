@@ -140,7 +140,6 @@ display_HomeScreen(ucg, temperature, humidity, setpoint);
 
 void loop()
 {
-  // tickEncoder();
   EXECUTEFAST() {
     UPDATEFAST();
 
