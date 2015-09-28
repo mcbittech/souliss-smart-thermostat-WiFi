@@ -26,7 +26,7 @@
 #include "display.h"
 #include "language.h"
 #include "ntp.h"
-#include <Time.h> 
+#include <Time.h>
 #include <MenuSystem.h>
 #include "menu.h"
 
@@ -55,19 +55,19 @@ Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ 2 , /*cs=*/ 15);
 void setup()
 {
   SERIAL_OUT.begin(115200);
-   //DISPLAY INIT
+  //DISPLAY INIT
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-   ucg.begin(UCG_FONT_MODE_SOLID);
-   ucg.setColor(0, 0, 0);
-   ucg.setRotate90();
-display_print_splash_screen(ucg);
+  ucg.begin(UCG_FONT_MODE_SOLID);
+  ucg.setColor(0, 0, 0);
+  ucg.setRotate90();
+  display_print_splash_screen(ucg);
 
   //BACK LED
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   pinMode(BACKLED, OUTPUT);                     // Background Display LED
-  analogWrite(BACKLED,50);
-  
+  analogWrite(BACKLED, BRIGHT_MAX);
+
   Initialize();
 
   // Read the IP configuration from the EEPROM, if not available start
@@ -124,18 +124,18 @@ display_print_splash_screen(ucg);
   pinMode (ENCODER_PIN_A, INPUT_PULLUP);
   pinMode (ENCODER_PIN_B, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(ENCODER_PIN_A), encoder, CHANGE);
-
+  attachInterrupt(digitalPinToInterrupt(ENCODER_PIN_B), encoder, CHANGE);
   //NTP
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   initNTP();
   //*************************************************************************
   //*************************************************************************
 
- //MENU
+  //MENU
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
-initMenu();
+  initMenu();
 
-display_HomeScreen(ucg, temperature, humidity, setpoint);
+  display_HomeScreen(ucg, temperature, humidity, setpoint);
 }
 
 void loop()
@@ -144,7 +144,7 @@ void loop()
     UPDATEFAST();
 
     FAST_10ms() {
-     
+
     }
 
     FAST_30ms() {
@@ -153,7 +153,7 @@ void loop()
       //Stampa il setpoint solo se il valore dell'encoder è diverso da quello impostato nel T31
 
       if (arrotonda(getEncoderValue()) != arrotonda(encoderValue_prec)) {
-        analogWrite(BACKLED,1023);
+        analogWrite(BACKLED, BRIGHT_MAX);
         SERIAL_OUT.println("display_setpointPage");
         display_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity );
       }
@@ -194,6 +194,7 @@ void loop()
 
       if (timerDisplay_setpoint()) {
         SERIAL_OUT.println("display_HomeScreen");
+        analogWrite(BACKLED, 100);
         display_HomeScreen(ucg, temperature, humidity, setpoint);
       }
     }
@@ -231,34 +232,34 @@ void loop()
       //*************************************************************************
       //*****************TEST MENU***********************************************
 
-//     MenuSystem m=getMenu();
-//
-//  printMenu();
-//  // Simulate using the menu by walking over the entire structure.
-//  m.select();
-//
-//
-//  
-//  if (getbRanCallback())
-//  {
-//    if (getbForward())
-//      m.next();
-//    else
-//      m.prev();
-//    setbRanCallback(false);
-//  }
+      //     MenuSystem m=getMenu();
+      //
+      //  printMenu();
+      //  // Simulate using the menu by walking over the entire structure.
+      //  m.select();
+      //
+      //
+      //
+      //  if (getbRanCallback())
+      //  {
+      //    if (getbForward())
+      //      m.next();
+      //    else
+      //      m.prev();
+      //    setbRanCallback(false);
+      //  }
 
 
-  
+
       //*************************************************************************
       //*************************************************************************
     }
-    
-  SLOW_15m(){
-  //NTP
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////
-  initNTP();  
-  }
+
+    SLOW_15m() {
+      //NTP
+      /////////////////////////////////////////////////////////////////////////////////////////////////////////
+      initNTP();
+    }
 
     // If running as Peer
     if (!IsRuntimeGateway())

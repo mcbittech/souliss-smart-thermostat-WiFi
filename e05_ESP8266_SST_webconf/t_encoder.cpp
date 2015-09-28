@@ -17,19 +17,20 @@ void setEncoderValue(float val) {
   encoder0Pos = val * 10;
 }
 
- int encoder0PinALast = LOW;
-void encoder(){
-  n = digitalRead(ENCODER_PIN_A);
-      if ((encoder0PinALast == LOW) && (n == HIGH)) {  
-          if (digitalRead(ENCODER_PIN_B) == LOW) {
-            encoder0Pos--;
-            analogWrite(BACKLED,1023);  
-              } else {
-            encoder0Pos++;
-            analogWrite(BACKLED,1023);  
-              }
-            encoderValue=encoder0Pos/10.0;          
-              } 
-            encoder0PinALast = n; 
-             }
+int encoder0PinALast = LOW;
+
+void encoder() {
+  int MSB = digitalRead(ENCODER_PIN_B); //MSB = most significant bit
+  int LSB = digitalRead(ENCODER_PIN_A); //LSB = least significant bit
+
+  int encoded = (MSB << 1) | LSB; //converting the 2 pin value to single number
+  int sum  = (encoder0PinALast << 2) | encoded; //adding it to the previous encoded value
+
+  if (sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011) encoder0Pos ++;
+  if (sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000) encoder0Pos --;
+
+  encoder0PinALast = encoded; //store this value for next time
+  encoderValue = encoder0Pos / 10.0;
+
+}
 
