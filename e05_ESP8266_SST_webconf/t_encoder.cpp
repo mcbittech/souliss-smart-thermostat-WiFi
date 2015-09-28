@@ -31,3 +31,20 @@ void setEncoderValue(float val) {
   encoder0Pos = val * 10;
 
 }
+
+ int encoder0PinALast = LOW;
+void encoder(){
+  n = digitalRead(ENCODER_PIN_A);
+      if ((encoder0PinALast == LOW) && (n == HIGH)) {  
+          if (digitalRead(ENCODER_PIN_B) == LOW) {
+            encoder0Pos--;
+            analogWrite(BACKLED,1023);  
+              } else {
+            encoder0Pos++;
+            analogWrite(BACKLED,1023);  
+              }
+            encoderValue=encoder0Pos/10.0;          
+              } 
+            encoder0PinALast = n; 
+             }
+

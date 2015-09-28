@@ -5,6 +5,5 @@
 float getEncoderValue();
 void setEncoderValue(float);
 void tickEncoder();
-void doEncoderA();
-  void doEncoderB();
+void encoder();
 

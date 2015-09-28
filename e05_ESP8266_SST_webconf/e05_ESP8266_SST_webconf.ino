@@ -123,7 +123,7 @@ display_print_splash_screen(ucg);
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   pinMode (ENCODER_PIN_A, INPUT_PULLUP);
   pinMode (ENCODER_PIN_B, INPUT_PULLUP);
-
+  attachInterrupt(digitalPinToInterrupt(ENCODER_PIN_A), encoder, CHANGE);
 
   //NTP
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -140,7 +140,7 @@ display_HomeScreen(ucg, temperature, humidity, setpoint);
 
 void loop()
 {
-   tickEncoder();
+  // tickEncoder();
   EXECUTEFAST() {
     UPDATEFAST();
 
@@ -148,7 +148,7 @@ void loop()
      
     }
 
-    FAST_50ms() {
+    FAST_30ms() {
       //set point attuale
       setpoint = Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3);
       //Stampa il setpoint solo se il valore dell'encoder è diverso da quello impostato nel T31
