@@ -28,11 +28,11 @@
 #include <DHT.h>
 
 // Define the network configuration
-uint8_t ip_address[4]  = {192, 168, 1, 25};
+uint8_t ip_address[4]  = {192, 168, 1, 26};
 uint8_t subnet_mask[4] = {255, 255, 255, 0};
 uint8_t ip_gateway[4]  = {192, 168, 1, 1};
 #define Gateway_address 18
-#define  PEER4          25
+#define  PEER4          26
 #define myvNet_address  ip_address[3]       // The last byte of the IP address (18) is also the vNet address
 #define myvNet_subnet   0xFF00
 #define myvNet_supern   Gateway_address
@@ -71,13 +71,22 @@ float hyst = 0.2;
  int encoder0PinALast = LOW;
  int n = LOW;
 
+//NTP
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#include "ntp.h"
+#include <Time.h> 
+
+//NTP
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+#include "ntp.h"
+#include <Time.h>    
+
 
 //DISPLAY
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #include <SPI.h>
 #include "Ucglib.h"
 
- 
 // Use hardware SPI
 Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ 2 , /*cs=*/ 15);
 
@@ -121,7 +130,7 @@ void setup()
    analogWrite(backLED,100);
    ucg.setRotate90();
    delay(500);
-            
+            //SPLASH SCREEN
             ucg.setColor(153, 203, 255);    // Celeste
             ucg.setFont(ucg_font_fub35_hr);
             ucg.setPrintPos(50,100);
@@ -135,6 +144,7 @@ void setup()
    delay(5000);
    ucg.setColor(0, 0, 0);                //Nero
    ucg.drawBox(0, 0, ucg.getWidth(), ucg.getHeight());
+
 }
 
 void loop()
@@ -179,7 +189,20 @@ void loop()
             /////////////////////////////////////////////////////////////////////////////////////////////
              
             } 
-            
+        FAST_910ms(){
+            String Time = "";
+            String Date = "";
+            Time = digitalClockDisplay();
+            Date = digitalDataDisplay();
+            ucg.setFont(ucg_font_inr16_mf);
+            //ucg.setFont(ucg_font_fub14_hr);
+            ucg.setColor(0, 255, 255, 255);    // Bianco
+            ucg.setPrintPos(203,20);
+            ucg.print(Date);
+            ucg.setFont(ucg_font_inb19_mf);
+            ucg.setPrintPos(240,45);
+            ucg.print(Time);
+             }    
               
         // Here we handle here the communication with Android
         FAST_PeerComms();
@@ -188,8 +211,9 @@ void loop()
        EXECUTESLOW()
   {
     UPDATESLOW();
-    
-      SLOW_10s(){
+
+                        
+      SLOW_110s(){
             ucg.setColor(0, 255, 255, 255);    // Bianco
             ucg.drawCircle(85, 120, 119, UCG_DRAW_ALL);
             ucg.drawCircle(85, 119, 119, UCG_DRAW_ALL);
@@ -214,7 +238,7 @@ void loop()
         
         temperature = dht.readTemperature(); 
         int temp = (int) temperature;       
-        int diff=dopovigola(temperature);
+        int diff=dopovirgola(temperature);
         /*Serial.print("DHT: ");Serial.println(temperature,2);   
         Serial.print("TEMP: ");Serial.println(temp);     
         Serial.print("DIFF: ");Serial.println(diff);
@@ -320,7 +344,7 @@ void loop()
 } 
 
 
-int dopovigola(const float v)
+int dopovirgola(const float v)
 {
   float vX10 = v * 1;
   //Serial.print("vX10: "); Serial.println(vX10);
