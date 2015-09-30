@@ -28,11 +28,11 @@
 #include <DHT.h>
 
 // Define the network configuration
-uint8_t ip_address[4]  = {192, 168, 1, 26};
+uint8_t ip_address[4]  = {192, 168, 1, 25};
 uint8_t subnet_mask[4] = {255, 255, 255, 0};
 uint8_t ip_gateway[4]  = {192, 168, 1, 1};
 #define Gateway_address 18
-#define  PEER4          26
+#define  PEER4          25
 #define myvNet_address  ip_address[3]       // The last byte of the IP address (18) is also the vNet address
 #define myvNet_subnet   0xFF00
 #define myvNet_supern   Gateway_address
@@ -59,6 +59,8 @@ uint8_t ip_gateway[4]  = {192, 168, 1, 1};
 
 DHT dht(DHTPIN, DHTTYPE);
 float temperature = 0;
+float pretemperature = 0;
+float deltaT = 0;
 float humidity = 0;
 float hyst = 0.2;
 
@@ -77,7 +79,7 @@ float hyst = 0.2;
 #include <Time.h> 
 
 //NTP
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #include "ntp.h"
 #include <Time.h>    
 
@@ -92,6 +94,10 @@ Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ 2 , /*cs=*/ 15);
 
 #define SERIAL_OUT Serial
 int backLED = 16;
+int backLEDvalue=0;
+int backLEDvalueHIGH=1000;
+int backLEDvalueLOW=100;
+bool FADE=1;
 float setpoint=22.0;
 
 
@@ -122,13 +128,18 @@ void setup()
    pinMode (encoder0PinB,INPUT);
    attachInterrupt(digitalPinToInterrupt(encoder0PinA), encoder, CHANGE);
    attachInterrupt(digitalPinToInterrupt(encoder0PinB), encoder, CHANGE);
+
+//NTP
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+initNTP();
+     
 //DISPLAY
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
    
    ucg.begin(UCG_FONT_MODE_SOLID);
    ucg.setColor(0, 0, 0);
    ucg.drawBox(0, 0, ucg.getWidth(), ucg.getHeight());
-   analogWrite(backLED,100);
+   analogWrite(backLED,1000);
    ucg.setRotate90();
    delay(500);
             //SPLASH SCREEN
@@ -145,7 +156,7 @@ void setup()
    delay(5000);
    ucg.setColor(0, 0, 0);                //Nero
    ucg.drawBox(0, 0, ucg.getWidth(), ucg.getHeight());
-
+   FADE=1;
 }
 
 void loop()
@@ -154,8 +165,12 @@ void loop()
     EXECUTEFAST() {                     
         UPDATEFAST();   
         FAST_10ms() {
-            
+        if (FADE==1 and backLEDvalue<backLEDvalueHIGH){
+          backLEDvalue=backLEDvalue+5;
+          analogWrite(backLED,backLEDvalue);      
         }
+        }
+        
         FAST_50ms() {   // We process the logic and relevant input and output every 50 milliseconds
             Logic_SimpleLight(CALDAIA);
             DigOut(RELE, Souliss_T1n_Coil,CALDAIA);
@@ -166,38 +181,46 @@ void loop()
             
             ucg.setColor(0, 255, 255, 255);    // Bianco
             ucg.setFontMode(UCG_FONT_MODE_SOLID);
-            ucg.setPrintPos(24,52);
+            ucg.setPrintPos(25,52);
             ucg.setFont(ucg_font_inb21_mr);
             ucg.print("Sp");ucg.print(setpoint,1);
             ucg.setFont(ucg_font_profont11_mr);
             ucg.setPrintPos(135,36);
             ucg.print("o"); 
+        //FADE
+        if(FADE==0 and backLEDvalue>backLEDvalueLOW){
+        backLEDvalue=backLEDvalue-5;
+        analogWrite(backLED,backLEDvalue);
             } 
         FAST_910ms(){
-            String Time = "";
-            String Date = "";
-            Time = digitalClockDisplay();
-            Date = digitalDataDisplay();
-            ucg.setFont(ucg_font_inr16_mf);
-            //ucg.setFont(ucg_font_fub14_hr);
-            ucg.setColor(0, 255, 255, 255);    // Bianco
-            ucg.setPrintPos(203,20);
-            ucg.print(Date);
-            ucg.setFont(ucg_font_inb19_mf);
-            ucg.setPrintPos(240,45);
-            ucg.print(Time);
+
              }    
               
         // Here we handle here the communication with Android
         FAST_PeerComms();
                                     
     }
+  }  
        EXECUTESLOW()
   {
     UPDATESLOW();
 
-                        
-      SLOW_110s(){
+      SLOW_50s(){
+        //NTP
+        ////////////////////////////////////////////////////////////////////////////
+            String Time = "";
+            String Date = "";
+            Time = digitalClockDisplay();
+            Date = digitalDataDisplay();
+            ucg.setFont(ucg_font_inr19_mf);
+            ucg.setColor(0, 255, 255, 255);       // Bianco
+            ucg.setPrintPos(160,24);
+            ucg.print(Date);
+            ucg.setFont(ucg_font_inb21_mr);
+            ucg.setPrintPos(228,52);
+            ucg.print(Time);
+        ////////////////////////////////////////////////////////////////////////////
+            
             ucg.setColor(0, 255, 255, 255);    // Bianco
             ucg.drawCircle(85, 120, 119, UCG_DRAW_ALL);
             ucg.drawCircle(85, 119, 119, UCG_DRAW_ALL);
@@ -223,8 +246,8 @@ void loop()
         temperature = dht.readTemperature(); 
         int temp = (int) temperature;       
         int diff=dopovirgola(temperature);
-        /*Serial.print("DHT: ");Serial.println(temperature,2);   
-        Serial.print("TEMP: ");Serial.println(temp);     
+        Serial.print("DHT: ");Serial.println(temperature,2);   
+        /*Serial.print("TEMP: ");Serial.println(temp);     
         Serial.print("DIFF: ");Serial.println(diff);
         */
         humidity = dht.readHumidity();
@@ -306,25 +329,40 @@ void loop()
             ucg.drawCircle(85, 119, 111, UCG_DRAW_ALL);
             ucg.drawCircle(85, 120, 110, UCG_DRAW_ALL);
             ucg.drawCircle(85, 119, 110, UCG_DRAW_ALL);
-          
-
-
+        //CALCOLO ANDAMENTO
+        ///////////////////////////////////////////////////////////////////////////
+        deltaT=temperature-pretemperature;
+        Serial.print("DELTAT ");Serial.println(deltaT,DEC);
+        if(temperature > pretemperature && deltaT || 0){
+            ucg.setColor(255, 0, 0);              // Rosso
+            ucg.drawTriangle(0,0, 0,31, 10,22);
+            ucg.setColor(0, 0, 0);                //Nero
+            ucg.drawTriangle(0,240, 0,209, 10,218);                
+        }else if (deltaT == 0){
+            ucg.setColor(0, 0, 0);                //Nero
+            ucg.drawTriangle(0,240, 0,209, 10,218);
+            ucg.setColor(0, 0, 0);                //Nero
+            ucg.drawTriangle(0,0, 0,31, 10,22);  
+        }
+        else{
+            ucg.setColor(65, 105, 225);           // Blu Reale
+            ucg.drawTriangle(0,240, 0,209, 10,218);     
+            ucg.setColor(0, 0, 0);                //Nero
+            ucg.drawTriangle(0,0, 0,31, 10,22);        
+        }
+        ///////////////////////////////////////////////////////////////////////////
         
-      }
-
-      //
-      SLOW_50s(){
         if(temperature<setpoint-hyst){
           //Souliss_Input(memory_map, CALDAIA) = Souliss_T1n_OnCmd;
           mInput(CALDAIA) = Souliss_T1n_OnCmd;
           }
         if(temperature>setpoint+hyst){
           mInput(CALDAIA) = Souliss_T1n_OffCmd;
-          }
-        analogWrite(backLED,100);
+          }        
+        pretemperature=temperature;
+        FADE=0;    
         }
-      } 
-      
+    }   
 } 
 
 
@@ -341,18 +379,18 @@ int dopovirgola(const float v)
 }
          
 void encoder(){
-  analogWrite(backLED,1023);
   int MSB = digitalRead(encoder0PinA); //MSB = most significant bit
   int LSB = digitalRead(encoder0PinB); //LSB = least significant bit
  
   int encoded = (MSB << 1) |LSB; //converting the 2 pin value to single number
   int sum  = (encoder0PinALast << 2) | encoded; //adding it to the previous encoded value
  
-  if(sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011) encoder0Pos ++;
-  if(sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000) encoder0Pos --;
+  if(sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011) encoder0Pos --;
+  if(sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000) encoder0Pos ++;
  
   encoder0PinALast = encoded; //store this value for next time
   setpoint=encoder0Pos/10.0; 
+  FADE=1;
   
 }
 
