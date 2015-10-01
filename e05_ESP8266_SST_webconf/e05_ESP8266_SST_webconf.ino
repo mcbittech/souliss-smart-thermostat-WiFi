@@ -55,19 +55,24 @@ Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ 2 , /*cs=*/ 15);
 void setup()
 {
   SERIAL_OUT.begin(115200);
+
+
   //DISPLAY INIT
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
-
   ucg.begin(UCG_FONT_MODE_SOLID);
   ucg.setColor(0, 0, 0);
   ucg.setRotate90();
-  display_print_splash_screen(ucg);
 
   //BACK LED
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
+  digitalWrite(BACKLED, HIGH);
   pinMode(BACKLED, OUTPUT);                     // Background Display LED
-  analogWrite(BACKLED, BRIGHT_MAX);
 
+// SWITCH ENCODER
+digitalWrite(BACKLED, HIGH);
+pinMode(GPIO0, INPUT);    
+  
+  display_print_splash_screen(ucg);
   Initialize();
 
   // Read the IP configuration from the EEPROM, if not available start
@@ -109,12 +114,15 @@ void setup()
 
   //*************************************************************************
   //*************************************************************************
-  // Set the typical to use in slot 0
-  Set_Thermostat(SLOT_THERMOSTAT);
-  set_ThermostatMode(SLOT_THERMOSTAT);
-
   Set_T52(SLOT_TEMPERATURE);
   Set_T53(SLOT_HUMIDITY);
+  Set_T19(SLOT_BRIGHT_DISPLAY);
+
+//set default mode
+  Set_Thermostat(SLOT_THERMOSTAT);
+  set_ThermostatMode(SLOT_THERMOSTAT);
+  set_DisplayMinBright(SLOT_BRIGHT_DISPLAY, BRIGHT_MIN_DEFAULT);
+
   // Define output pins
   pinMode(RELE, OUTPUT);    // Heater
   dht.begin();
@@ -142,18 +150,14 @@ void loop()
 {
   EXECUTEFAST() {
     UPDATEFAST();
-
-    FAST_10ms() {
-
-    }
-
     FAST_30ms() {
       //set point attuale
       setpoint = Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3);
       //Stampa il setpoint solo se il valore dell'encoder è diverso da quello impostato nel T31
 
       if (arrotonda(getEncoderValue()) != arrotonda(encoderValue_prec)) {
-        analogWrite(BACKLED, BRIGHT_MAX);
+        int val = (BRIGHT_MAX / 100) * 1023;
+        analogWrite(BACKLED, val);
         SERIAL_OUT.println("display_setpointPage");
         display_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity );
       }
@@ -188,13 +192,28 @@ void loop()
       // user interface if the difference is greater than the deadband
       Logic_T52(SLOT_TEMPERATURE);
       Logic_T53(SLOT_HUMIDITY);
+      Logic_T19(SLOT_BRIGHT_DISPLAY);
+
+//SWITCH ENCODER
+if(!digitalRead(GPIO0)){
+   SERIAL_OUT.println("pulsante premuto");
+
+   SISTEMARE CARATTERE GRANDE CENTRALE
+   SE SCENDE SOTTO 10°
+   O SE VA SOTTO ZERO
+   
+}
+      
     }
 
     FAST_910ms() {
 
       if (timerDisplay_setpoint()) {
         SERIAL_OUT.println("display_HomeScreen");
-        analogWrite(BACKLED, 100);
+        float valW =  memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1];
+        int val = (valW / 254) * 1023;
+        analogWrite(BACKLED, val);
+
         display_HomeScreen(ucg, temperature, humidity, setpoint);
       }
     }
@@ -272,4 +291,7 @@ void set_ThermostatMode(U8 slot) {
 
 }
 
+void set_DisplayMinBright(U8 slot, U8 val) {
+memory_map[MaCaco_OUT_s + slot + 1]=val;
+}
 

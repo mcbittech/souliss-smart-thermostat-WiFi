@@ -15,7 +15,8 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define TFT_DC 2
 #define TFT_CS 15
-#define BRIGHT_MAX 1023
+#define BRIGHT_MAX 100          //%
+#define BRIGHT_MIN_DEFAULT 50  //%
 
 
 
@@ -24,6 +25,8 @@
 #define SLOT_THERMOSTAT        0     
 #define SLOT_TEMPERATURE        5     // This is the memory slot used for the execution of the logic in network_address1
 #define SLOT_HUMIDITY        7     // This is the memory slot used for the execution of the logic
+#define SLOT_BRIGHT_DISPLAY        9     
+
     
 
 //PIN
@@ -31,6 +34,7 @@
 // **** Define here the right pin for your ESP module **** 
 #define RELE                  5
 #define BACKLED  16
+#define GPIO0  0
 
 //TIMER DISPLAY
 #define TIMER_DISPLAY_SETPOINT 3000
