@@ -21,8 +21,8 @@
 
 #include "Souliss.h"
 
-#include "t_encoder.h"
-#include "t_constants.h"
+#include "encoder.h"
+#include "constants.h"
 #include "display.h"
 #include "language.h"
 #include "ntp.h"
