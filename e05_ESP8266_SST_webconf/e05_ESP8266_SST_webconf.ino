@@ -44,6 +44,11 @@ float encoderValue_prec = 0;
 #include <Arduino.h>
 #include "Ucglib.h"
 
+int backLEDvalue = 0;
+int backLEDvalueHIGH = BRIGHT_MAX;
+int backLEDvalueLOW = BRIGHT_MIN_DEFAULT;
+bool FADE = 1;
+
 // Use hardware SPI
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ 2 , /*cs=*/ 15);
@@ -152,14 +157,14 @@ void loop()
 {
   EXECUTEFAST() {
     UPDATEFAST();
+
     FAST_30ms() {
       //set point attuale
       setpoint = Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3);
       //Stampa il setpoint solo se il valore dell'encoder è diverso da quello impostato nel T31
 
       if (arrotonda(getEncoderValue()) != arrotonda(encoderValue_prec)) {
-        int val = (BRIGHT_MAX / 100) * 1023;
-        analogWrite(BACKLED, val);
+        FADE = 1;
         SERIAL_OUT.println("display_setpointPage");
         display_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity );
       }
@@ -175,6 +180,17 @@ void loop()
         data_changed = Souliss_TRIGGED;
       }
       encoderValue_prec = getEncoderValue();
+    }
+
+    FAST_110ms() {
+      //FADE
+      if (FADE == 0 && backLEDvalue > backLEDvalueLOW) {
+        backLEDvalue -= BRIGHT_STEP_FADE_OUT;
+        bright(backLEDvalue);
+      } else  if (FADE == 1 && backLEDvalue < backLEDvalueHIGH) {
+        backLEDvalue +=  BRIGHT_STEP_FADE_IN;
+        bright(backLEDvalue);
+      }
     }
 
     FAST_90ms() {   // We process the logic and relevant input and output every 50 milliseconds
@@ -212,10 +228,8 @@ void loop()
 
       if (timerDisplay_setpoint()) {
         SERIAL_OUT.println("display_HomeScreen");
-        float valW =  memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1];
-        int val = (valW / 254) * 1023;
-        analogWrite(BACKLED, val);
-
+        backLEDvalueLOW =  memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1];
+        FADE = 0;
         display_HomeScreen(ucg, temperature, humidity, setpoint);
       }
     }
@@ -296,4 +310,13 @@ void set_ThermostatMode(U8 slot) {
 void set_DisplayMinBright(U8 slot, U8 val) {
   memory_map[MaCaco_OUT_s + slot + 1] = val;
 }
+
+void bright(int lum) {
+  int val = ((float)lum / 100) * 1023;
+  if(val>1023) val=1023;
+  if(val<0) val=0;
+  analogWrite(BACKLED, val);
+  SERIAL_OUT.print(" analogWrite(BACKLED, val): "); SERIAL_OUT.println(val);
+}
+
 

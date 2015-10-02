@@ -16,9 +16,9 @@
 #define TFT_DC 2
 #define TFT_CS 15
 #define BRIGHT_MAX 100          //%
-#define BRIGHT_MIN_DEFAULT 50  //%
-
-
+#define BRIGHT_MIN_DEFAULT 40  //%
+#define BRIGHT_STEP_FADE_IN 20 //%
+#define BRIGHT_STEP_FADE_OUT 1
 
 //SLOT
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
