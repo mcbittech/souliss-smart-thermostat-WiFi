@@ -8,13 +8,8 @@
 float arrotonda(const float v)
 {
   float vX10 = v * 10;
-  //Serial.print("vX10: "); Serial.println(vX10);
-
   int vInt = (int) vX10;
-  //Serial.print("vInt: "); Serial.println(vInt);
-
   float diff = abs(vX10 - vInt);
-  //Serial.print("diff: "); Serial.println(diff);
   if (diff < 0.5) {
     return (float) vInt / 10;
   } else {
@@ -46,15 +41,7 @@ void timerDisplay_setpoint_Tick() {
   lastClickTime = millis();
 }
 
-//Stampa soltanto il setpoint grande al centro del display
-void display_print_setpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint) {
-  SERIAL_OUT.println("display_print_setpoint");
-  ucg.setColor(102, 255, 0);    // Verde Chiaro
-
-  ucg.setFontMode(UCG_FONT_MODE_SOLID);
-
-
-
+void printBigChar(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fValTemp) {
   ucg.setFont(FONT_BIG);
 #if(FONT_BIG_SCALE2x2)
   ucg.setScale2x2();
@@ -76,10 +63,10 @@ void display_print_setpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint)
 
   ucg.setFont(FONT_BIG);
   ucg.setPrintPos(ucg.getWidth() / 2 - vW / 2, ucg.getHeight() / 2 + ucg.getFontAscent() / 2);
-  ucg.print((int) setpoint);
+  ucg.print((int) fValTemp);
 
   ucg.setFont(FONT_BIG_MIN_50_PERCENT);
-  int diff = dopovigola(setpoint);
+  int diff = dopovigola(fValTemp);
   ucg.print(".");
   ucg.print(diff);
 
@@ -101,6 +88,15 @@ void display_print_setpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint)
 #if(FONT_BIG_SCALE2x2)
   ucg.undoScale();
 #endif
+
+}
+
+//Stampa soltanto il setpoint grande al centro del display
+void display_print_setpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint) {
+  SERIAL_OUT.println("display_print_setpoint");
+  ucg.setColor(102, 255, 0);    // Verde Chiaro
+  ucg.setFontMode(UCG_FONT_MODE_SOLID);
+  printBigChar(ucg, setpoint);
 }
 
 void display_print_B3(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text, float temp) {
@@ -111,7 +107,7 @@ void display_print_B3(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text, float te
   String str = text + "00.00";
   const char * c = str.c_str();
 
-ucg.setColor(102, 255, 0);    // Verde Chiaro
+  ucg.setColor(102, 255, 0);    // Verde Chiaro
   ucg.setPrintPos(ucg.getWidth() - ucg.getStrWidth(c) - 5, ucg.getHeight() - 5);
   ucg.print(text);
   ucg.print(temp, 1);
@@ -252,53 +248,8 @@ void display_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp, float h
 
     ucg.setFontMode(UCG_FONT_MODE_SOLID);
 
-    ucg.setFont(FONT_BIG);
-#if(FONT_BIG_SCALE2x2)
-    ucg.setScale2x2();
-#endif
-    ucg.setFontPosBaseline();
+    printBigChar(ucg, temp);
 
-    //calcolo ingombro testo
-    String str = "00";
-    const char *c = str.c_str();
-    int vW = ucg.getStrWidth(c);
-    ucg.setFont(FONT_BIG_MIN_50_PERCENT);
-    str = ".0";
-    c = str.c_str();
-    vW += ucg.getStrWidth(c);
-    ucg.setFont(FONT_SMALL_CENTIGRAD);
-    str = "0";
-    c = str.c_str();
-    vW += ucg.getStrWidth(c);
-
-    ucg.setFont(FONT_BIG);
-    ucg.setPrintPos(ucg.getWidth() / 2 - vW / 2, ucg.getHeight() / 2 + ucg.getFontAscent() / 2);
-    ucg.print((int) temp);
-
-    ucg.setFont(FONT_BIG_MIN_50_PERCENT);
-    int diff = dopovigola(temp);
-    ucg.print(".");
-    ucg.print(diff);
-
-    //calcolo ingombro testo
-    ucg.setFont(FONT_BIG);
-    str = "00";
-    c = str.c_str();
-    vW = ucg.getStrWidth(c);
-    ucg.setFont(FONT_BIG_MIN_50_PERCENT);
-    str = ".0";
-    c = str.c_str();
-    vW += ucg.getStrWidth(c);
-
-    ucg.setFont(FONT_SMALL_CENTIGRAD);
-    int position_For_Ball = ucg.getWidth() / 2  + vW / 2 - FONT_SHIFT_POSITION_TO_SX_CENTIGRAD ;
-    ucg.setPrintPos(position_For_Ball, ucg.getHeight() / 2 - ucg.getFontAscent() / 2);
-    ucg.print("o");
-
-
-#if(FONT_BIG_SCALE2x2)
-    ucg.undoScale();
-#endif
     temp_prec = temp;
     setpoint_prec = setpoint;
     flag_onetime_HomeScreen = true;

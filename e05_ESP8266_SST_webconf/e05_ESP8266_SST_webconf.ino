@@ -68,10 +68,6 @@ void setup()
   digitalWrite(BACKLED, HIGH);
   pinMode(BACKLED, OUTPUT);                     // Background Display LED
 
-// SWITCH ENCODER
-digitalWrite(BACKLED, HIGH);
-pinMode(GPIO0, INPUT);    
-  
   display_print_splash_screen(ucg);
   Initialize();
 
@@ -118,7 +114,7 @@ pinMode(GPIO0, INPUT);
   Set_T53(SLOT_HUMIDITY);
   Set_T19(SLOT_BRIGHT_DISPLAY);
 
-//set default mode
+  //set default mode
   Set_Thermostat(SLOT_THERMOSTAT);
   set_ThermostatMode(SLOT_THERMOSTAT);
   set_DisplayMinBright(SLOT_BRIGHT_DISPLAY, BRIGHT_MIN_DEFAULT);
@@ -133,6 +129,10 @@ pinMode(GPIO0, INPUT);
   pinMode (ENCODER_PIN_B, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(ENCODER_PIN_A), encoder, CHANGE);
   attachInterrupt(digitalPinToInterrupt(ENCODER_PIN_B), encoder, CHANGE);
+  // SWITCH ENCODER
+  digitalWrite(BACKLED, HIGH);
+  pinMode(GPIO0, INPUT);
+
   //NTP
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   initNTP();
@@ -144,6 +144,8 @@ pinMode(GPIO0, INPUT);
   initMenu();
 
   display_HomeScreen(ucg, temperature, humidity, setpoint);
+
+
 }
 
 void loop()
@@ -194,16 +196,16 @@ void loop()
       Logic_T53(SLOT_HUMIDITY);
       Logic_T19(SLOT_BRIGHT_DISPLAY);
 
-//SWITCH ENCODER
-if(!digitalRead(GPIO0)){
-   SERIAL_OUT.println("pulsante premuto");
+      //SWITCH ENCODER
+      if (!digitalRead(GPIO0)) {
+        SERIAL_OUT.println("pulsante premuto");
 
-   SISTEMARE CARATTERE GRANDE CENTRALE
-   SE SCENDE SOTTO 10°
-   O SE VA SOTTO ZERO
-   
-}
-      
+        //   SISTEMARE CARATTERE GRANDE CENTRALE
+        //   SE SCENDE SOTTO 10°
+        //   O SE VA SOTTO ZERO
+
+      }
+
     }
 
     FAST_910ms() {
@@ -292,6 +294,6 @@ void set_ThermostatMode(U8 slot) {
 }
 
 void set_DisplayMinBright(U8 slot, U8 val) {
-memory_map[MaCaco_OUT_s + slot + 1]=val;
+  memory_map[MaCaco_OUT_s + slot + 1] = val;
 }
 
