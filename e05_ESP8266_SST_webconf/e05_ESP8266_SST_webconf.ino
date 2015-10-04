@@ -181,7 +181,15 @@ void loop()
       }
       encoderValue_prec = getEncoderValue();
     }
-
+    FAST_90ms() {   // We process the logic and relevant input and output every 50 milliseconds
+      //*************************************************************************
+      //*************************************************************************
+      Logic_Thermostat(SLOT_THERMOSTAT);
+      // Start the heater and the fans
+      nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
+      //*************************************************************************
+      //*************************************************************************
+    }
     FAST_110ms() {
       //FADE
       if (FADE == 0 && backLEDvalue > backLEDvalueLOW) {
@@ -191,18 +199,6 @@ void loop()
         backLEDvalue +=  BRIGHT_STEP_FADE_IN;
         bright(backLEDvalue);
       }
-    }
-
-    FAST_90ms() {   // We process the logic and relevant input and output every 50 milliseconds
-      //*************************************************************************
-      //*************************************************************************
-      Logic_Thermostat(SLOT_THERMOSTAT);
-      // Start the heater and the fans
-      nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
-      //*************************************************************************
-      //*************************************************************************
-
-
     }
 
     FAST_510ms() {
@@ -225,7 +221,6 @@ void loop()
     }
 
     FAST_910ms() {
-
       if (timerDisplay_setpoint()) {
         SERIAL_OUT.println("display_HomeScreen");
         backLEDvalueLOW =  memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1];
@@ -313,8 +308,8 @@ void set_DisplayMinBright(U8 slot, U8 val) {
 
 void bright(int lum) {
   int val = ((float)lum / 100) * 1023;
-  if(val>1023) val=1023;
-  if(val<0) val=0;
+  if (val > 1023) val = 1023;
+  if (val < 0) val = 0;
   analogWrite(BACKLED, val);
   SERIAL_OUT.print(" analogWrite(BACKLED, val): "); SERIAL_OUT.println(val);
 }

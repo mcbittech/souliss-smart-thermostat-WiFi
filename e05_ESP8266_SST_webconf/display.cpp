@@ -41,6 +41,10 @@ void timerDisplay_setpoint_Tick() {
   lastClickTime = millis();
 }
 
+int centerW=0;
+int centerH=0;
+int vW_pos_before_point, vW_pos_after_point, vW_pos_grade;
+String sTempToPrint;
 void printBigChar(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fValTemp) {
   ucg.setFont(FONT_BIG);
 #if(FONT_BIG_SCALE2x2)
@@ -56,18 +60,34 @@ void printBigChar(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fValTemp) {
   str = ".0";
   c = str.c_str();
   vW += ucg.getStrWidth(c);
+  str = ".";
+  vW -= ucg.getStrWidth(c) / 2; //arretra di metà spazio di un carattere
+
+  vW_pos_before_point = vW;
+  vW_pos_after_point = vW_pos_before_point + ucg.getStrWidth(c) / 2;
   ucg.setFont(FONT_SMALL_CENTIGRAD);
   str = "0";
   c = str.c_str();
-  vW += ucg.getStrWidth(c);
+  vW += ucg.getStrWidth(c) / 2; //aggiunge metà dello spazio di un carattere
 
   ucg.setFont(FONT_BIG);
-  ucg.setPrintPos(ucg.getWidth() / 2 - vW / 2, ucg.getHeight() / 2 + ucg.getFontAscent() / 2);
+  centerW = ucg.getWidth() / 2;
+  centerH = ucg.getHeight() / 2 ;
+  ucg.setPrintPos(centerW - vW / 2, centerH + ucg.getFontAscent() / 2);
+  if (((int) fValTemp) > 9) {
+    sTempToPrint = (int)fValTemp;
+  }
+  else {
+    sTempToPrint = "0" + (int)fValTemp;
+  }
+  ucg.print(sTempToPrint);
   ucg.print((int) fValTemp);
 
   ucg.setFont(FONT_BIG_MIN_50_PERCENT);
+  ucg.setPrintPos(centerW - vW / 2 + vW_pos_before_point, centerH + ucg.getFontAscent() / 2);
   int diff = dopovigola(fValTemp);
   ucg.print(".");
+  ucg.setPrintPos(centerW - vW / 2 + vW_pos_after_point, centerH + ucg.getFontAscent() / 2);
   ucg.print(diff);
 
   //calcolo ingombro testo
