@@ -11,7 +11,6 @@
 
         
 ***************************************************************************/
-
 // Configure the framework
 #include "bconf/MCU_ESP8266.h"              // Load the code directly on the ESP8266
 #include "conf/IPBroadcast.h"
@@ -59,10 +58,13 @@ uint8_t ip_gateway[4]  = {192, 168, 1, 1};
 
 DHT dht(DHTPIN, DHTTYPE);
 float temperature = 0;
+float logtemperature[14];
+int i=0;
 float pretemperature = 0;
 float deltaT = 0;
 float humidity = 0;
 float hyst = 0.2;
+
 
 //ENCODER
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -205,7 +207,7 @@ void loop()
   {
     UPDATESLOW();
 
-      SLOW_50s(){
+      SLOW_10s(){
         //NTP
         ////////////////////////////////////////////////////////////////////////////
             String Time = "";
@@ -243,16 +245,22 @@ void loop()
             ucg.drawCircle(85, 120, 110, UCG_DRAW_ALL);
             ucg.drawCircle(85, 119, 110, UCG_DRAW_ALL);
         
-        temperature = dht.readTemperature(); 
-        int temp = (int) temperature;       
-        int diff=dopovirgola(temperature);
-        Serial.print("DHT: ");Serial.println(temperature,2);   
-        /*Serial.print("TEMP: ");Serial.println(temp);     
-        Serial.print("DIFF: ");Serial.println(diff);
-        */
-        humidity = dht.readHumidity();
-        Souliss_ImportAnalog(memory_map, TEMPERATURA, &temperature);
-        Souliss_ImportAnalog(memory_map, UMIDITA, &humidity);
+            temperature = dht.readTemperature(); 
+              logtemperature[i]=temperature/10;
+              Serial.print("LOG ");Serial.print(i,DEC);Serial.print(" ");Serial.println(logtemperature[i]);
+              i++;              
+              if(i>=15){
+                 i=0;
+                 }
+            int temp = (int) temperature;       
+            int diff=dopovirgola(temperature);
+            Serial.print("DHT: ");Serial.println(temperature,2);   
+            /*Serial.print("TEMP: ");Serial.println(temp);     
+            Serial.print("DIFF: ");Serial.println(diff);
+            */
+            humidity = dht.readHumidity();
+            Souliss_ImportAnalog(memory_map, TEMPERATURA, &temperature);
+            Souliss_ImportAnalog(memory_map, UMIDITA, &humidity);
 
             ucg.setColor(0, 0, 0);                //Nero
             ucg.drawCircle(85, 120, 119, UCG_DRAW_ALL);
@@ -329,8 +337,28 @@ void loop()
             ucg.drawCircle(85, 119, 111, UCG_DRAW_ALL);
             ucg.drawCircle(85, 120, 110, UCG_DRAW_ALL);
             ucg.drawCircle(85, 119, 110, UCG_DRAW_ALL);
+
+        
+        if(temperature<setpoint-hyst){
+          //Souliss_Input(memory_map, CALDAIA) = Souliss_T1n_OnCmd;
+          mInput(CALDAIA) = Souliss_T1n_OnCmd;
+          }
+        if(temperature>setpoint+hyst){
+          mInput(CALDAIA) = Souliss_T1n_OffCmd;
+          }        
+        FADE=0;    
+        }
+        
+        SLOW_x10s(16){
         //CALCOLO ANDAMENTO
         ///////////////////////////////////////////////////////////////////////////
+        for (int n=0;n<=14;n++){
+          pretemperature=pretemperature+logtemperature[n];
+          Serial.print("LOG ");Serial.print(n,DEC);Serial.print(" ");Serial.println(logtemperature[n]);
+        }
+        pretemperature=pretemperature/15;
+        pretemperature=pretemperature*10;
+        Serial.print("MEDIA ");Serial.print(" ");Serial.println(pretemperature);
         deltaT=temperature-pretemperature;
         Serial.print("DELTAT ");Serial.println(deltaT,DEC);
         if(temperature > pretemperature && deltaT || 0){
@@ -351,16 +379,6 @@ void loop()
             ucg.drawTriangle(0,0, 0,31, 10,22);        
         }
         ///////////////////////////////////////////////////////////////////////////
-        
-        if(temperature<setpoint-hyst){
-          //Souliss_Input(memory_map, CALDAIA) = Souliss_T1n_OnCmd;
-          mInput(CALDAIA) = Souliss_T1n_OnCmd;
-          }
-        if(temperature>setpoint+hyst){
-          mInput(CALDAIA) = Souliss_T1n_OffCmd;
-          }        
-        pretemperature=temperature;
-        FADE=0;    
         }
     }   
 } 
@@ -377,6 +395,7 @@ int dopovirgola(const float v)
   //Serial.print("diff: "); Serial.println(diff);
   return result = diff * 10;
 }
+
          
 void encoder(){
   int MSB = digitalRead(encoder0PinA); //MSB = most significant bit
