@@ -72,40 +72,28 @@ void setDay(Ucglib_ILI9341_18x240x320_HWSPI ucg){
       ucg.setColor(0, 0, 255);
       ucg.setPrintPos(160,235);
       ucg.drawBox(155,215,150,20);
+      ucg.setColor(255, 255, 255);                                //Bianco     
+      ucg.setPrintPos(160,235);
       switch (dDaysel){
         case 1:
-          ucg.setColor(255, 255, 255);                                //Bianco     
-          ucg.setPrintPos(160,235);
           ucg.print("LUNEDI'");
           break;
         case 2:
-          ucg.setColor(255, 255, 255);                                //Bianco     
-          ucg.setPrintPos(160,235);
           ucg.print("MARTEDI'"); 
           break;
         case 3:
-          ucg.setColor(255, 255, 255);                                //Bianco     
-          ucg.setPrintPos(160,235);
           ucg.print("MERCOLEDI'"); 
           break;
         case 4:
-          ucg.setColor(255, 255, 255);                                //Bianco     
-          ucg.setPrintPos(160,235);
           ucg.print("GIOVEDI'"); 
           break;
         case 5:
-          ucg.setColor(255, 255, 255);                                //Bianco     
-          ucg.setPrintPos(160,235);
           ucg.print("VENERDI'"); 
           break;
         case 6:
-          ucg.setColor(255, 255, 255);                                //Bianco     
-          ucg.setPrintPos(160,235);
           ucg.print("SABATO"); 
           break;
         case 7:
-          ucg.setColor(255, 255, 255);                                //Bianco     
-          ucg.setPrintPos(160,235);
           ucg.print("DOMENICA"); 
           break;
         default: 
@@ -138,12 +126,11 @@ void setDay(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     pushed=1;}
   else{
     pushed=0;}      
-  
   }
 
-
   pushed=0;
-  delay(1000);  
+  delay(500);  
+  //Cancello Schermo
   ucg.setColor(0, 0, 0);                                    //Nero
   ucg.drawBox(0, 0, ucg.getWidth(), ucg.getHeight());
   
