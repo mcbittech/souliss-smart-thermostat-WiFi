@@ -3,22 +3,24 @@
 #include "t_constants.h"
 
 //LAYOUT
-//////////////////////////////////////////////////////////
-byte start_x = 10;
-byte start_y = 80;
-byte offset_x = 25;
-byte offset_y = 80;
-byte offset_text = 25;
-byte dim_x = 10;
-byte dim_y = 5;
-byte texthour=0;
+///////////////////////////////////////////////////////////
+byte start_x = 10;        //Start Position Layout X (pixel)
+byte start_y = 80;        //Start Position Layout Y (pixel)
+byte offset_x = 25;       //Offset between  columns (pixel)
+byte offset_y = 80;       //Offset between  rows (pixel)
+byte offset_text = 25;    //Offset between Text (pixel)
+byte dim_x = 10;          //Box Dimension in X (pixel)
+byte dim_y = 5;           //Box Dimension in Y (pixel)
+byte texthour = 0;        //Text to be write (hour index)
 
 
 //SELECTION
-//////////////////////////////////////////////////////////
-byte dDaysel = 1;
-byte dDay[7];
-byte dHour[48];
+///////////////////////////////////////////////////////////
+byte dDaysel = 1;         //Day Selected
+byte dHourSel [7][48];    //Array Matrix
+byte setP1 = 180;         //Setpoint Eco
+byte setP2 = 200;         //Setpoint Normal
+byte setP3 = 220;         //Setpoint Comfort
 
 
 void drawCrono(Ucglib_ILI9341_18x240x320_HWSPI ucg){ 
