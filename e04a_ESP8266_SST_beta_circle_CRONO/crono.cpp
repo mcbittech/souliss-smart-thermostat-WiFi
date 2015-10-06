@@ -11,7 +11,7 @@ byte offset_y = 80;
 byte offset_text = 25;
 byte dim_x = 10;
 byte dim_y = 5;
-byte text=0;
+byte texthour=0;
 
 
 //Selezioni
@@ -36,15 +36,15 @@ void drawCrono(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     Serial.print("VERTICALE ");Serial.println(nv);
     for(byte nh=0;nh<12;nh++){
       ucg.setPrintPos(start_x+(offset_x*nh)+2,(start_y+(offset_y*nv))+offset_text);
-      ucg.print(text); 
+      ucg.print(texthour); 
       ucg.drawBox(start_x+(offset_x*nh) , start_y+(offset_y*nv) , dim_x , dim_y);
       ucg.drawBox(start_x+(offset_x*nh)+dim_x+1, start_y+(offset_y*nv) , dim_x , dim_y);
       Serial.print("ORIZZONTALE1 ");Serial.print(nh);Serial.print("  X ");Serial.print(start_x+(offset_x*nh));Serial.print("  Y ");Serial.println(start_y+(offset_y*nv));
       Serial.print("ORIZZONTALE2 ");Serial.print(nh);Serial.print("  X ");Serial.print(start_x+(offset_x*nh)+dim_x+1);Serial.print("  Y ");Serial.println(start_y+(offset_y*nv));
-      text++;
+      texthour++;
     }
   }
-  text=0; 
+  texthour=0; 
 }
 
 void setDay(Ucglib_ILI9341_18x240x320_HWSPI ucg){ 
