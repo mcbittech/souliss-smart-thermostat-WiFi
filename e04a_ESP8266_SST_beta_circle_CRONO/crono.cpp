@@ -14,9 +14,11 @@ byte dim_y = 5;
 byte texthour=0;
 
 
-//Selezioni
+//SELECTION
 //////////////////////////////////////////////////////////
-byte dDay = 1;
+byte dDaysel = 1;
+byte dDay[7];
+byte dHour[48];
 
 
 void drawCrono(Ucglib_ILI9341_18x240x320_HWSPI ucg){ 
@@ -53,7 +55,7 @@ void setDay(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   ucg.setPrintPos(70,235);
   ucg.print("GIORNO:"); 
   ucg.setPrintPos(160,235);
-    switch (dDay) {
+    switch (dDaysel) {
       case 1:
         ucg.print("LUNEDI'"); 
         break;
