@@ -2,6 +2,16 @@
 #include "Ucglib.h"
 #include "t_constants.h"
 
+
+//GENERAL
+///////////////////////////////////////////////////////////
+bool pushed=0;
+bool changeday=0;
+bool delday=0;
+int encoder0PinALast1 = 0;
+int n = 0;
+
+
 //LAYOUT
 ///////////////////////////////////////////////////////////
 byte start_x = 10;        //Start Position Layout X (pixel)
@@ -56,33 +66,87 @@ void setDay(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   ucg.setFont(ucg_font_helvB14_hf);
   ucg.setPrintPos(70,235);
   ucg.print("GIORNO:"); 
-  ucg.setPrintPos(160,235);
-    switch (dDaysel) {
-      case 1:
-        ucg.print("LUNEDI'"); 
+  changeday=1;
+  while(pushed==0){
+    if(changeday==1){
+      ucg.setColor(0, 0, 255);
+      ucg.setPrintPos(160,235);
+      ucg.drawBox(155,215,150,20);
+      switch (dDaysel){
+        case 1:
+          ucg.setColor(255, 255, 255);                                //Bianco     
+          ucg.setPrintPos(160,235);
+          ucg.print("LUNEDI'");
+          break;
+        case 2:
+          ucg.setColor(255, 255, 255);                                //Bianco     
+          ucg.setPrintPos(160,235);
+          ucg.print("MARTEDI'"); 
+          break;
+        case 3:
+          ucg.setColor(255, 255, 255);                                //Bianco     
+          ucg.setPrintPos(160,235);
+          ucg.print("MERCOLEDI'"); 
+          break;
+        case 4:
+          ucg.setColor(255, 255, 255);                                //Bianco     
+          ucg.setPrintPos(160,235);
+          ucg.print("GIOVEDI'"); 
+          break;
+        case 5:
+          ucg.setColor(255, 255, 255);                                //Bianco     
+          ucg.setPrintPos(160,235);
+          ucg.print("VENERDI'"); 
+          break;
+        case 6:
+          ucg.setColor(255, 255, 255);                                //Bianco     
+          ucg.setPrintPos(160,235);
+          ucg.print("SABATO"); 
+          break;
+        case 7:
+          ucg.setColor(255, 255, 255);                                //Bianco     
+          ucg.setPrintPos(160,235);
+          ucg.print("DOMENICA"); 
+          break;
+        default: 
         break;
-      case 2:
-        ucg.print("MARTEDI'");       
-        break;
-      case 3:
-        ucg.print("MERCOLEDI'");       
-        break;
-      case 4:
-        ucg.print("GIOVEDI'");       
-        break;
-      case 5:
-        ucg.print("VENERDI'");       
-        break;
-      case 6:
-        ucg.print("SABATO");       
-        break;
-      case 7:
-        ucg.print("DOMENICA");       
-        break;
-    default: 
-    break;
+      }
+    changeday=0; 
     }
-  delay(10000);  
+  delay(1);
+
+  //ENCODER
+  //////////////////////////////////////////////////////////////  
+  n = digitalRead(encoder0PinA); 
+  if ((encoder0PinALast1 == LOW) && (n == HIGH)) { 
+       dDaysel++;
+       changeday=1;
+       }   
+  encoder0PinALast1 = n; 
+
+  //MIN-MAX dDaysel
+  //////////////////////////////////////////////////////////////  
+  if(dDaysel<1){
+    dDaysel=7;
+  }else if(dDaysel>7){
+    dDaysel=1;
+  }
+
+  //On CHANGE changeday=1;
+  //////////////////////////////////////////////////////////////  
+    
+  //ESCAPE FROM WHILE
+  //////////////////////////////////////////////////////////////  
+  if(digitalRead(GPIO0)==LOW){
+    pushed=1;}
+  else{
+    pushed=0;}      
+  
+  }
+
+
+  pushed=0;
+  delay(1000);  
   ucg.setColor(0, 0, 0);                                    //Nero
   ucg.drawBox(0, 0, ucg.getWidth(), ucg.getHeight());
   

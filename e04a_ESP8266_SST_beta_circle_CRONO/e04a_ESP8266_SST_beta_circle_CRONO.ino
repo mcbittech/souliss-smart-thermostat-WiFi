@@ -68,12 +68,10 @@ float hyst = 0.2;
 
 //ENCODER
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
- int val; 
- //int encoder0PinA = 3;
- //int encoder0PinB = 4;
- int encoder0Pos = 220;
- int encoder0PinALast = LOW;
- int n = LOW;
+int val; 
+int encoder0Pos = 220;
+int encoder0PinALast = LOW;
+bool encSetpointEnable=1;
 
 
 //NTP
@@ -198,8 +196,10 @@ void loop()
         FAST_110ms(){
                 if(digitalRead(GPIO0)==LOW){
                   Serial.println("PULSANTE PREMUTO");
+                  encSetpointEnable=0;
                   drawCrono(ucg);
                   setDay(ucg);
+                  encSetpointEnable=1;
                   
                 }
              }    
@@ -388,6 +388,7 @@ int dopovirgola(const float v)
 }
          
 void encoder(){
+if(encSetpointEnable==1){ 
   int MSB = digitalRead(encoder0PinA); //MSB = most significant bit
   int LSB = digitalRead(encoder0PinB); //LSB = least significant bit
  
@@ -400,7 +401,7 @@ void encoder(){
   encoder0PinALast = encoded; //store this value for next time
   setpoint=encoder0Pos/10.0; 
   FADE=1;
-  
+  }
 }
 
 
