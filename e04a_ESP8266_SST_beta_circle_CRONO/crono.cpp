@@ -27,18 +27,18 @@ byte offset_text = 25;    //Offset between Text (pixel)
 byte dim_x = 10;          //Box Dimension in X (pixel)
 byte dim_y = 5;           //Box Dimension in Y (pixel)
 byte dim_x_set = 10;      //Box Dimension in X (pixel)
-byte dim_y_set = 8;       //Box Dimension in Y (pixel)
+byte dim_y_set = 12;       //Box Dimension in Y (pixel)
 byte texthour = 0;        //Text to be write (hour index)
 
 
 //SELECTION
 ///////////////////////////////////////////////////////////
 byte dDaysel = 1;         //Day Selected
-byte dHourSel [7][48];    //Array Matrix
+byte lastDaysel=0;
+byte dHourSel[7][48]={{1,2,3,4,5,6,7},{1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,}};     //Array Matrix
 byte setP1 = 180;         //Setpoint Eco
 byte setP2 = 200;         //Setpoint Normal
 byte setP3 = 220;         //Setpoint Comfort
-
 
 
 //drawCrono
@@ -120,8 +120,7 @@ void setDay(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   //////////////////////////////////////////////////////////////  
   n = digitalRead(encoder0PinA); 
   if ((encoder0PinALast1 == LOW) && (n == HIGH)) { 
-       dDaysel++;
-       changeday=1;
+       dDaysel++;   
        }   
   encoder0PinALast1 = n; 
 
@@ -138,8 +137,16 @@ void setDay(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   if(digitalRead(GPIO0)==LOW){
     pushed=1;}
   else{
-    pushed=0;}      
-  }
+    pushed=0;}    
+
+  //OnChange
+  //////////////////////////////////////////////////////////////  
+  if(dDaysel!=lastDaysel){
+    changeday=1;}
+  lastDaysel=dDaysel;  
+//////////////////////////////////////////////////////////////////////////////////////
+  
+  }//endwhile
 
   pushed=0;
   daySelected=dDaysel;
@@ -161,48 +168,48 @@ void drawBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
       if(hourSel_Box1>0){
         //Box C1:nh:1 
         ucg.setColor(255, 0, 0);                               //Rosso
-        ucg.drawBox(start_x+(offset_x*nh) , start_y+dim_y+2+(offset_y*nv), dim_x_set , dim_y_set);
+        ucg.drawBox(start_x+(offset_x*nh) , (start_y-dim_y-2)+(offset_y*nv), dim_x_set , dim_y_set);
         if(hourSel_Box1>1){
           //Box C1:nh:2 
-          ucg.drawBox(start_x+(offset_x*nh) , start_y+dim_y+2+(dim_y_set*2)+(offset_y*nv) , dim_x_set , dim_y_set);
+          ucg.drawBox(start_x+(offset_x*nh) , (start_y-dim_y-2-dim_y_set)+(offset_y*nv) , dim_x_set , dim_y_set);
           if(hourSel_Box1>2){
             //Box C1:nh:3 
-            ucg.drawBox(start_x+(offset_x*nh) , start_y+dim_y+2+(dim_y_set*3)+(offset_y*nv) , dim_x_set , dim_y_set);
+            ucg.drawBox(start_x+(offset_x*nh) , (start_y-dim_y-2-(dim_y_set*2))+(offset_y*nv) , dim_x_set , dim_y_set);
             }else{
               ucg.setColor(0, 0, 255);          //Blu
-              ucg.drawBox(start_x+(offset_x*nh) , start_y+dim_y+2+(dim_y_set*3)+(offset_y*nv) , dim_x_set , dim_y_set);  
+              ucg.drawBox(start_x+(offset_x*nh) , (start_y-dim_y-2-(dim_y_set*2))+(offset_y*nv) , dim_x_set , dim_y_set);  
               }
           }else{
             ucg.setColor(0, 0, 255);          //Blu
-            ucg.drawBox(start_x+(offset_x*nh) , start_y+dim_y+2+(dim_y_set*2)+(offset_y*nv) , dim_x_set*2 , dim_y_set*2);
+            ucg.drawBox(start_x+(offset_x*nh) , (start_y-dim_y-2-dim_y_set)+(offset_y*nv) , dim_x_set , dim_y_set);
             }
         }else{
           ucg.setColor(0, 0, 255);          //Blu
-          ucg.drawBox(start_x+(offset_x*nh) , start_y+dim_y+2 , dim_x_set*3 , dim_y_set*3);
+          ucg.drawBox(start_x+(offset_x*nh) , (start_y-dim_y-2) , dim_x_set , dim_y_set);
           }
           
         //Seconda Colonna [C2]  
         if(hourSel_Box2>0){    
           //Box C2:nh:1
           ucg.setColor(255, 0, 0);                               //Rosso
-          ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , start_y+dim_y+2+(offset_y*nv), dim_x_set , dim_y_set);     
+          ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , (start_y-dim_y-2)+(offset_y*nv), dim_x_set , dim_y_set);     
           if(hourSel_Box2>1){
             //Box C2:nh:2
-            ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , start_y+dim_y+2+(dim_y_set*2)+(offset_y*nv) , dim_x_set , dim_y_set);  
+            ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , (start_y-dim_y-2-dim_y_set)+(offset_y*nv) , dim_x_set , dim_y_set);  
             if(hourSel_Box2>2){    
               //Box C2:nh:3
-              ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , start_y+dim_y+2+(dim_y_set*3)+(offset_y*nv) , dim_x_set , dim_y_set);
+              ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , (start_y-dim_y-2-(dim_y_set*2))+(offset_y*nv) , dim_x_set , dim_y_set);
             }else{
               ucg.setColor(0, 0, 255);          //Blu
-              ucg.drawBox(start_x+(offset_x*nh) , start_y+dim_y+2+(dim_y_set*3)+(offset_y*nv) , dim_x_set , dim_y_set);               
+              ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , (start_y-dim_y-2-(dim_y_set*2))+(offset_y*nv) , dim_x_set , dim_y_set);               
               }
           }else{
             ucg.setColor(0, 0, 255);          //Blu
-            ucg.drawBox(start_x+(offset_x*nh) , start_y+dim_y+2+(dim_y_set*2)+(offset_y*nv) , dim_x_set*2 , dim_y_set*2);            
+            ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , (start_y-dim_y-2-dim_y_set)+(offset_y*nv) , dim_x_set , dim_y_set);            
             }
         }else{
           ucg.setColor(0, 0, 255);          //Blu
-          ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , start_y+dim_y+2 , dim_x_set*3 , dim_y_set*3);
+          ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , (start_y-dim_y-2) , dim_x_set , dim_y_set);
           }
     boxPointer=boxPointer+2;      
     }
@@ -215,6 +222,7 @@ void drawBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
 //clearScreen
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void clearScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg){
+  delay(1000);
   ucg.setColor(0, 0, 0);                                 //Nero
   ucg.drawBox(0, 0, ucg.getWidth(), ucg.getHeight());
 }

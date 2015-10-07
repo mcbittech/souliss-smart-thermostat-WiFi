@@ -195,13 +195,21 @@ void loop()
         analogWrite(backLED,backLEDvalue);
             } 
         FAST_110ms(){
+                byte menu;
                 if(digitalRead(GPIO0)==LOW){
                   Serial.println("PULSANTE PREMUTO");
                   encSetpointEnable=0;
                   drawCrono(ucg);
-                  setDay(ucg);
+                  menu=1;
+                  while(menu==1){
+                    setDay(ucg);
+                    drawBoxes(ucg);
+                    if(digitalRead(GPIO0)==LOW){
+                    menu=0;
+                    }
+                  }
+                  clearScreen(ucg);
                   encSetpointEnable=1;
-                  
                 }
              }    
               
