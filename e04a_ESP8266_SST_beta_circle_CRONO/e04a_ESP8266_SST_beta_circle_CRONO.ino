@@ -82,6 +82,7 @@ bool encSetpointEnable=1;
 //DISPLAY
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #include <SPI.h>
+#include <Arduino.h>
 #include "Ucglib.h"
 
 // Use hardware SPI
@@ -136,7 +137,7 @@ initNTP();
      
 //DISPLAY
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-   
+   SPI.setFrequency(40000000);
    ucg.begin(UCG_FONT_MODE_SOLID);
    ucg.setColor(0, 0, 0);
    ucg.drawBox(0, 0, ucg.getWidth(), ucg.getHeight());
