@@ -62,6 +62,8 @@ Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ 2 , /*cs=*/ 15);
 void setup()
 {
   SERIAL_OUT.begin(115200);
+  //SPI Frequency
+  SPI.setFrequency(40000000);
 
 
   //DISPLAY INIT
@@ -148,7 +150,7 @@ void setup()
 
   //MENU
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
-  initMenu();
+ // initMenu();
 
 #if(LAYOUT_1)
   display_layout1_HomeScreen(ucg, temperature, humidity, setpoint);

@@ -1,5 +1,6 @@
 
 
+
 /**************************************************************************
     Souliss - Hello World for Expressif ESP8266 with TFT SPI ILI9341
     
@@ -11,6 +12,7 @@
 
         
 ***************************************************************************/
+
 // Configure the framework
 #include "bconf/MCU_ESP8266.h"              // Load the code directly on the ESP8266
 #include "conf/IPBroadcast.h"
@@ -25,6 +27,7 @@
 #include <EEPROM.h>
 #include "Souliss.h"
 #include <DHT.h>
+#include "t_constants.h"
 
 // Define the network configuration
 uint8_t ip_address[4]  = {192, 168, 1, 25};
@@ -58,8 +61,6 @@ uint8_t ip_gateway[4]  = {192, 168, 1, 1};
 
 DHT dht(DHTPIN, DHTTYPE);
 float temperature = 0;
-float logtemperature[14];
-int i=0;
 float pretemperature = 0;
 float deltaT = 0;
 float humidity = 0;
@@ -68,39 +69,37 @@ float hyst = 0.2;
 
 //ENCODER
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
- int val; 
- int encoder0PinA = 3;
- int encoder0PinB = 4;
- int encoder0Pos = 220;
- int encoder0PinALast = LOW;
- int n = LOW;
+int val; 
+int encoder0Pos = 220;
+int encoder0PinALast = LOW;
+bool encSetpointEnable=1;
 
 //NTP
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #include "ntp.h"
 #include <Time.h> 
 
-//NTP
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#include "ntp.h"
-#include <Time.h>    
-
-
 //DISPLAY
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #include <SPI.h>
+#include <Arduino.h>
 #include "Ucglib.h"
 
 // Use hardware SPI
 Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ 2 , /*cs=*/ 15);
 
 #define SERIAL_OUT Serial
+
 int backLED = 16;
 int backLEDvalue=0;
 int backLEDvalueHIGH=1000;
 int backLEDvalueLOW=100;
 bool FADE=1;
 float setpoint=22.0;
+
+//CRONO
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#include "crono.h"
 
 
 void setup()
@@ -116,6 +115,7 @@ void setup()
     Set_SimpleLight(CALDAIA);                     // Define a simple LED light logic
     Souliss_SetT52(memory_map, TEMPERATURA);
     Souliss_SetT53(memory_map, UMIDITA);
+    pinMode(GPIO0, INPUT);
     pinMode(RELE, OUTPUT);                        // Use pin as output 
     pinMode(backLED, OUTPUT);                     // Background Display LED
     analogWrite(backLED,30);
@@ -130,14 +130,14 @@ void setup()
    pinMode (encoder0PinB,INPUT);
    attachInterrupt(digitalPinToInterrupt(encoder0PinA), encoder, CHANGE);
    attachInterrupt(digitalPinToInterrupt(encoder0PinB), encoder, CHANGE);
-
+ 
 //NTP
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 initNTP();
      
 //DISPLAY
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-   
+   SPI.setFrequency(40000000);
    ucg.begin(UCG_FONT_MODE_SOLID);
    ucg.setColor(0, 0, 0);
    ucg.drawBox(0, 0, ucg.getWidth(), ucg.getHeight());
@@ -170,7 +170,7 @@ void loop()
         if (FADE==1 and backLEDvalue<backLEDvalueHIGH){
           backLEDvalue=backLEDvalue+5;
           analogWrite(backLED,backLEDvalue);      
-        }
+          }
         }
         
         FAST_50ms() {   // We process the logic and relevant input and output every 50 milliseconds
@@ -194,8 +194,24 @@ void loop()
         backLEDvalue=backLEDvalue-5;
         analogWrite(backLED,backLEDvalue);
             } 
-        FAST_910ms(){
-
+        FAST_110ms(){
+                byte menu;
+                if(digitalRead(GPIO0)==LOW){
+                  Serial.println("PULSANTE PREMUTO");
+                  encSetpointEnable=0;
+                  drawCrono(ucg);
+                  menu=1;
+                  while(menu==1){
+                    setDay(ucg);
+                    drawBoxes(ucg);
+                    setBoxes(ucg);
+                    if(digitalRead(GPIO0)==LOW){
+                    menu=0;
+                    }
+                  }
+                  clearScreen(ucg);
+                  encSetpointEnable=1;
+                }
              }    
               
         // Here we handle here the communication with Android
@@ -207,7 +223,7 @@ void loop()
   {
     UPDATESLOW();
 
-      SLOW_10s(){
+      SLOW_50s(){
         //NTP
         ////////////////////////////////////////////////////////////////////////////
             String Time = "";
@@ -221,6 +237,7 @@ void loop()
             ucg.setFont(ucg_font_inb21_mr);
             ucg.setPrintPos(228,52);
             ucg.print(Time);
+            
         ////////////////////////////////////////////////////////////////////////////
             
             ucg.setColor(0, 255, 255, 255);    // Bianco
@@ -245,22 +262,16 @@ void loop()
             ucg.drawCircle(85, 120, 110, UCG_DRAW_ALL);
             ucg.drawCircle(85, 119, 110, UCG_DRAW_ALL);
         
-            temperature = dht.readTemperature(); 
-              logtemperature[i]=temperature/10;
-              Serial.print("LOG ");Serial.print(i,DEC);Serial.print(" ");Serial.println(logtemperature[i]);
-              i++;              
-              if(i>=15){
-                 i=0;
-                 }
-            int temp = (int) temperature;       
-            int diff=dopovirgola(temperature);
-            Serial.print("DHT: ");Serial.println(temperature,2);   
-            /*Serial.print("TEMP: ");Serial.println(temp);     
-            Serial.print("DIFF: ");Serial.println(diff);
-            */
-            humidity = dht.readHumidity();
-            Souliss_ImportAnalog(memory_map, TEMPERATURA, &temperature);
-            Souliss_ImportAnalog(memory_map, UMIDITA, &humidity);
+        temperature = dht.readTemperature(); 
+        int temp = (int) temperature;       
+        int diff=dopovirgola(temperature);
+        Serial.print("DHT: ");Serial.println(temperature,2);   
+        /*Serial.print("TEMP: ");Serial.println(temp);     
+        Serial.print("DIFF: ");Serial.println(diff);
+        */
+        humidity = dht.readHumidity();
+        Souliss_ImportAnalog(memory_map, TEMPERATURA, &temperature);
+        Souliss_ImportAnalog(memory_map, UMIDITA, &humidity);
 
             ucg.setColor(0, 0, 0);                //Nero
             ucg.drawCircle(85, 120, 119, UCG_DRAW_ALL);
@@ -337,28 +348,8 @@ void loop()
             ucg.drawCircle(85, 119, 111, UCG_DRAW_ALL);
             ucg.drawCircle(85, 120, 110, UCG_DRAW_ALL);
             ucg.drawCircle(85, 119, 110, UCG_DRAW_ALL);
-
-        
-        if(temperature<setpoint-hyst){
-          //Souliss_Input(memory_map, CALDAIA) = Souliss_T1n_OnCmd;
-          mInput(CALDAIA) = Souliss_T1n_OnCmd;
-          }
-        if(temperature>setpoint+hyst){
-          mInput(CALDAIA) = Souliss_T1n_OffCmd;
-          }        
-        FADE=0;    
-        }
-        
-        SLOW_x10s(16){
         //CALCOLO ANDAMENTO
         ///////////////////////////////////////////////////////////////////////////
-        for (int n=0;n<=14;n++){
-          pretemperature=pretemperature+logtemperature[n];
-          Serial.print("LOG ");Serial.print(n,DEC);Serial.print(" ");Serial.println(logtemperature[n]);
-        }
-        pretemperature=pretemperature/15;
-        pretemperature=pretemperature*10;
-        Serial.print("MEDIA ");Serial.print(" ");Serial.println(pretemperature);
         deltaT=temperature-pretemperature;
         Serial.print("DELTAT ");Serial.println(deltaT,DEC);
         if(temperature > pretemperature && deltaT || 0){
@@ -379,6 +370,16 @@ void loop()
             ucg.drawTriangle(0,0, 0,31, 10,22);        
         }
         ///////////////////////////////////////////////////////////////////////////
+        
+        if(temperature<setpoint-hyst){
+          //Souliss_Input(memory_map, CALDAIA) = Souliss_T1n_OnCmd;
+          mInput(CALDAIA) = Souliss_T1n_OnCmd;
+          }
+        if(temperature>setpoint+hyst){
+          mInput(CALDAIA) = Souliss_T1n_OffCmd;
+          }        
+        pretemperature=temperature;
+        FADE=0;    
         }
     }   
 } 
@@ -395,9 +396,9 @@ int dopovirgola(const float v)
   //Serial.print("diff: "); Serial.println(diff);
   return result = diff * 10;
 }
-
          
 void encoder(){
+if(encSetpointEnable==1){ 
   int MSB = digitalRead(encoder0PinA); //MSB = most significant bit
   int LSB = digitalRead(encoder0PinB); //LSB = least significant bit
  
@@ -410,7 +411,7 @@ void encoder(){
   encoder0PinALast = encoded; //store this value for next time
   setpoint=encoder0Pos/10.0; 
   FADE=1;
-  
+  }
 }
 
 
