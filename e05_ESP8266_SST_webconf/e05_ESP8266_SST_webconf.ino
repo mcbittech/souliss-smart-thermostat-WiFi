@@ -29,6 +29,8 @@
 #include <Time.h>
 #include <MenuSystem.h>
 #include "menu.h"
+#include "layouts.h"
+
 
 //*************************************************************************
 //*************************************************************************
@@ -148,8 +150,11 @@ void setup()
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   initMenu();
 
-  display_HomeScreen(ucg, temperature, humidity, setpoint);
-
+#if(LAYOUT_1)
+  display_layout1_HomeScreen(ucg, temperature, humidity, setpoint);
+#else if(LAYOUT_2)
+  //LAYOUT 2
+#endif
 
 }
 
@@ -165,8 +170,13 @@ void loop()
 
       if (arrotonda(getEncoderValue()) != arrotonda(encoderValue_prec)) {
         FADE = 1;
-        SERIAL_OUT.println("display_setpointPage");
-        display_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity );
+#if(LAYOUT_1)
+SERIAL_OUT.println("display_setpointPage - layout 1");
+        display_layout1_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity );
+#else if(LAYOUT_2)
+SERIAL_OUT.println("display_setpointPage - layout 2");
+        //LAYOUT 2
+#endif
       }
       if (timerDisplay_setpoint()) {
         //timeout scaduto
@@ -222,10 +232,14 @@ void loop()
 
     FAST_910ms() {
       if (timerDisplay_setpoint()) {
-        SERIAL_OUT.println("display_HomeScreen");
         backLEDvalueLOW =  memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1];
         FADE = 0;
-        display_HomeScreen(ucg, temperature, humidity, setpoint);
+#if(LAYOUT_1)
+        display_layout1_HomeScreen(ucg, temperature, humidity, setpoint);
+#else if(LAYOUT_2)
+        //LAYOUT 2
+#endif
+
       }
     }
 
