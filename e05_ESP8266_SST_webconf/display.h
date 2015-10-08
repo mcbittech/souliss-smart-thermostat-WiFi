@@ -18,7 +18,8 @@ void display_print_splash_waiting_connection_gateway(Ucglib_ILI9341_18x240x320_H
 void display_print_splash_waiting_connection_peer(Ucglib_ILI9341_18x240x320_HWSPI);
 void display_print_splash_screen(Ucglib_ILI9341_18x240x320_HWSPI);
 void display_layout1_printBigChar();
-
+void display_layout1_background(Ucglib_ILI9341_18x240x320_HWSPI, float);
+void display_layout1_background_black(Ucglib_ILI9341_18x240x320_HWSPI);
 
 
 boolean timerDisplay_setpoint();//return 1 for timeout

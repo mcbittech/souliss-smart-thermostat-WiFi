@@ -43,7 +43,7 @@ void timerDisplay_setpoint_Tick() {
 
 int startW=0;
 int baseH=0;
-int vW_pos_before_point, vW_pos_after_point, vW_pos_grade;
+int vW_pos_before_point, vW_pos_after_point, vW_pos_grade, baseH_Grade;
 String sTempToPrint;
 
 void display_layout1_printBigChar(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fValTemp) {
@@ -57,29 +57,36 @@ void display_layout1_printBigChar(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVa
   String str = "00";
   const char *c = str.c_str();
   int vW = ucg.getStrWidth(c);
-  ucg.setFont(FONT_BIG_MIN_50_PERCENT);
-  str = ".0";
-  c = str.c_str();
-  vW += ucg.getStrWidth(c);
-  str = ".";
-  vW -= ucg.getStrWidth(c) / 2; //arretra di metà spazio di un carattere
-
-  vW_pos_before_point = vW;
-  vW_pos_after_point = vW_pos_before_point + ucg.getStrWidth(c) / 2;
-  ucg.setFont(FONT_SMALL_CENTIGRAD);
+  
   str = "0";
   c = str.c_str();
-  vW += ucg.getStrWidth(c) / 2; //aggiunge metà dello spazio di un carattere. Il ° verrà parzialmente sovrapposto alla vifra decimale
+  vW_pos_before_point = vW-ucg.getStrWidth(c) / 8; //arretra di un sesto dello spazio di un carattere, per avvicinare il punto
+  ucg.setFont(FONT_BIG_MIN_50_PERCENT);
+  str = ".";
+  c = str.c_str();
+  vW += ucg.getStrWidth(c);
+  vW_pos_after_point = vW_pos_before_point + ucg.getStrWidth(c) - ucg.getStrWidth(c) /8; //aggiunge lo spazio del punto meno un sesto
+str = "0";
+  c = str.c_str();
+vW += ucg.getStrWidth(c);
 
+  ucg.setFont(FONT_SMALL_CENTIGRAD);
+  str = "o";
+  c = str.c_str();
+  vW += ucg.getStrWidth(c) / 2; //aggiunge metà dello spazio di un carattere. Il ° verrà parzialmente sovrapposto alla vifra decimale
+  
   ucg.setFont(FONT_BIG);
-  startW = ucg.getWidth() / 2-vW;
+  startW = (ucg.getWidth()- vW) / 2 ;
   baseH = ucg.getHeight() / 2 + ucg.getFontAscent()/2;
+  baseH_Grade=baseH - ucg.getFontAscent()+ ucg.getFontAscent()/6;
   ucg.setPrintPos(startW, baseH );
   if (((int) fValTemp) > 9) {
     sTempToPrint = (int)fValTemp;
+   SERIAL_OUT.print("(int)fValTemp: ");SERIAL_OUT.println((int)fValTemp);
   }
   else {
-    sTempToPrint = "0" + (int)fValTemp;
+    sTempToPrint = "0" + (String)fValTemp;
+    SERIAL_OUT.print("0 + (int)fValTemp: ");SERIAL_OUT.println("0" + (int)fValTemp);
   }
   ucg.print(sTempToPrint);
   //ucg.print((int) fValTemp);
@@ -94,8 +101,8 @@ void display_layout1_printBigChar(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVa
   //print °
 
   ucg.setFont(FONT_SMALL_CENTIGRAD);
-  int position_For_Ball = startW + vW_pos_after_point;   // - FONT_SHIFT_POSITION_TO_SX_CENTIGRAD ;
-  ucg.setPrintPos(position_For_Ball, baseH - ucg.getFontAscent() / 2);
+  vW_pos_grade = startW + vW_pos_after_point;   // - FONT_SHIFT_POSITION_TO_SX_CENTIGRAD ;
+  ucg.setPrintPos(vW_pos_grade, baseH_Grade);
   ucg.print("o");
 
 #if(FONT_BIG_SCALE2x2)
@@ -274,7 +281,22 @@ void display_layout1_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp,
   display_layout1_print_B1_datetime(ucg);
 }
 
+void display_layout1_background(Ucglib_ILI9341_18x240x320_HWSPI ucg,float diff){
+  SERIAL_OUT.print("diff:");SERIAL_OUT.println(diff);
+  if(diff>0){
+    //SFONDO ROSSO
+    SERIAL_OUT.println("SFONDO ROSSO");
+    ucg.setColor(1, 159, 33, 33); // RED for the background
+  } else{
+    //SFONDO BLU
+    SERIAL_OUT.println("SFONDO BLU");
+    ucg.setColor(1, 0, 73, 221); // BLUE for the background
+  }
+ }
 
+void display_layout1_background_black(Ucglib_ILI9341_18x240x320_HWSPI ucg){
+  ucg.setColor(1, 0, 0, 0); // BLACK for the background
+}
 
 
 

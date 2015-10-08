@@ -171,15 +171,17 @@ void loop()
       if (arrotonda(getEncoderValue()) != arrotonda(encoderValue_prec)) {
         FADE = 1;
 #if(LAYOUT_1)
-SERIAL_OUT.println("display_setpointPage - layout 1");
+        SERIAL_OUT.println("display_setpointPage - layout 1");
+        display_layout1_background(ucg, arrotonda(getEncoderValue()) - arrotonda(setpoint));
         display_layout1_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity );
 #else if(LAYOUT_2)
-SERIAL_OUT.println("display_setpointPage - layout 2");
+        SERIAL_OUT.println("display_setpointPage - layout 2");
         //LAYOUT 2
 #endif
       }
       if (timerDisplay_setpoint()) {
         //timeout scaduto
+        display_layout1_background_black(ucg);
         setEncoderValue(setpoint);
       } else {
         //timer non scaduto. Memorizzo
@@ -325,7 +327,6 @@ void bright(int lum) {
   if (val > 1023) val = 1023;
   if (val < 0) val = 0;
   analogWrite(BACKLED, val);
-  SERIAL_OUT.print(" analogWrite(BACKLED, val): "); SERIAL_OUT.println(val);
 }
 
 
