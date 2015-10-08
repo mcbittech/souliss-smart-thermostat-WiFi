@@ -1,5 +1,6 @@
 
 
+
 /**************************************************************************
     Souliss - Hello World for Expressif ESP8266 with TFT SPI ILI9341
     
@@ -73,7 +74,6 @@ int encoder0Pos = 220;
 int encoder0PinALast = LOW;
 bool encSetpointEnable=1;
 
-
 //NTP
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #include "ntp.h"
@@ -130,7 +130,7 @@ void setup()
    pinMode (encoder0PinB,INPUT);
    attachInterrupt(digitalPinToInterrupt(encoder0PinA), encoder, CHANGE);
    attachInterrupt(digitalPinToInterrupt(encoder0PinB), encoder, CHANGE);
-
+ 
 //NTP
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 initNTP();
@@ -204,6 +204,7 @@ void loop()
                   while(menu==1){
                     setDay(ucg);
                     drawBoxes(ucg);
+                    setBoxes(ucg);
                     if(digitalRead(GPIO0)==LOW){
                     menu=0;
                     }

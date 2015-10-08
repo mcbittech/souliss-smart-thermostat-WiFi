@@ -86,7 +86,7 @@ String digitalClockDisplay() {
 
 String digitalDataDisplay() {
   // digital clock display of the time
-  return printDigits(day()) + "/" + (month()) + "/" + (year());
+  return printDigits(day()) + "." + (month()) + "." + (year());
 }
 
 

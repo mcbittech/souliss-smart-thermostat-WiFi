@@ -3,10 +3,12 @@
 #include "t_constants.h"
 
 
+
 //GENERAL
 ///////////////////////////////////////////////////////////
 bool pushed=0;
 bool changeday=0;
+bool changebox=0;
 bool delday=0;
 byte daySelected=0;
 byte boxSelected=0;
@@ -35,6 +37,8 @@ byte texthour = 0;        //Text to be write (hour index)
 ///////////////////////////////////////////////////////////
 byte dDaysel = 1;         //Day Selected
 byte lastDaysel=0;
+byte lastBoxsel=0;
+byte line=0;
 byte dHourSel[7][48]={{1,2,3,4,5,6,7},{1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,}};     //Array Matrix
 byte setP1 = 180;         //Setpoint Eco
 byte setP2 = 200;         //Setpoint Normal
@@ -154,7 +158,7 @@ void setDay(Ucglib_ILI9341_18x240x320_HWSPI ucg){
 }
 
 
-//drawBoxes
+//drawBoxes from array
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void drawBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   for(byte nv=0;nv<2;nv++){
@@ -215,9 +219,104 @@ void drawBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     }
   }
   boxPointer=0;
+  delay(250);
 }
 
 
+//setBoxes
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
+  while(pushed==0){
+    if(changebox==1){
+      switch (boxSelected){
+        if(boxSelected>24){
+          line=2; }
+          else{
+          line=0; } 
+        case 0:
+          ucg.setColor(0, 0, 255);                               //Blu
+          //P1
+          ucg.drawBox(start_x+(offset_x*boxPointer)+dim_x+1 , (start_y-dim_y-2)+(offset_y*line), dim_x_set , dim_y_set);  
+          //P2
+          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-2-dim_y_set)+(offset_y*line) , dim_x_set , dim_y_set);
+          //P3
+          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-2-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);
+        case 1:
+          dHourSel[daySelected][boxPointer]=1;                 
+          ucg.setColor(255, 0, 0);                               //Rosso
+          //P1
+          ucg.drawBox(start_x+(offset_x*boxPointer)+dim_x+1 , (start_y-dim_y-2)+(offset_y*line), dim_x_set , dim_y_set);          
+          ucg.setColor(0, 0, 255);                               //Blu
+          //P2
+          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-2-dim_y_set)+(offset_y*line) , dim_x_set , dim_y_set);          
+          //P3
+          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-2-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);          
+          break;
+        case 2:
+          dHourSel[daySelected][boxPointer]=2;
+          ucg.setColor(255, 0, 0);                               //Rosso
+          //P1
+          ucg.drawBox(start_x+(offset_x*boxPointer)+dim_x+1 , (start_y-dim_y-2)+(offset_y*line), dim_x_set , dim_y_set);  
+          //P2
+          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-2-dim_y_set)+(offset_y*line) , dim_x_set , dim_y_set);          
+          ucg.setColor(0, 0, 255);                               //Blu     
+          //P3
+          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-2-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);  
+          break;
+        case 3:
+          dHourSel[daySelected][boxPointer]=3;          
+          ucg.setColor(255, 0, 0);                               //Rosso
+          //P1
+          ucg.drawBox(start_x+(offset_x*boxPointer)+dim_x+1 , (start_y-dim_y-2)+(offset_y*line), dim_x_set , dim_y_set);  
+          //P2
+          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-2-dim_y_set)+(offset_y*line) , dim_x_set , dim_y_set);
+          //P3
+          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-2-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);
+          break;
+        default: 
+        break;
+      }
+      changebox=0;
+      line=0;      
+      if(boxPointer>48){
+        boxPointer=0;
+      }
+    }
+  delay(1);    
+
+  //ENCODER
+  //////////////////////////////////////////////////////////////  
+  n = digitalRead(encoder0PinA); 
+  if ((encoder0PinALast1 == LOW) && (n == HIGH)) { 
+       boxSelected++;   
+       }   
+  encoder0PinALast1 = n; 
+
+  //MIN-MAX dDaysel
+  //////////////////////////////////////////////////////////////  
+  if(boxSelected<0){
+    boxSelected=3;
+  }else if(boxSelected>3){
+    boxSelected=0;
+  }
+    
+  //ESCAPE FROM WHILE with longpress
+  //////////////////////////////////////////////////////////////  
+  if(digitalRead(GPIO0)==LOW){
+    pushed=1;}
+    else{
+    pushed=0;}    
+
+  //OnChange
+  //////////////////////////////////////////////////////////////  
+  if(boxSelected!=lastBoxsel){
+    changebox=1;}
+  lastBoxsel=boxSelected; 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+}
+pushed=0;
+delay(250);
+}
 
 //clearScreen
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
