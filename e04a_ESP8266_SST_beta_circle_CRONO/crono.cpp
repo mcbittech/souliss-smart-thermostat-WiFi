@@ -15,8 +15,9 @@ byte boxSelected=0;
 byte boxPointer=0;
 byte hourSel_Box1=0;
 byte hourSel_Box2=0;
-int encoder0PinALast1 = 0;
-int n = 0;
+int encoder0PinBLast1 = 0;
+bool n = 0;
+bool np = 0;
 
 
 //LAYOUT
@@ -39,7 +40,8 @@ byte dDaysel = 1;         //Day Selected
 byte lastDaysel=0;
 byte lastBoxsel=0;
 byte line=0;
-byte dHourSel[7][48]={{1,2,3,4,5,6,7},{1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,}};     //Array Matrix
+byte dHourSel[7][48]={{1,2,3,4,5,6,7},{1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3}
+                                      };     //Array Matrix
 byte setP1 = 180;         //Setpoint Eco
 byte setP2 = 200;         //Setpoint Normal
 byte setP3 = 220;         //Setpoint Comfort
@@ -50,7 +52,7 @@ byte setP3 = 220;         //Setpoint Comfort
 void drawCrono(Ucglib_ILI9341_18x240x320_HWSPI ucg){ 
   //CANCELLO SCHERMO
   //Serial.println("          Cancello Schermo");
-  ucg.setColor(0, 0, 255);                                    //Blu 
+  ucg.setColor(0, 0, 0);                                      //Nero
   ucg.drawBox(0, 0, ucg.getWidth(), ucg.getHeight());
   //PREPARO LAYOUT
   ucg.setColor(255, 255, 255);                                //Bianco
@@ -67,6 +69,9 @@ void drawCrono(Ucglib_ILI9341_18x240x320_HWSPI ucg){
       ucg.print(texthour); 
       ucg.drawBox(start_x+(offset_x*nh) , start_y+(offset_y*nv) , dim_x , dim_y);
       ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , start_y+(offset_y*nv) , dim_x , dim_y);
+      //ucg.drawHLine(start_x-3, start_y-(offset_y*nv)-(dim_y_set*1) , 302);
+      //ucg.drawHLine(start_x-3, start_y-(offset_y*nv)-(dim_y_set*2) , 302);
+      //ucg.drawHLine(start_x-3, start_y-(offset_y*nv)-(dim_y_set*3) , 302);
       //Serial.print("ORIZZONTALE1 ");Serial.print(nh);Serial.print("  X ");Serial.print(start_x+(offset_x*nh));Serial.print("  Y ");Serial.println(start_y+(offset_y*nv));
       //Serial.print("ORIZZONTALE2 ");Serial.print(nh);Serial.print("  X ");Serial.print(start_x+(offset_x*nh)+dim_x+1);Serial.print("  Y ");Serial.println(start_y+(offset_y*nv));
       texthour++;
@@ -79,6 +84,7 @@ void drawCrono(Ucglib_ILI9341_18x240x320_HWSPI ucg){
 //setDay
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void setDay(Ucglib_ILI9341_18x240x320_HWSPI ucg){ 
+  Serial.print("MENU' setDay ");
   ucg.setFontMode(UCG_FONT_MODE_TRANSPARENT);
   ucg.setFont(ucg_font_helvB14_hf);
   ucg.setPrintPos(70,235);
@@ -86,9 +92,10 @@ void setDay(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   changeday=1;
   while(pushed==0){
     if(changeday==1){
-      ucg.setColor(0, 0, 255);          //Blu
+      Serial.print("dDaysel ");Serial.println(dDaysel);
+      ucg.setColor(0, 0, 0);            //Nero
       ucg.setPrintPos(160,235);
-      ucg.drawBox(155,215,150,20);
+      ucg.drawBox(155,220,150,20);
       ucg.setColor(255, 255, 255);      //Bianco     
       ucg.setPrintPos(160,235);
       switch (dDaysel){
@@ -122,11 +129,11 @@ void setDay(Ucglib_ILI9341_18x240x320_HWSPI ucg){
 
   //ENCODER
   //////////////////////////////////////////////////////////////  
-  n = digitalRead(encoder0PinA); 
-  if ((encoder0PinALast1 == LOW) && (n == HIGH)) { 
+  n = digitalRead(encoder0PinB); 
+  if ((encoder0PinBLast1 == LOW) && (n == HIGH)) { 
        dDaysel++;   
        }   
-  encoder0PinALast1 = n; 
+  encoder0PinBLast1 = n; 
 
   //MIN-MAX dDaysel
   //////////////////////////////////////////////////////////////  
@@ -161,6 +168,7 @@ void setDay(Ucglib_ILI9341_18x240x320_HWSPI ucg){
 //drawBoxes from array
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void drawBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
+  Serial.println("MENU' drawBoxes ");
   for(byte nv=0;nv<2;nv++){
     //Serial.print("VERTICALE ");Serial.println(nv);
     for(byte nh=0;nh<12;nh++){
@@ -171,49 +179,49 @@ void drawBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
       //Prima Colonna [C1] 
       if(hourSel_Box1>0){
         //Box C1:nh:1 
-        ucg.setColor(255, 0, 0);                               //Rosso
-        ucg.drawBox(start_x+(offset_x*nh) , (start_y-dim_y-2)+(offset_y*nv), dim_x_set , dim_y_set);
+        ucg.setColor(102, 255, 0);           // Verde Chiaro
+        ucg.drawBox(start_x+(offset_x*nh) , (start_y-dim_y-(dim_y*2))+(offset_y*nv), dim_x_set , dim_y_set);
         if(hourSel_Box1>1){
           //Box C1:nh:2 
-          ucg.drawBox(start_x+(offset_x*nh) , (start_y-dim_y-2-dim_y_set)+(offset_y*nv) , dim_x_set , dim_y_set);
+          ucg.drawBox(start_x+(offset_x*nh) , (start_y-dim_y-(dim_y*2)-dim_y_set)+(offset_y*nv) , dim_x_set , dim_y_set);
           if(hourSel_Box1>2){
             //Box C1:nh:3 
-            ucg.drawBox(start_x+(offset_x*nh) , (start_y-dim_y-2-(dim_y_set*2))+(offset_y*nv) , dim_x_set , dim_y_set);
+            ucg.drawBox(start_x+(offset_x*nh) , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*nv) , dim_x_set , dim_y_set);
             }else{
-              ucg.setColor(0, 0, 255);          //Blu
-              ucg.drawBox(start_x+(offset_x*nh) , (start_y-dim_y-2-(dim_y_set*2))+(offset_y*nv) , dim_x_set , dim_y_set);  
+              ucg.setColor(0, 0, 0);            //Nero
+              ucg.drawBox(start_x+(offset_x*nh) , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*nv) , dim_x_set , dim_y_set);  
               }
           }else{
-            ucg.setColor(0, 0, 255);          //Blu
-            ucg.drawBox(start_x+(offset_x*nh) , (start_y-dim_y-2-dim_y_set)+(offset_y*nv) , dim_x_set , dim_y_set);
+            ucg.setColor(0, 0, 0);            //Nero
+            ucg.drawBox(start_x+(offset_x*nh) , (start_y-dim_y-(dim_y*2)-dim_y_set)+(offset_y*nv) , dim_x_set , dim_y_set);
             }
         }else{
-          ucg.setColor(0, 0, 255);          //Blu
-          ucg.drawBox(start_x+(offset_x*nh) , (start_y-dim_y-2) , dim_x_set , dim_y_set);
+          ucg.setColor(0, 0, 0);            //Nero
+          ucg.drawBox(start_x+(offset_x*nh) , (start_y-dim_y-(dim_y*2)) , dim_x_set , dim_y_set);
           }
           
         //Seconda Colonna [C2]  
         if(hourSel_Box2>0){    
           //Box C2:nh:1
-          ucg.setColor(255, 0, 0);                               //Rosso
-          ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , (start_y-dim_y-2)+(offset_y*nv), dim_x_set , dim_y_set);     
+          ucg.setColor(102, 255, 0);           // Verde Chiaro
+          ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , (start_y-dim_y-(dim_y*2))+(offset_y*nv), dim_x_set , dim_y_set);     
           if(hourSel_Box2>1){
             //Box C2:nh:2
-            ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , (start_y-dim_y-2-dim_y_set)+(offset_y*nv) , dim_x_set , dim_y_set);  
+            ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , (start_y-dim_y-(dim_y*2)-dim_y_set)+(offset_y*nv) , dim_x_set , dim_y_set);  
             if(hourSel_Box2>2){    
               //Box C2:nh:3
-              ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , (start_y-dim_y-2-(dim_y_set*2))+(offset_y*nv) , dim_x_set , dim_y_set);
+              ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*nv) , dim_x_set , dim_y_set);
             }else{
-              ucg.setColor(0, 0, 255);          //Blu
-              ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , (start_y-dim_y-2-(dim_y_set*2))+(offset_y*nv) , dim_x_set , dim_y_set);               
+              ucg.setColor(0, 0, 0);            //Nero
+              ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*nv) , dim_x_set , dim_y_set);               
               }
           }else{
-            ucg.setColor(0, 0, 255);          //Blu
-            ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , (start_y-dim_y-2-dim_y_set)+(offset_y*nv) , dim_x_set , dim_y_set);            
+            ucg.setColor(0, 0, 0);            //Nero
+            ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , (start_y-dim_y-(dim_y*2)-dim_y_set)+(offset_y*nv) , dim_x_set , dim_y_set);            
             }
         }else{
-          ucg.setColor(0, 0, 255);          //Blu
-          ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , (start_y-dim_y-2) , dim_x_set , dim_y_set);
+          ucg.setColor(0, 0, 0);            //Nero
+          ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , (start_y-dim_y-(dim_y*2)) , dim_x_set , dim_y_set);
           }
     boxPointer=boxPointer+2;      
     }
@@ -226,71 +234,76 @@ void drawBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
 //setBoxes
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
+  Serial.println("MENU' setBoxes ");
   while(pushed==0){
     if(changebox==1){
+        Serial.print("boxSelected ");Serial.println(boxSelected);
+        Serial.print("boxPointer ");Serial.println(boxPointer); 
       switch (boxSelected){
         if(boxSelected>24){
           line=2; }
           else{
-          line=0; } 
+          line=0; }  
         case 0:
-          ucg.setColor(0, 0, 255);                               //Blu
+          dHourSel[daySelected][boxPointer]=0;
+          ucg.setColor(0, 0, 0);            //Nero
           //P1
-          ucg.drawBox(start_x+(offset_x*boxPointer)+dim_x+1 , (start_y-dim_y-2)+(offset_y*line), dim_x_set , dim_y_set);  
+          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-(dim_y*2))+(offset_y*line), dim_x_set , dim_y_set);          
           //P2
-          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-2-dim_y_set)+(offset_y*line) , dim_x_set , dim_y_set);
+          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-(dim_y*2)-dim_y_set)+(offset_y*line) , dim_x_set , dim_y_set);
           //P3
-          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-2-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);
+          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);
+          break;
         case 1:
           dHourSel[daySelected][boxPointer]=1;                 
-          ucg.setColor(255, 0, 0);                               //Rosso
+          ucg.setColor(102, 255, 0);           // Verde Chiaro
           //P1
-          ucg.drawBox(start_x+(offset_x*boxPointer)+dim_x+1 , (start_y-dim_y-2)+(offset_y*line), dim_x_set , dim_y_set);          
-          ucg.setColor(0, 0, 255);                               //Blu
+          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-(dim_y*2))+(offset_y*line), dim_x_set , dim_y_set);        
+          ucg.setColor(0, 0, 0);            //Nero
           //P2
-          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-2-dim_y_set)+(offset_y*line) , dim_x_set , dim_y_set);          
+          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-(dim_y*2)-dim_y_set)+(offset_y*line) , dim_x_set , dim_y_set);          
           //P3
-          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-2-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);          
+          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);         
           break;
         case 2:
           dHourSel[daySelected][boxPointer]=2;
-          ucg.setColor(255, 0, 0);                               //Rosso
+          ucg.setColor(102, 255, 0);           // Verde Chiaro
           //P1
-          ucg.drawBox(start_x+(offset_x*boxPointer)+dim_x+1 , (start_y-dim_y-2)+(offset_y*line), dim_x_set , dim_y_set);  
+          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-(dim_y*2))+(offset_y*line), dim_x_set , dim_y_set);
           //P2
-          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-2-dim_y_set)+(offset_y*line) , dim_x_set , dim_y_set);          
-          ucg.setColor(0, 0, 255);                               //Blu     
+          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-(dim_y*2)-dim_y_set)+(offset_y*line) , dim_x_set , dim_y_set);     
+          ucg.setColor(0, 0, 0);            //Nero   
           //P3
-          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-2-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);  
+          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);
           break;
         case 3:
           dHourSel[daySelected][boxPointer]=3;          
-          ucg.setColor(255, 0, 0);                               //Rosso
+          ucg.setColor(102, 255, 0);           // Verde Chiaro
           //P1
-          ucg.drawBox(start_x+(offset_x*boxPointer)+dim_x+1 , (start_y-dim_y-2)+(offset_y*line), dim_x_set , dim_y_set);  
+          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-(dim_y*2))+(offset_y*line), dim_x_set , dim_y_set);
           //P2
-          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-2-dim_y_set)+(offset_y*line) , dim_x_set , dim_y_set);
+          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-(dim_y*2)-dim_y_set)+(offset_y*line) , dim_x_set , dim_y_set);
           //P3
-          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-2-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);
+          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);
           break;
         default: 
         break;
       }
       changebox=0;
       line=0;      
-      if(boxPointer>48){
+      if(boxPointer>47){
         boxPointer=0;
       }
     }
-  delay(1);    
+     
 
   //ENCODER
   //////////////////////////////////////////////////////////////  
-  n = digitalRead(encoder0PinA); 
-  if ((encoder0PinALast1 == LOW) && (n == HIGH)) { 
+  n = digitalRead(encoder0PinB); 
+  if ((encoder0PinBLast1 == LOW) && (n == HIGH)) { 
        boxSelected++;   
        }   
-  encoder0PinALast1 = n; 
+  encoder0PinBLast1 = n; 
 
   //MIN-MAX dDaysel
   //////////////////////////////////////////////////////////////  
@@ -300,12 +313,31 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     boxSelected=0;
   }
     
+  //Adding boxPointer
+  //////////////////////////////////////////////////////////////  
+  if(digitalRead(GPIO0)==LOW && (np == HIGH)){
+    boxPointer++;
+    Serial.print("boxPointer++ ");Serial.println(boxPointer);
+    changebox=1;}  
+    
+  np = digitalRead(GPIO0); 
+
+  
   //ESCAPE FROM WHILE with longpress
   //////////////////////////////////////////////////////////////  
-  if(digitalRead(GPIO0)==LOW){
+  int longpress;
+  if(np==LOW){
+    longpress++;
+    }else{
+    longpress=0;
+    }
+
+  if(longpress >= 2000){
+    Serial.println("longpress ");
     pushed=1;}
     else{
-    pushed=0;}    
+    pushed=0;}
+    
 
   //OnChange
   //////////////////////////////////////////////////////////////  
@@ -313,6 +345,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     changebox=1;}
   lastBoxsel=boxSelected; 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+delay(1); 
 }
 pushed=0;
 delay(250);

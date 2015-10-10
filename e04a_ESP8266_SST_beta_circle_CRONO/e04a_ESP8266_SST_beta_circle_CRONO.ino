@@ -29,6 +29,11 @@
 #include <DHT.h>
 #include "t_constants.h"
 
+
+//OTA
+//#include <GDBStub.h> 
+
+
 // Define the network configuration
 uint8_t ip_address[4]  = {192, 168, 1, 25};
 uint8_t subnet_mask[4] = {255, 255, 255, 0};
@@ -95,7 +100,7 @@ int backLEDvalue=0;
 int backLEDvalueHIGH=1000;
 int backLEDvalueLOW=100;
 bool FADE=1;
-float setpoint=22.0;
+float setpoint=20.5;
 
 //CRONO
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -173,7 +178,7 @@ void loop()
           }
         }
         
-        FAST_50ms() {   // We process the logic and relevant input and output every 50 milliseconds
+        FAST_110ms() {   // We process the logic and relevant input and output every 50 milliseconds
             Logic_SimpleLight(CALDAIA);
             DigOut(RELE, Souliss_T1n_Coil,CALDAIA);
             
@@ -194,7 +199,7 @@ void loop()
         backLEDvalue=backLEDvalue-5;
         analogWrite(backLED,backLEDvalue);
             } 
-        FAST_110ms(){
+        FAST_210ms(){
                 byte menu;
                 if(digitalRead(GPIO0)==LOW){
                   Serial.println("PULSANTE PREMUTO");
