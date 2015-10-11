@@ -202,7 +202,7 @@ void loop()
         FAST_210ms(){
                 byte menu;
                 if(digitalRead(GPIO0)==LOW){
-                  Serial.println("PULSANTE PREMUTO");
+                  Serial.println("Entro MENU'");
                   encSetpointEnable=0;
                   drawCrono(ucg);
                   menu=1;
@@ -215,6 +215,7 @@ void loop()
                     menu=0;
                     }
                   }
+                  Serial.println("Esco MENU'");
                   clearScreen(ucg);
                   encSetpointEnable=1;
                 }
