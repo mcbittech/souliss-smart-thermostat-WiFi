@@ -13,6 +13,7 @@ bool delday=0;
 byte daySelected=0;
 byte boxSelected=0;
 byte boxPointer=0;
+byte boxPointerView=0;
 byte hourSel_Box1=0;
 byte hourSel_Box2=0;
 int encoder0PinBLast1 = 0;
@@ -30,8 +31,10 @@ byte offset_text = 25;    //Offset between Text (pixel)
 byte dim_x = 10;          //Box Dimension in X (pixel)
 byte dim_y = 5;           //Box Dimension in Y (pixel)
 byte dim_x_set = 10;      //Box Dimension in X (pixel)
-byte dim_y_set = 12;       //Box Dimension in Y (pixel)
+byte dim_y_set = 12;      //Box Dimension in Y (pixel)
 byte texthour = 0;        //Text to be write (hour index)
+byte spacing = 1;         //Spacing between columns (pixel)
+byte spacing1 = 0;
 
 
 //SELECTION
@@ -65,10 +68,11 @@ void drawCrono(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   for(byte nv=0;nv<2;nv++){
     //Serial.print("VERTICALE ");Serial.println(nv);
     for(byte nh=0;nh<12;nh++){
-      ucg.setPrintPos(start_x+(offset_x*nh)+2,(start_y+(offset_y*nv))+offset_text);
+      ucg.setPrintPos(start_x+(offset_x*nh)+(spacing*2),(start_y+(offset_y*nv))+offset_text);
       ucg.print(texthour); 
-      ucg.drawBox(start_x+(offset_x*nh) , start_y+(offset_y*nv) , dim_x , dim_y);
-      ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , start_y+(offset_y*nv) , dim_x , dim_y);
+      for(byte nc=0;nc<2;nc++){
+        ucg.drawBox(start_x+(offset_x*nh)+(dim_x*nc)+(spacing*nc) , start_y+(offset_y*nv) , dim_x , dim_y);
+      }            
       //ucg.drawHLine(start_x-3, start_y-(offset_y*nv)-(dim_y_set*1) , 302);
       //ucg.drawHLine(start_x-3, start_y-(offset_y*nv)-(dim_y_set*2) , 302);
       //ucg.drawHLine(start_x-3, start_y-(offset_y*nv)-(dim_y_set*3) , 302);
@@ -172,61 +176,36 @@ void drawBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   for(byte nv=0;nv<2;nv++){
     //Serial.print("VERTICALE ");Serial.println(nv);
     for(byte nh=0;nh<12;nh++){
-      //Take data from array matrix
-      hourSel_Box1=dHourSel[daySelected][boxPointer];       //[C1]
-      hourSel_Box2=dHourSel[daySelected][boxPointer+1];     //[C2]
-      
-      //Prima Colonna [C1] 
-      if(hourSel_Box1>0){
-        //Box C1:nh:1 
-        ucg.setColor(102, 255, 0);           // Verde Chiaro
-        ucg.drawBox(start_x+(offset_x*nh) , (start_y-dim_y-(dim_y*2))+(offset_y*nv), dim_x_set , dim_y_set);
-        if(hourSel_Box1>1){
-          //Box C1:nh:2 
-          ucg.drawBox(start_x+(offset_x*nh) , (start_y-dim_y-(dim_y*2)-dim_y_set)+(offset_y*nv) , dim_x_set , dim_y_set);
-          if(hourSel_Box1>2){
-            //Box C1:nh:3 
-            ucg.drawBox(start_x+(offset_x*nh) , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*nv) , dim_x_set , dim_y_set);
-            }else{
+        for(byte nc=0;nc<2;nc++){
+          //Take data from array matrix
+          hourSel_Box1=dHourSel[daySelected][boxPointer];  
+          if(hourSel_Box1>0){
+            //Box C1:nh:1 
+            ucg.setColor(102, 255, 0);           // Verde Chiaro
+            ucg.drawBox(start_x+(offset_x*nh)+(dim_x*nc)+(spacing*nc) , (start_y-dim_y-(dim_y*2))+(offset_y*nv) , dim_x_set , dim_y_set);
+            if(hourSel_Box1>1){
+              //Box C1:nh:2 
+              ucg.drawBox(start_x+(offset_x*nh)+(dim_x*nc)+(spacing*nc) , (start_y-dim_y-(dim_y*2)-dim_y_set)+(offset_y*nv) , dim_x_set , dim_y_set);
+              if(hourSel_Box1>2){
+              //Box C1:nh:3 
+              ucg.drawBox(start_x+(offset_x*nh)+(dim_x*nc)+(spacing*nc) , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*nv) , dim_x_set , dim_y_set);
+              }else{
               ucg.setColor(0, 0, 0);            //Nero
-              ucg.drawBox(start_x+(offset_x*nh) , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*nv) , dim_x_set , dim_y_set);  
+              ucg.drawBox(start_x+(offset_x*nh)+(dim_x*nc)+(spacing*nc) , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*nv) , dim_x_set , dim_y_set);
               }
-          }else{
-            ucg.setColor(0, 0, 0);            //Nero
-            ucg.drawBox(start_x+(offset_x*nh) , (start_y-dim_y-(dim_y*2)-dim_y_set)+(offset_y*nv) , dim_x_set , dim_y_set);
-            }
-        }else{
-          ucg.setColor(0, 0, 0);            //Nero
-          ucg.drawBox(start_x+(offset_x*nh) , (start_y-dim_y-(dim_y*2)) , dim_x_set , dim_y_set);
-          }
-          
-        //Seconda Colonna [C2]  
-        if(hourSel_Box2>0){    
-          //Box C2:nh:1
-          ucg.setColor(102, 255, 0);           // Verde Chiaro
-          ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , (start_y-dim_y-(dim_y*2))+(offset_y*nv), dim_x_set , dim_y_set);     
-          if(hourSel_Box2>1){
-            //Box C2:nh:2
-            ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , (start_y-dim_y-(dim_y*2)-dim_y_set)+(offset_y*nv) , dim_x_set , dim_y_set);  
-            if(hourSel_Box2>2){    
-              //Box C2:nh:3
-              ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*nv) , dim_x_set , dim_y_set);
             }else{
-              ucg.setColor(0, 0, 0);            //Nero
-              ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*nv) , dim_x_set , dim_y_set);               
-              }
-          }else{
             ucg.setColor(0, 0, 0);            //Nero
-            ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , (start_y-dim_y-(dim_y*2)-dim_y_set)+(offset_y*nv) , dim_x_set , dim_y_set);            
+            ucg.drawBox(start_x+(offset_x*nh)+(dim_x*nc)+(spacing*nc) , (start_y-dim_y-(dim_y*2)-dim_y_set)+(offset_y*nv) , dim_x_set , dim_y_set);
             }
-        }else{
+          }else{
           ucg.setColor(0, 0, 0);            //Nero
-          ucg.drawBox(start_x+(offset_x*nh)+dim_x+1 , (start_y-dim_y-(dim_y*2)) , dim_x_set , dim_y_set);
-          }
-    boxPointer=boxPointer+2;      
-    }
+          ucg.drawBox(start_x+(offset_x*nh)+(dim_x*nc)+(spacing*nc) , (start_y-dim_y-(dim_y*2))+(offset_y*nv) , dim_x_set , dim_y_set);
+          }          
+        boxPointer++; 
+        }
+     }   
   }
-  boxPointer=0;
+ boxPointer=0;
   delay(250);
 }
 
@@ -239,61 +218,53 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     if(changebox==1){
         Serial.print("boxSelected ");Serial.println(boxSelected);
         Serial.print("boxPointer ");Serial.println(boxPointer); 
-      switch (boxSelected){
-        if(boxSelected>24){
-          line=1; }
-          else{
-          line=0; }  
+      switch (boxSelected){ 
         case 0:
           dHourSel[daySelected][boxPointer]=0;
           ucg.setColor(0, 0, 0);            //Nero
           //P1
-          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-(dim_y*2))+(offset_y*line), dim_x_set , dim_y_set);          
+          ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2))+(offset_y*line), dim_x_set , dim_y_set);          
           //P2
-          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-(dim_y*2)-dim_y_set)+(offset_y*line) , dim_x_set , dim_y_set);
+          ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-dim_y_set)+(offset_y*line) , dim_x_set , dim_y_set);
           //P3
-          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);
+          ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);
           break;
         case 1:
           dHourSel[daySelected][boxPointer]=1;                 
           ucg.setColor(102, 255, 0);           // Verde Chiaro
           //P1
-          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-(dim_y*2))+(offset_y*line), dim_x_set , dim_y_set);        
+          ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2))+(offset_y*line), dim_x_set , dim_y_set);        
           ucg.setColor(0, 0, 0);            //Nero
           //P2
-          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-(dim_y*2)-dim_y_set)+(offset_y*line) , dim_x_set , dim_y_set);          
+          ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-dim_y_set)+(offset_y*line) , dim_x_set , dim_y_set);          
           //P3
-          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);         
+          ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);         
           break;
         case 2:
           dHourSel[daySelected][boxPointer]=2;
           ucg.setColor(102, 255, 0);           // Verde Chiaro
           //P1
-          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-(dim_y*2))+(offset_y*line), dim_x_set , dim_y_set);
+          ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2))+(offset_y*line), dim_x_set , dim_y_set);
           //P2
-          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-(dim_y*2)-dim_y_set)+(offset_y*line) , dim_x_set , dim_y_set);     
+          ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-dim_y_set)+(offset_y*line) , dim_x_set , dim_y_set);     
           ucg.setColor(0, 0, 0);            //Nero   
           //P3
-          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);
+          ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);
           break;
         case 3:
           dHourSel[daySelected][boxPointer]=3;          
           ucg.setColor(102, 255, 0);           // Verde Chiaro
           //P1
-          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-(dim_y*2))+(offset_y*line), dim_x_set , dim_y_set);
+          ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2))+(offset_y*line), dim_x_set , dim_y_set);
           //P2
-          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-(dim_y*2)-dim_y_set)+(offset_y*line) , dim_x_set , dim_y_set);
+          ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-dim_y_set)+(offset_y*line) , dim_x_set , dim_y_set);
           //P3
-          ucg.drawBox(start_x+(offset_x*boxPointer) , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);
+          ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);
           break;
         default: 
         break;
       }
-      changebox=0;
-      line=0;      
-      if(boxPointer>47){
-        boxPointer=0;
-      }
+      changebox=0;     
     }
      
 
@@ -301,7 +272,8 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   //////////////////////////////////////////////////////////////  
   n = digitalRead(encoder0PinB); 
   if ((encoder0PinBLast1 == LOW) && (n == HIGH)) { 
-       boxSelected++;   
+       boxSelected++;
+       delay(250);   
        }   
   encoder0PinBLast1 = n; 
 
@@ -317,7 +289,23 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   //////////////////////////////////////////////////////////////  
   if(digitalRead(GPIO0)==LOW && (np == HIGH)){
     boxPointer++;
-    Serial.print("boxPointer++ ");Serial.println(boxPointer);
+    boxPointerView++;
+    if(spacing1==0){
+      spacing1=dim_x+spacing;
+      }else{
+      spacing1=0;
+      }
+    if(boxPointerView>23){
+      boxPointerView=0;}
+    if(boxPointer>23){
+      line=1; }
+    if(boxPointer>47){
+      boxPointer=0;
+      line=0; }
+    Serial.print("boxPointer= ");Serial.println(boxPointer);
+    Serial.print("boxPointerView= ");Serial.println(boxPointerView);
+    Serial.print("spacing1= ");Serial.println(spacing1); 
+    Serial.print("line= ");Serial.println(line);  
     changebox=1;}  
     
   np = digitalRead(GPIO0); 
@@ -347,8 +335,8 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 delay(1); 
 }
+boxPointerView=0;
 pushed=0;
-delay(250);
 }
 
 //clearScreen
