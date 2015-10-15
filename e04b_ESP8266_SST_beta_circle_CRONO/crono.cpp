@@ -23,10 +23,10 @@ bool np = 0;
 
 //LAYOUT
 ///////////////////////////////////////////////////////////
-byte start_x = 10;        //Start Position Layout X (pixel)
-byte start_y = 80;        //Start Position Layout Y (pixel)
+byte start_x = 12;        //Start Position Layout X (pixel)
+byte start_y = 90;        //Start Position Layout Y (pixel)
 byte offset_x = 25;       //Offset between  columns (pixel)
-byte offset_y = 80;       //Offset between  rows (pixel)
+byte offset_y = 95;       //Offset between  rows (pixel)
 byte offset_text = 25;    //Offset between Text (pixel)
 byte dim_x = 10;          //Box Dimension in X (pixel)
 byte dim_y = 5;           //Box Dimension in Y (pixel)
@@ -43,13 +43,10 @@ byte dDaysel = 1;         //Day Selected
 byte lastDaysel=0;
 byte lastBoxsel=0;
 byte line=0;
-byte dHourSel[7][48]={0};
-/*{{1,2,3,4,5,6,7},{1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3}
-                                      };     //Array Matrix
-                                      */
-byte setP1 = 180;         //Setpoint Eco
-byte setP2 = 200;         //Setpoint Normal
-byte setP3 = 220;         //Setpoint Comfort
+byte dHourSel[7][48]={0}; //Array Matrix
+float setP1 = 18.0;         //Setpoint Eco
+float setP2 = 20.4;         //Setpoint Normal
+float setP3 = 22.5;         //Setpoint Comfort
 
 
 //drawCrono
@@ -246,6 +243,8 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-dim_y_set)+(offset_y*line) , dim_x_set , dim_y_set);
           //P3
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);
+          //OverP3
+          ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*3))+(offset_y*line) , dim_x_set , dim_y_set);   
           break;
         case 1:
           dHourSel[daySelected][boxPointer]=1;                 
@@ -256,7 +255,14 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
           //P2
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-dim_y_set)+(offset_y*line) , dim_x_set , dim_y_set);          
           //P3
-          ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);         
+          ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);  
+          //Text over P1
+          //ucg.undoRotate();
+          ucg.setColor(102, 255, 0);           // Verde Chiaro
+          ucg.setFont(ucg_font_9x18_mf);
+          //ucg.setFont(ucg_font_courB08_mf);             
+          ucg.setPrintPos(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2))+(offset_y*line));
+          ucg.print("1");     
           break;
         case 2:
           dHourSel[daySelected][boxPointer]=2;
@@ -268,6 +274,13 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
           ucg.setColor(0, 0, 0);            //Nero   
           //P3
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);
+          //Text over P1
+          //ucg.undoRotate();
+          ucg.setColor(102, 255, 0);           // Verde Chiaro
+          ucg.setFont(ucg_font_9x18_mf);
+          //ucg.setFont(ucg_font_courB08_mf);             
+          ucg.setPrintPos(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-dim_y_set)+(offset_y*line));
+          ucg.print("2");
           break;
         case 3:
           dHourSel[daySelected][boxPointer]=3;          
@@ -278,10 +291,18 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-dim_y_set)+(offset_y*line) , dim_x_set , dim_y_set);
           //P3
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);
+          //Text over P1
+          //ucg.undoRotate();
+          ucg.setColor(102, 255, 0);           // Verde Chiaro
+          ucg.setFont(ucg_font_9x18_mf);
+          //ucg.setFont(ucg_font_courB08_mf);             
+          ucg.setPrintPos(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*line));
+          ucg.print("3");          
           break;
         default: 
         break;
       }
+      //ucg.setRotate90();
       changebox=0;     
     }
      

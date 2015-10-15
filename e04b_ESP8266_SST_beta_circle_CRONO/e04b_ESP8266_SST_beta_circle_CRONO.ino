@@ -147,8 +147,9 @@ initNTP();
    ucg.setColor(0, 0, 0);
    ucg.drawBox(0, 0, ucg.getWidth(), ucg.getHeight());
    analogWrite(backLED,1000);
+   delay(100);
    ucg.setRotate90();
-   delay(500);
+   delay(100);
             //SPLASH SCREEN
             ucg.setColor(153, 203, 255);    // Celeste
             ucg.setFont(ucg_font_fub35_hr);
