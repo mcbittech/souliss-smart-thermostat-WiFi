@@ -147,8 +147,9 @@ initNTP();
    ucg.setColor(0, 0, 0);
    ucg.drawBox(0, 0, ucg.getWidth(), ucg.getHeight());
    analogWrite(backLED,1000);
+   delay(100);
    ucg.setRotate90();
-   delay(500);
+   delay(100);
             //SPLASH SCREEN
             ucg.setColor(153, 203, 255);    // Celeste
             ucg.setFont(ucg_font_fub35_hr);
@@ -158,7 +159,7 @@ initNTP();
             ucg.setPrintPos(30,130);
             ucg.print("Souliss Smart Thermostat");
             ucg.setPrintPos(135,180);
-            ucg.print("v0.1");
+            ucg.print("v0.2");
             
    delay(5000);
    ucg.setColor(0, 0, 0);                //Nero
@@ -202,7 +203,7 @@ void loop()
         FAST_210ms(){
                 byte menu;
                 if(digitalRead(GPIO0)==LOW){
-                  Serial.println("PULSANTE PREMUTO");
+                  Serial.println("Entro MENU'");
                   encSetpointEnable=0;
                   drawCrono(ucg);
                   menu=1;
@@ -210,10 +211,12 @@ void loop()
                     setDay(ucg);
                     drawBoxes(ucg);
                     setBoxes(ucg);
+                    delay(2000);
                     if(digitalRead(GPIO0)==LOW){
                     menu=0;
                     }
                   }
+                  Serial.println("Esco MENU'");
                   clearScreen(ucg);
                   encSetpointEnable=1;
                 }
