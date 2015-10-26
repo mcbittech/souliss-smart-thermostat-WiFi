@@ -196,7 +196,9 @@ void display_print_splash_waiting_need_configuration(Ucglib_ILI9341_18x240x320_H
   ucg.setFont(FONT_SPLASH_SCREEN);
   ucg.setPrintPos(4, 28);
 
-  ucg.println(SPLASH_NEED_CONFIGURATION);
+  ucg.println(SPLASH_NEED_CONFIGURATION_LINE1);
+  ucg.println(SPLASH_NEED_CONFIGURATION_LINE2);
+  ucg.println(SPLASH_NEED_CONFIGURATION_LINE3);
   ucg.print("IP ");
   ucg.print(WiFi.softAPIP());
 }

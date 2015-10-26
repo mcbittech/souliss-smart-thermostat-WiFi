@@ -10,7 +10,9 @@
 
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
+#include <ESP8266mDNS.h>
 #include <EEPROM.h>
+#include <WiFiUdp.h>
 #include <DHT.h>
 
 // Configure the Souliss framework
@@ -58,6 +60,8 @@ Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ 2 , /*cs=*/ 15);
 //*************************************************************************
 //*************************************************************************
 
+// Setup the libraries for Over The Air Update
+OTA_Setup();
 
 void setup()
 {
@@ -150,7 +154,10 @@ void setup()
 
   //MENU
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
- // initMenu();
+  // initMenu();
+
+  // Init the OTA
+  OTA_Init();
 
 #if(LAYOUT_1)
   display_layout1_HomeScreen(ucg, temperature, humidity, setpoint);
@@ -313,6 +320,8 @@ void loop()
     if (!IsRuntimeGateway())
       SLOW_PeerJoin();
   }
+  // Look for a new sketch to update over the air
+  OTA_Process();
 }
 
 void set_ThermostatMode(U8 slot) {
