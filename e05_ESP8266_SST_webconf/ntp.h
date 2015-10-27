@@ -5,7 +5,10 @@
 
 time_t getNtpTime();
 void sendNTPpacket(IPAddress);
+
 String digitalClockDisplay();
+String digitalClockDisplay_simple();
+String digitalDataDisplay();
 String printDigits(int);
 
 void initNTP();

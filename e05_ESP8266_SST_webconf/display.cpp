@@ -155,9 +155,7 @@ boolean flag_onetime_clear_SetpointPage = false;
 //compone la pagina dedicata al setpoint
 void display_layout1_setpointPage(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint, float temp, float hum) {
   SERIAL_OUT.println("display_setpointPage");
-  //TICK TIMER
-  timerDisplay_setpoint_Tick();
-
+  
   if (!flag_onetime_clear_SetpointPage) {
     //viene ripristinata in homepage
     flag_onetime_clear_SetpointPage = true;
@@ -195,10 +193,12 @@ void display_print_splash_waiting_need_configuration(Ucglib_ILI9341_18x240x320_H
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SPLASH_SCREEN);
   ucg.setPrintPos(4, 28);
-
-  ucg.println(SPLASH_NEED_CONFIGURATION_LINE1);
-  ucg.println(SPLASH_NEED_CONFIGURATION_LINE2);
-  ucg.println(SPLASH_NEED_CONFIGURATION_LINE3);
+  ucg.println(SPLASH_NEED_CONF_LINE1);
+  ucg.setPrintPos(4, 58);
+  ucg.println(SPLASH_NEED_CONF_LINE2);
+  ucg.setPrintPos(4, 88);
+  ucg.println(SPLASH_NEED_CONF_LINE3);
+   ucg.setPrintPos(4, 118);
   ucg.print("IP ");
   ucg.print(WiFi.softAPIP());
 }
@@ -210,7 +210,9 @@ void display_print_splash_waiting_connection_gateway(Ucglib_ILI9341_18x240x320_H
   ucg.setFont(FONT_SPLASH_SCREEN);
   ucg.setPrintPos(4, 28);
   ucg.println(SPLASH_GW_LINE1);
+  ucg.setPrintPos(4, 58);
   ucg.println(SPLASH_GW_LINE2);
+  ucg.setPrintPos(4, 88);
   ucg.print("IP ");
   ucg.print(WiFi.localIP());
 }

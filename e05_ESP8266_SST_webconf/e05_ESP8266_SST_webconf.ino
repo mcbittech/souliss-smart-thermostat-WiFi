@@ -26,6 +26,7 @@
 #include "encoder.h"
 #include "constants.h"
 #include "display.h"
+#include "display2.h"
 #include "language.h"
 #include "ntp.h"
 #include <Time.h>
@@ -159,10 +160,11 @@ void setup()
   // Init the OTA
   OTA_Init();
 
+  //HOMESCREEN ////////////////////////////////////////////////////////////////
 #if(LAYOUT_1)
   display_layout1_HomeScreen(ucg, temperature, humidity, setpoint);
 #else if(LAYOUT_2)
-  //LAYOUT 2
+  display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
 #endif
 
 }
@@ -179,13 +181,16 @@ void loop()
 
       if (arrotonda(getEncoderValue()) != arrotonda(encoderValue_prec)) {
         FADE = 1;
+        //TICK TIMER
+        timerDisplay_setpoint_Tick();
+        //SETPOINT PAGE ////////////////////////////////////////////////////////////////
 #if(LAYOUT_1)
         SERIAL_OUT.println("display_setpointPage - layout 1");
         display_layout1_background(ucg, arrotonda(getEncoderValue()) - arrotonda(setpoint));
         display_layout1_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity );
 #else if(LAYOUT_2)
         SERIAL_OUT.println("display_setpointPage - layout 2");
-        //LAYOUT 2
+        display_layout2_Setpoint(ucg, getEncoderValue());
 #endif
       }
       if (timerDisplay_setpoint()) {
@@ -245,10 +250,13 @@ void loop()
       if (timerDisplay_setpoint()) {
         backLEDvalueLOW =  memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1];
         FADE = 0;
+        //HOMESCREEN ////////////////////////////////////////////////////////////////
 #if(LAYOUT_1)
         display_layout1_HomeScreen(ucg, temperature, humidity, setpoint);
 #else if(LAYOUT_2)
-        //LAYOUT 2
+        display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
+        display_layout2_print_datetime(ucg);
+        display_layout2_print_circle_green(ucg);
 #endif
 
       }
@@ -309,7 +317,11 @@ void loop()
       //*************************************************************************
       //*************************************************************************
     }
-
+    
+    SLOW_50s() {
+      calcoloAndamento(ucg, temperature);
+    }
+    
     SLOW_15m() {
       //NTP
       /////////////////////////////////////////////////////////////////////////////////////////////////////////

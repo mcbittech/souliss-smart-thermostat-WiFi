@@ -83,7 +83,16 @@ String digitalClockDisplay() {
   return printDigits(hour()) + ":" + printDigits(minute()) + ":" + printDigits(second()) +  " " + day() + "/" + month() + "/" + year();
 }
 
+String digitalClockDisplay_simple() {
+  // digital clock display of the time
+  return printDigits(hour()) + ":" + printDigits(minute());
+}
 
+
+String digitalDataDisplay() {
+  // digital clock display of the time
+  return printDigits(day()) + "." + (month()) + "." + (year());
+}
 
 void initNTP() {
 

@@ -50,7 +50,7 @@ const int timeZone = 2;     // Central European Time
 //#define FONT_BIG ucg_font_inb63_mn
 //#define FONT_BIG ucg_font_inb46_mr
 //#define FONT_BIG_MIN_50_PERCENT ucg_font_inb33_mr
-#define VERSION "v0.1"
+#define VERSION "v0.3"
 #define FONT_BIG ucg_font_inb53_mn
 #define FONT_BIG_MIN_50_PERCENT ucg_font_inb24_mr
 
