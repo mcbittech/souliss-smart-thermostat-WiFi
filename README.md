@@ -7,3 +7,7 @@ Wi-Fi Smart Thermostat based on Souliss IoT Framework
 -ILI9341 with SPI connection, via UEXT connector  
 -Rotary Encoder with pushbutton & status LED  
 -DHT22 Temperature & Humidity Sensor  
+
+# Power up your system:
+All the system require maximum about 200mA @5vdc, with relay ON and maximum brightness of the screen. 
+Minimum power required about 65mA, with relay OFF and minimum brightness.
