@@ -3,14 +3,15 @@
 
 //DHT22
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define DHTPIN 12 
-#define DHTTYPE DHT22 
+#define DHTPIN 12
+#define DHTTYPE DHT22
 
 //ENCODER
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define ENCODER_PIN_A   3
 #define ENCODER_PIN_B   4
- 
+#define ENCODER_SWITCH  0
+
 //DISPLAY
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define TFT_DC 2
@@ -22,19 +23,19 @@
 
 //SLOT
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define SLOT_THERMOSTAT        0     
+#define SLOT_THERMOSTAT        0
 #define SLOT_TEMPERATURE        5     // This is the memory slot used for the execution of the logic in network_address1
 #define SLOT_HUMIDITY        7     // This is the memory slot used for the execution of the logic
-#define SLOT_BRIGHT_DISPLAY        9     
+#define SLOT_BRIGHT_DISPLAY        9
 
-    
+
 
 //PIN
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// **** Define here the right pin for your ESP module **** 
+// **** Define here the right pin for your ESP module ****
 #define RELE                  5
 #define BACKLED  16
-#define GPIO0  0
+
 
 //TIMER DISPLAY
 #define TIMER_DISPLAY_SETPOINT 3000

@@ -54,7 +54,7 @@ int backLEDvalueHIGH = BRIGHT_MAX;
 int backLEDvalueLOW = BRIGHT_MIN_DEFAULT;
 bool FADE = 1;
 MenuSystem* myMenu;
-
+bool bMenuEnabled = false;
 // Use hardware SPI
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ 2 , /*cs=*/ 15);
@@ -146,7 +146,7 @@ void setup()
   attachInterrupt(digitalPinToInterrupt(ENCODER_PIN_B), encoder, CHANGE);
   // SWITCH ENCODER
   digitalWrite(BACKLED, HIGH);
-  pinMode(GPIO0, INPUT);
+  pinMode(ENCODER_SWITCH, INPUT);
 
   //NTP
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -163,12 +163,13 @@ void setup()
   OTA_Init();
 
   //HOMESCREEN ////////////////////////////////////////////////////////////////
+#if(!bMenuEnabled)
 #if(LAYOUT_1)
   display_layout1_HomeScreen(ucg, temperature, humidity, setpoint);
 #else if(LAYOUT_2)
   display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
 #endif
-
+#endif
 }
 
 void loop()
@@ -177,7 +178,7 @@ void loop()
     UPDATEFAST();
 
     //FAST_30ms() {
-      FAST_50ms() {
+    FAST_50ms() {
       //set point attuale
       setpoint = Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3);
       //Stampa il setpoint solo se il valore dell'encoder è diverso da quello impostato nel T31
@@ -187,6 +188,7 @@ void loop()
         //TICK TIMER
         timerDisplay_setpoint_Tick();
         //SETPOINT PAGE ////////////////////////////////////////////////////////////////
+#if(!bMenuEnabled)
 #if(LAYOUT_1)
         SERIAL_OUT.println("display_setpointPage - layout 1");
         display_layout1_background(ucg, arrotonda(getEncoderValue()) - arrotonda(setpoint));
@@ -194,6 +196,7 @@ void loop()
 #else if(LAYOUT_2)
         SERIAL_OUT.println("display_setpointPage - layout 2");
         display_layout2_Setpoint(ucg, getEncoderValue());
+#endif
 #endif
       }
       if (timerDisplay_setpoint()) {
@@ -211,16 +214,33 @@ void loop()
       encoderValue_prec = getEncoderValue();
     }
 
+
+
     FAST_110ms() {
+      //SWITCH ENCODER
+      if (!digitalRead(ENCODER_SWITCH)) {
+        Serial.println("pulsante premuto");
+        myMenu->select(false);
+        printMenu();
+        Serial.println(); Serial.println();
+      }
+       //   SISTEMARE CARATTERE GRANDE CENTRALE
+        //   SE SCENDE SOTTO 10°
+        //   O SE VA SOTTO ZERO
+
+
+
       //FADE
       if (FADE == 0) {
         //Raggiunge il livello di luminosità minima, che può essere variata anche da SoulissApp
-        if ( backLEDvalue > backLEDvalueLOW) {
-          backLEDvalue -= BRIGHT_STEP_FADE_OUT;
-        } else {
-          backLEDvalue += BRIGHT_STEP_FADE_OUT;
+        if ( backLEDvalue != backLEDvalueLOW) {
+          if ( backLEDvalue > backLEDvalueLOW) {
+            backLEDvalue -= BRIGHT_STEP_FADE_OUT;
+          } else {
+            backLEDvalue += BRIGHT_STEP_FADE_OUT;
+          }
+          bright(backLEDvalue);
         }
-        bright(backLEDvalue);
       } else  if (FADE == 1 && backLEDvalue < backLEDvalueHIGH) {
         backLEDvalue +=  BRIGHT_STEP_FADE_IN;
         bright(backLEDvalue);
@@ -243,17 +263,6 @@ void loop()
       Logic_T52(SLOT_TEMPERATURE);
       Logic_T53(SLOT_HUMIDITY);
       Logic_T19(SLOT_BRIGHT_DISPLAY);
-
-      //SWITCH ENCODER
-      if (!digitalRead(GPIO0)) {
-        SERIAL_OUT.println("pulsante premuto");
-
-        //   SISTEMARE CARATTERE GRANDE CENTRALE
-        //   SE SCENDE SOTTO 10°
-        //   O SE VA SOTTO ZERO
-
-      }
-
     }
 
     FAST_910ms() {
@@ -261,12 +270,14 @@ void loop()
         backLEDvalueLOW =  memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1];
         FADE = 0;
         //HOMESCREEN ////////////////////////////////////////////////////////////////
+#if(!bMenuEnabled)
 #if(LAYOUT_1)
         display_layout1_HomeScreen(ucg, temperature, humidity, setpoint);
 #else if(LAYOUT_2)
         display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
         display_layout2_print_datetime(ucg);
         display_layout2_print_circle_green(ucg);
+#endif
 #endif
 
       }
@@ -329,12 +340,13 @@ void loop()
     }
 
     SLOW_50s() {
-
+#if(!bMenuEnabled)
 #if(LAYOUT_1)
       //
 #else if(LAYOUT_2)
       SERIAL_OUT.println("display_frecce andamento temperatura - layout 2");
       calcoloAndamento(ucg, temperature);
+#endif
 #endif
 
     }
