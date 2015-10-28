@@ -8,6 +8,9 @@
 	This example is only supported on ESP8266.
 ***************************************************************************/
 
+
+
+
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
@@ -33,7 +36,6 @@
 #include <MenuSystem.h>
 #include "menu.h"
 #include "layouts.h"
-
 
 //*************************************************************************
 //*************************************************************************
@@ -121,7 +123,7 @@ void setup()
     SetDynamicAddressing();
     GetAddress();
   }
-
+  
   //*************************************************************************
   //*************************************************************************
   Set_T52(SLOT_TEMPERATURE);
@@ -150,6 +152,7 @@ void setup()
   //NTP
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   initNTP();
+  delay(1000);
   //*************************************************************************
   //*************************************************************************
 
@@ -164,7 +167,13 @@ void setup()
 #if(LAYOUT_1)
   display_layout1_HomeScreen(ucg, temperature, humidity, setpoint);
 #else if(LAYOUT_2)
+  ucg.clearScreen();
+  getTemp();
   display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
+  display_layout2_print_circle_white(ucg); 
+  display_layout2_print_datetime(ucg);
+  display_layout2_print_circle_black(ucg);
+  display_layout2_print_circle_green(ucg);
 #endif
 
 }
@@ -218,13 +227,8 @@ void loop()
     }
     FAST_110ms() {
       //FADE
-      if (FADE == 0) {
-        //Raggiunge il livello di luminosità minima, che può essere variata anche da SoulissApp 
-        if ( backLEDvalue > backLEDvalueLOW) {
-          backLEDvalue -= BRIGHT_STEP_FADE_OUT;
-        } else {
-          backLEDvalue += BRIGHT_STEP_FADE_OUT;
-        }
+      if (FADE == 0 && backLEDvalue > backLEDvalueLOW) {
+        backLEDvalue -= BRIGHT_STEP_FADE_OUT;
         bright(backLEDvalue);
       } else  if (FADE == 1 && backLEDvalue < backLEDvalueHIGH) {
         backLEDvalue +=  BRIGHT_STEP_FADE_IN;
@@ -259,9 +263,7 @@ void loop()
 #if(LAYOUT_1)
         display_layout1_HomeScreen(ucg, temperature, humidity, setpoint);
 #else if(LAYOUT_2)
-        display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
-        display_layout2_print_datetime(ucg);
-        display_layout2_print_circle_green(ucg);
+//
 #endif
 
       }
@@ -277,23 +279,31 @@ void loop()
   EXECUTESLOW() {
     UPDATESLOW();
 
-    SLOW_10s() {
+    SLOW_50s() {
+
+#if(LAYOUT_1)
+      //
+#else if(LAYOUT_2)
+      SERIAL_OUT.println("display_frecce andamento temperatura - layout 2");
+      calcoloAndamento(ucg, temperature);
+      display_layout2_print_datetime(ucg);
+      display_layout2_print_circle_green(ucg);
+#endif
+
+    }    
+
+    SLOW_110s() {
       //*************************************************************************
       //*************************************************************************
-
-      // Read temperature value from DHT sensor and convert from single-precision to half-precision
-      temperature = dht.readTemperature();
-      //Import temperature into T31 Thermostat
-      ImportAnalog(SLOT_THERMOSTAT + 1, &temperature);
-      ImportAnalog(SLOT_TEMPERATURE, &temperature);
-
-      // Read humidity value from DHT sensor and convert from single-precision to half-precision
-      humidity = dht.readHumidity();
-      ImportAnalog(SLOT_HUMIDITY, &humidity);
-
-
-      SERIAL_OUT.print("aquisizione Temperature: "); SERIAL_OUT.println(temperature);
-      SERIAL_OUT.print("aquisizione Humidity: "); SERIAL_OUT.println(humidity);
+#if(LAYOUT_1)
+      getTemp();
+#else if(LAYOUT_2)
+      display_layout2_print_circle_white(ucg);
+      getTemp();
+      display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);       
+      display_layout2_print_circle_black(ucg);
+      display_layout2_print_circle_green(ucg);
+#endif
 
       //*************************************************************************
       //*************************************************************************
@@ -323,16 +333,7 @@ void loop()
       //*************************************************************************
     }
 
-    SLOW_50s() {
 
-#if(LAYOUT_1)
-      //
-#else if(LAYOUT_2)
-      SERIAL_OUT.println("display_frecce andamento temperatura - layout 2");
-      calcoloAndamento(ucg, temperature);
-#endif
-
-    }
 
     SLOW_15m() {
       //NTP
@@ -355,6 +356,21 @@ void set_ThermostatMode(U8 slot) {
 
 void set_DisplayMinBright(U8 slot, U8 val) {
   memory_map[MaCaco_OUT_s + slot + 1] = val;
+}
+
+void getTemp(){
+      // Read temperature value from DHT sensor and convert from single-precision to half-precision
+      temperature = dht.readTemperature();
+      //Import temperature into T31 Thermostat
+      ImportAnalog(SLOT_THERMOSTAT + 1, &temperature);
+      ImportAnalog(SLOT_TEMPERATURE, &temperature);
+
+      // Read humidity value from DHT sensor and convert from single-precision to half-precision
+      humidity = dht.readHumidity();
+      ImportAnalog(SLOT_HUMIDITY, &humidity);
+
+      SERIAL_OUT.print("aquisizione Temperature: "); SERIAL_OUT.println(temperature);
+      SERIAL_OUT.print("aquisizione Humidity: "); SERIAL_OUT.println(humidity);
 }
 
 void bright(int lum) {

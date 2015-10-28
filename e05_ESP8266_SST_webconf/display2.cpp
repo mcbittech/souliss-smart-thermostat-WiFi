@@ -71,12 +71,36 @@ void display_layout2_print_datetime(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
 
 void display_layout2_print_circle_green(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   ucg.setColor(102, 255, 0);    // Verde Chiaro
- // ucg.drawCircle(85, 120, 119, UCG_DRAW_ALL);
-//  ucg.drawCircle(85, 119, 119, UCG_DRAW_ALL);
-//  ucg.drawCircle(85, 120, 118, UCG_DRAW_ALL);
- // ucg.drawCircle(85, 119, 118, UCG_DRAW_ALL);
- // ucg.drawCircle(85, 120, 117, UCG_DRAW_ALL);
- // ucg.drawCircle(85, 119, 117, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 120, 110, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 119, 110, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 120, 111, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 119, 111, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 120, 112, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 119, 112, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 120, 113, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 119, 113, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 120, 114, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 119, 114, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 120, 115, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 119, 115, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 120, 116, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 119, 116, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 120, 117, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 119, 117, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 120, 118, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 119, 118, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 120, 119, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 119, 119, UCG_DRAW_ALL);
+}
+
+void display_layout2_print_circle_white(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
+  ucg.setColor(255, 255, 255);    // Bianco
+  ucg.drawCircle(85, 120, 119, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 119, 119, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 120, 118, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 119, 118, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 120, 117, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 119, 117, UCG_DRAW_ALL);
   ucg.drawCircle(85, 120, 116, UCG_DRAW_ALL);
   ucg.drawCircle(85, 119, 116, UCG_DRAW_ALL);
   ucg.drawCircle(85, 120, 115, UCG_DRAW_ALL);
@@ -88,10 +112,35 @@ void display_layout2_print_circle_green(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   ucg.drawCircle(85, 120, 112, UCG_DRAW_ALL);
   ucg.drawCircle(85, 119, 112, UCG_DRAW_ALL);
   ucg.drawCircle(85, 120, 111, UCG_DRAW_ALL);
-//  ucg.drawCircle(85, 119, 111, UCG_DRAW_ALL);
-//  ucg.drawCircle(85, 120, 110, UCG_DRAW_ALL);
- // ucg.drawCircle(85, 119, 110, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 119, 111, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 120, 110, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 119, 110, UCG_DRAW_ALL);
 }
+
+void display_layout2_print_circle_black(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
+  ucg.setColor(0, 0, 0);    // Nero
+  ucg.drawCircle(85, 120, 119, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 119, 119, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 120, 118, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 119, 118, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 120, 117, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 119, 117, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 120, 116, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 119, 116, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 120, 115, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 119, 115, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 120, 114, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 119, 114, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 120, 113, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 119, 113, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 120, 112, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 119, 112, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 120, 111, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 119, 111, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 120, 110, UCG_DRAW_ALL);
+  ucg.drawCircle(85, 119, 110, UCG_DRAW_ALL);
+}
+
 
 boolean flag_onetime2_HomeScreen = false;
 float temp2_prec = 0;
