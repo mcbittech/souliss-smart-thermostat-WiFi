@@ -218,8 +218,13 @@ void loop()
     }
     FAST_110ms() {
       //FADE
-      if (FADE == 0 && backLEDvalue > backLEDvalueLOW) {
-        backLEDvalue -= BRIGHT_STEP_FADE_OUT;
+      if (FADE == 0) {
+        //Raggiunge il livello di luminosità minima, che può essere variata anche da SoulissApp 
+        if ( backLEDvalue > backLEDvalueLOW) {
+          backLEDvalue -= BRIGHT_STEP_FADE_OUT;
+        } else {
+          backLEDvalue += BRIGHT_STEP_FADE_OUT;
+        }
         bright(backLEDvalue);
       } else  if (FADE == 1 && backLEDvalue < backLEDvalueHIGH) {
         backLEDvalue +=  BRIGHT_STEP_FADE_IN;
