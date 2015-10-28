@@ -53,6 +53,7 @@ int backLEDvalue = 0;
 int backLEDvalueHIGH = BRIGHT_MAX;
 int backLEDvalueLOW = BRIGHT_MIN_DEFAULT;
 bool FADE = 1;
+MenuSystem* myMenu;
 
 // Use hardware SPI
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -155,7 +156,8 @@ void setup()
 
   //MENU
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // initMenu();
+  initMenu();
+  myMenu = getMenu();
 
   // Init the OTA
   OTA_Init();
@@ -174,7 +176,8 @@ void loop()
   EXECUTEFAST() {
     UPDATEFAST();
 
-    FAST_30ms() {
+    //FAST_30ms() {
+      FAST_50ms() {
       //set point attuale
       setpoint = Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3);
       //Stampa il setpoint solo se il valore dell'encoder è diverso da quello impostato nel T31
@@ -207,19 +210,11 @@ void loop()
       }
       encoderValue_prec = getEncoderValue();
     }
-    FAST_90ms() {   // We process the logic and relevant input and output every 50 milliseconds
-      //*************************************************************************
-      //*************************************************************************
-      Logic_Thermostat(SLOT_THERMOSTAT);
-      // Start the heater and the fans
-      nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
-      //*************************************************************************
-      //*************************************************************************
-    }
+
     FAST_110ms() {
       //FADE
       if (FADE == 0) {
-        //Raggiunge il livello di luminosità minima, che può essere variata anche da SoulissApp 
+        //Raggiunge il livello di luminosità minima, che può essere variata anche da SoulissApp
         if ( backLEDvalue > backLEDvalueLOW) {
           backLEDvalue -= BRIGHT_STEP_FADE_OUT;
         } else {
@@ -230,6 +225,16 @@ void loop()
         backLEDvalue +=  BRIGHT_STEP_FADE_IN;
         bright(backLEDvalue);
       }
+    }
+
+    FAST_210ms() {   // We process the logic and relevant input and output
+      //*************************************************************************
+      //*************************************************************************
+      Logic_Thermostat(SLOT_THERMOSTAT);
+      // Start the heater and the fans
+      nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
+      //*************************************************************************
+      //*************************************************************************
     }
 
     FAST_510ms() {
