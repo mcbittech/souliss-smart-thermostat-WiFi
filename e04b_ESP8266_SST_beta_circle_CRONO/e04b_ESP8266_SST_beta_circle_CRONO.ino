@@ -39,7 +39,7 @@ uint8_t ip_address[4]  = {192, 168, 1, 25};
 uint8_t subnet_mask[4] = {255, 255, 255, 0};
 uint8_t ip_gateway[4]  = {192, 168, 1, 1};
 #define Gateway_address 18
-#define  PEER4          25
+#define  PEER5          25
 #define myvNet_address  ip_address[3]       // The last byte of the IP address (18) is also the vNet address
 #define myvNet_subnet   0xFF00
 #define myvNet_supern   Gateway_address
@@ -111,11 +111,8 @@ void setup()
 {   
   //SOULISS
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
-    Souliss_SetIPAddress(ip_address, subnet_mask, ip_gateway);                    
-
-    // This is the vNet address for this node, used to communicate with other
-    // nodes in your Souliss network
-    SetAddress(0xAB02, 0xFF00, 0xAB01);
+  Souliss_SetIPAddress(ip_address, subnet_mask, ip_gateway);   
+  SetAsPeerNode(PEER5,25);
     
     Set_SimpleLight(CALDAIA);                     // Define a simple LED light logic
     Souliss_SetT52(memory_map, TEMPERATURA);
