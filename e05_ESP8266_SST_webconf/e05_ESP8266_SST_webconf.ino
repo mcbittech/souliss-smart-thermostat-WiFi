@@ -124,7 +124,7 @@ void setup()
     SetDynamicAddressing();
     GetAddress();
   }
-  
+
   //*************************************************************************
   //*************************************************************************
   Set_T52(SLOT_TEMPERATURE);
@@ -166,19 +166,20 @@ void setup()
   OTA_Init();
 
   //HOMESCREEN ////////////////////////////////////////////////////////////////
-#if(!bMenuEnabled)
+  if (!bMenuEnabled) {
 #if(LAYOUT_1)
-  display_layout1_HomeScreen(ucg, temperature, humidity, setpoint);
+    display_layout1_HomeScreen(ucg, temperature, humidity, setpoint);
+    getTemp();
 #else if(LAYOUT_2)
-  ucg.clearScreen();
-  getTemp();
-  display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
-  display_layout2_print_circle_white(ucg); 
-  display_layout2_print_datetime(ucg);
-  display_layout2_print_circle_black(ucg);
-  display_layout2_print_circle_green(ucg);
+    ucg.clearScreen();
+    getTemp();
+    display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
+    display_layout2_print_circle_white(ucg);
+    display_layout2_print_datetime(ucg);
+    display_layout2_print_circle_black(ucg);
+    display_layout2_print_circle_green(ucg);
 #endif
-#endif
+  }
 }
 
 void loop()
@@ -197,16 +198,16 @@ void loop()
         //TICK TIMER
         timerDisplay_setpoint_Tick();
         //SETPOINT PAGE ////////////////////////////////////////////////////////////////
-#if(!bMenuEnabled)
+        if (!bMenuEnabled) {
 #if(LAYOUT_1)
-        SERIAL_OUT.println("display_setpointPage - layout 1");
-        display_layout1_background(ucg, arrotonda(getEncoderValue()) - arrotonda(setpoint));
-        display_layout1_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity );
+          SERIAL_OUT.println("display_setpointPage - layout 1");
+          display_layout1_background(ucg, arrotonda(getEncoderValue()) - arrotonda(setpoint));
+          display_layout1_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity );
 #else if(LAYOUT_2)
-        SERIAL_OUT.println("display_setpointPage - layout 2");
-        display_layout2_Setpoint(ucg, getEncoderValue());
+          SERIAL_OUT.println("display_setpointPage - layout 2");
+          display_layout2_Setpoint(ucg, getEncoderValue());
 #endif
-#endif
+        }
       }
       if (timerDisplay_setpoint()) {
         //timeout scaduto
@@ -222,20 +223,22 @@ void loop()
       }
       encoderValue_prec = getEncoderValue();
     }
-    
+
 
 
     FAST_110ms() {
       //SWITCH ENCODER
       if (!digitalRead(ENCODER_SWITCH)) {
         Serial.println("pulsante premuto");
+        bMenuEnabled = true;
+        ucg.clearScreen();
         myMenu->select(false);
         printMenu();
         Serial.println(); Serial.println();
       }
-       //   SISTEMARE CARATTERE GRANDE CENTRALE
-        //   SE SCENDE SOTTO 10°
-        //   O SE VA SOTTO ZERO
+      //   SISTEMARE CARATTERE GRANDE CENTRALE
+      //   SE SCENDE SOTTO 10°
+      //   O SE VA SOTTO ZERO
 
 
 
@@ -279,13 +282,13 @@ void loop()
         backLEDvalueLOW =  memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1];
         FADE = 0;
         //HOMESCREEN ////////////////////////////////////////////////////////////////
-#if(!bMenuEnabled)
+        if (!bMenuEnabled) {
 #if(LAYOUT_1)
-        display_layout1_HomeScreen(ucg, temperature, humidity, setpoint);
+          display_layout1_HomeScreen(ucg, temperature, humidity, setpoint);
 #else if(LAYOUT_2)
-//
+          //
 #endif
-#endif
+        }
 
       }
     }
@@ -311,22 +314,23 @@ void loop()
       display_layout2_print_circle_green(ucg);
 #endif
 
-    }    
+    }
 
-    SLOW_110s() {
+    SLOW_50s() {
       //*************************************************************************
       //*************************************************************************
+      if (!bMenuEnabled) {
 #if(LAYOUT_1)
-      getTemp();
+        getTemp();
 #else if(LAYOUT_2)
-      display_layout2_print_circle_white(ucg);
-      getTemp();
-      display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);       
-  display_layout2_print_datetime(ucg);
-      display_layout2_print_circle_black(ucg);
-      display_layout2_print_circle_green(ucg);
+        display_layout2_print_circle_white(ucg);
+        getTemp();
+        display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
+        display_layout2_print_datetime(ucg);
+        display_layout2_print_circle_black(ucg);
+        display_layout2_print_circle_green(ucg);
 #endif
-
+      }
       //*************************************************************************
       //*************************************************************************
       //*************************************************************************
@@ -354,10 +358,6 @@ void loop()
       //*************************************************************************
       //*************************************************************************
     }
-
-#if(!bMenuEnabled)
-#endif
-
     SLOW_15m() {
       //NTP
       /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -381,19 +381,19 @@ void set_DisplayMinBright(U8 slot, U8 val) {
   memory_map[MaCaco_OUT_s + slot + 1] = val;
 }
 
-void getTemp(){
-      // Read temperature value from DHT sensor and convert from single-precision to half-precision
-      temperature = dht.readTemperature();
-      //Import temperature into T31 Thermostat
-      ImportAnalog(SLOT_THERMOSTAT + 1, &temperature);
-      ImportAnalog(SLOT_TEMPERATURE, &temperature);
+void getTemp() {
+  // Read temperature value from DHT sensor and convert from single-precision to half-precision
+  temperature = dht.readTemperature();
+  //Import temperature into T31 Thermostat
+  ImportAnalog(SLOT_THERMOSTAT + 1, &temperature);
+  ImportAnalog(SLOT_TEMPERATURE, &temperature);
 
-      // Read humidity value from DHT sensor and convert from single-precision to half-precision
-      humidity = dht.readHumidity();
-      ImportAnalog(SLOT_HUMIDITY, &humidity);
+  // Read humidity value from DHT sensor and convert from single-precision to half-precision
+  humidity = dht.readHumidity();
+  ImportAnalog(SLOT_HUMIDITY, &humidity);
 
-      SERIAL_OUT.print("aquisizione Temperature: "); SERIAL_OUT.println(temperature);
-      SERIAL_OUT.print("aquisizione Humidity: "); SERIAL_OUT.println(humidity);
+  SERIAL_OUT.print("aquisizione Temperature: "); SERIAL_OUT.println(temperature);
+  SERIAL_OUT.print("aquisizione Humidity: "); SERIAL_OUT.println(humidity);
 }
 
 void bright(int lum) {
