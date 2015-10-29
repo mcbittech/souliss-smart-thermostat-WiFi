@@ -233,7 +233,7 @@ void loop()
         bMenuEnabled = true;
         ucg.clearScreen();
         myMenu->select(false);
-        printMenu();
+        printMenu(ucg);
         Serial.println(); Serial.println();
       }
       //   SISTEMARE CARATTERE GRANDE CENTRALE

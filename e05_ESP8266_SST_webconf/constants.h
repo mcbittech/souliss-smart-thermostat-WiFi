@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 
+#define VERSION "v0.5"
+
 //DHT22
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define DHTPIN 12
@@ -51,7 +53,6 @@ const int timeZone = 2;     // Central European Time
 //#define FONT_BIG ucg_font_inb63_mn
 //#define FONT_BIG ucg_font_inb46_mr
 //#define FONT_BIG_MIN_50_PERCENT ucg_font_inb33_mr
-#define VERSION "v0.4"
 #define FONT_BIG ucg_font_inb53_mn
 #define FONT_BIG_MIN_50_PERCENT ucg_font_inb24_mr
 
