@@ -13,4 +13,4 @@ All the system require maximum about 200mA @5vdc, with relay ON and maximum brig
 Minimum power required about 65mA, with relay OFF and minimum brightness.
 
 
-![Chrono](https://drive.google.com/file/d/0B1z0N6YThSIrd3VPZkwwYV91U1k/view?usp=sharing?raw=true "Chrono")
+![Chrono](https://github.com/mcbittech/souliss-smart-thermostat-WiFi/blob/master/SST_Connection.png?raw=true "Chrono")
