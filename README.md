@@ -12,9 +12,9 @@ Wi-Fi Smart Thermostat based on Souliss IoT Framework
 -Rotary Encoder with pushbutton & status LED  
 -DHT22 Temperature & Humidity Sensor  
 
+# How to connect your system:
+![scheme](https://github.com/mcbittech/souliss-smart-thermostat-WiFi/blob/master/SST_Connection.png?raw=true "scheme")
+
 # Power up your system:
 All the system require maximum about 200mA @5vdc, with relay ON and maximum brightness of the screen. 
 Minimum power required about 65mA, with relay OFF and minimum brightness.
-
-
-![scheme](https://github.com/mcbittech/souliss-smart-thermostat-WiFi/blob/master/SST_Connection.png?raw=true "scheme")
