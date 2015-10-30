@@ -13,4 +13,4 @@ All the system require maximum about 200mA @5vdc, with relay ON and maximum brig
 Minimum power required about 65mA, with relay OFF and minimum brightness.
 
 
-![Alt text](https://drive.google.com/open?id=0B1z0N6YThSIrdjhFRjROUWlSYkxUNmFSQk4zQWh5N0NUeWc4?raw=true "Chrono")
+![Chrono](https://drive.google.com/open?id=0B1z0N6YThSIrdjhFRjROUWlSYkxUNmFSQk4zQWh5N0NUeWc4?raw=true "Chrono")
