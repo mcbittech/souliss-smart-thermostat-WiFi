@@ -11,3 +11,6 @@ Wi-Fi Smart Thermostat based on Souliss IoT Framework
 # Power up your system:
 All the system require maximum about 200mA @5vdc, with relay ON and maximum brightness of the screen. 
 Minimum power required about 65mA, with relay OFF and minimum brightness.
+
+
+![Alt text](https://drive.google.com/open?id=0B1z0N6YThSIrdjhFRjROUWlSYkxUNmFSQk4zQWh5N0NUeWc4?raw=true "Chrono")
