@@ -195,28 +195,33 @@ void initMenu() {
 //}
 
 
-int x = 2;
-int y = 4;
-int y_step = 10;
+
 
 void printMenu(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
+  int x = 2;
+  int y = 4;
+  int y_step = 10;
+  ucg.clearScreen();
+
   // Display the menu
   Menu const* cp_menu;
   cp_menu = ms.get_current_menu();
-  //Current menu name
+
 
   ucg.setColor(0, 255, 255, 255);    // Bianco
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SMALL);
 
- y_step=ucg.getFontAscent();
- y=y+y_step;
+  //Current menu name
+  y_step = ucg.getFontAscent();
+  y = y + y_step;
   ucg.setPrintPos(x, y);
   ucg.print(cp_menu->get_name());
 
+  //One line space
+  y = y + y_step;
 
   MenuComponent const* cp_menu_sel = cp_menu->get_selected();
-   
   for (int i = 0; i < cp_menu->get_num_menu_components(); ++i)
   {
     MenuComponent const* cp_m_comp = cp_menu->get_menu_component(i);
@@ -228,10 +233,7 @@ void printMenu(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
     else
       ucg.print("  ");
 
-
     ucg.print(cp_m_comp->get_name());
-
-
   }
 }
 

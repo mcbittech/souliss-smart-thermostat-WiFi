@@ -192,13 +192,13 @@ void loop()
       //set point attuale
       setpoint = Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3);
       //Stampa il setpoint solo se il valore dell'encoder è diverso da quello impostato nel T31
+      if (!bMenuEnabled) {
+        if (arrotonda(getEncoderValue()) != arrotonda(encoderValue_prec)) {
+          FADE = 1;
+          //TICK TIMER
+          timerDisplay_setpoint_Tick();
+          //SETPOINT PAGE ////////////////////////////////////////////////////////////////
 
-      if (arrotonda(getEncoderValue()) != arrotonda(encoderValue_prec)) {
-        FADE = 1;
-        //TICK TIMER
-        timerDisplay_setpoint_Tick();
-        //SETPOINT PAGE ////////////////////////////////////////////////////////////////
-        if (!bMenuEnabled) {
 #if(LAYOUT_1)
           SERIAL_OUT.println("display_setpointPage - layout 1");
           display_layout1_background(ucg, arrotonda(getEncoderValue()) - arrotonda(setpoint));
@@ -208,39 +208,52 @@ void loop()
           display_layout2_Setpoint(ucg, getEncoderValue());
 #endif
         }
-      }
-      if (timerDisplay_setpoint()) {
-        //timeout scaduto
-        display_layout1_background_black(ucg);
-        setEncoderValue(setpoint);
+
+        if (timerDisplay_setpoint()) {
+          //timeout scaduto
+          display_layout1_background_black(ucg);
+          setEncoderValue(setpoint);
+        } else {
+          //timer non scaduto. Memorizzo
+          setpoint = getEncoderValue();
+          //memorizza il setpoint nel T31
+          Souliss_HalfPrecisionFloating((memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3), &setpoint);
+          // Trig the next change of the state
+          data_changed = Souliss_TRIGGED;
+        }
+        encoderValue_prec = getEncoderValue();
       } else {
-        //timer non scaduto. Memorizzo
-        setpoint = getEncoderValue();
-        //memorizza il setpoint nel T31
-        Souliss_HalfPrecisionFloating((memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3), &setpoint);
-        // Trig the next change of the state
-        data_changed = Souliss_TRIGGED;
+        //Bright high if menu enabled
+        FADE = 1;
+        //Menu Command Section
+        if (getEncoderValue() != encoderValue_prec)
+        {
+          if (getEncoderValue() > encoderValue_prec) {
+            //Menu UP
+            myMenu->prev();
+          } else {
+            //Menu DOWN
+            myMenu->next();
+          }
+          printMenu(ucg);
+          encoderValue_prec = getEncoderValue();
+        }
       }
-      encoderValue_prec = getEncoderValue();
     }
-
-
 
     FAST_110ms() {
       //SWITCH ENCODER
       if (!digitalRead(ENCODER_SWITCH)) {
-        Serial.println("pulsante premuto");
-        bMenuEnabled = true;
-        ucg.clearScreen();
-        myMenu->select(false);
+        Serial.println("pulsante premuto"); Serial.println();
+        if (!bMenuEnabled) {
+          //IF MENU NOT ENABLED
+          bMenuEnabled = true;
+        } else {
+          //IF MENU ENABLED
+          myMenu->select(false);
+        }
         printMenu(ucg);
-        Serial.println(); Serial.println();
       }
-      //   SISTEMARE CARATTERE GRANDE CENTRALE
-      //   SE SCENDE SOTTO 10°
-      //   O SE VA SOTTO ZERO
-
-
 
       //FADE
       if (FADE == 0) {
@@ -289,7 +302,6 @@ void loop()
           //
 #endif
         }
-
       }
     }
 
@@ -304,16 +316,16 @@ void loop()
     UPDATESLOW();
 
     SLOW_50s() {
-
+      if (!bMenuEnabled) {
 #if(LAYOUT_1)
-      //
+        //
 #else if(LAYOUT_2)
-      SERIAL_OUT.println("display_frecce andamento temperatura - layout 2");
-      calcoloAndamento(ucg, temperature);
-      display_layout2_print_datetime(ucg);
-      display_layout2_print_circle_green(ucg);
+        SERIAL_OUT.println("display_frecce andamento temperatura - layout 2");
+        calcoloAndamento(ucg, temperature);
+        display_layout2_print_datetime(ucg);
+        display_layout2_print_circle_green(ucg);
 #endif
-
+      }
     }
 
     SLOW_50s() {
@@ -331,32 +343,6 @@ void loop()
         display_layout2_print_circle_green(ucg);
 #endif
       }
-      //*************************************************************************
-      //*************************************************************************
-      //*************************************************************************
-      //*****************TEST MENU***********************************************
-
-      //     MenuSystem m=getMenu();
-      //
-      //  printMenu();
-      //  // Simulate using the menu by walking over the entire structure.
-      //  m.select();
-      //
-      //
-      //
-      //  if (getbRanCallback())
-      //  {
-      //    if (getbForward())
-      //      m.next();
-      //    else
-      //      m.prev();
-      //    setbRanCallback(false);
-      //  }
-
-
-
-      //*************************************************************************
-      //*************************************************************************
     }
     SLOW_15m() {
       //NTP
