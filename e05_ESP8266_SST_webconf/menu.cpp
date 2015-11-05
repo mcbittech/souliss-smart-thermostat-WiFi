@@ -3,11 +3,13 @@
 #include <MenuSystem.h>
 #include "language.h"
 #include "Ucglib.h"
+#include "MenuState.h"
 
 // Menu variables
 MenuSystem ms;
 Menu mmRoot(MENU_TEXT_ROOT);
 MenuItem mm_miBack(MENU_TEXT_BACK);
+MenuItem mm_miExit(MENU_TEXT_BACK);
 Menu muMenu(MENU_TEXT_MENU);
 Menu muCrono(MENU_TEXT_CRONO_SCREEN);
 
@@ -41,15 +43,22 @@ MenuItem muMenu_mi_Layouts_2(MENU_TEXT_LAYOUT_2);
 
 
 int iDisplayBright = 100;
-MenuSystem* getMenu() {
+MenuState *state=new MenuState();
+MenuSystem* getMenu(MenuState *mState) {
+  state=mState;
   return &ms;
+}
+
+void on_item_MenuExit_selected(MenuItem* p_menu_item)
+{
+  SERIAL_OUT.println("Exit Selected");
+  state->bMenuEnabled=false;
 }
 
 void on_itemBack_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("Back Selected");
   ms.back();
-
 }
 
 void on_item_perc100_selected(MenuItem* p_menu_item)
@@ -128,10 +137,11 @@ void on_item_layout2_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_layout2_selected");
 }
+
 void initMenu() {
 
   // Menu setup
-  mmRoot.add_item(&mm_miBack, &on_itemBack_selected);
+  mmRoot.add_item(&mm_miExit, &on_item_MenuExit_selected);
   mmRoot.add_menu(&muMenu);
   mmRoot.add_menu(&muCrono);
 
@@ -172,40 +182,20 @@ void initMenu() {
   ms.set_root_menu(&mmRoot);
 }
 
-
-//void printMenu() {
-//  // Display the menu
-//  Menu const* cp_menu;
-//  cp_menu = ms.get_current_menu();
-//
-//  Serial.print("Current menu name: ");
-//  Serial.println(cp_menu->get_name());
-//
-//  MenuComponent const* cp_menu_sel = cp_menu->get_selected();
-//  for (int i = 0; i < cp_menu->get_num_menu_components(); ++i)
-//  {
-//    MenuComponent const* cp_m_comp = cp_menu->get_menu_component(i);
-//    SERIAL_OUT.print(cp_m_comp->get_name());
-//
-//    if (cp_menu_sel == cp_m_comp)
-//      SERIAL_OUT.print("<<< ");
-//
-//    SERIAL_OUT.println("");
-//  }
-//}
-
-
-
-
+Menu const* prec_cp_menu;
 void printMenu(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   int x = 2;
   int y = 4;
-  int y_step = 10;
-  ucg.clearScreen();
+  int y_step_plus = 5;
+  int y_step;
 
   // Display the menu
   Menu const* cp_menu;
   cp_menu = ms.get_current_menu();
+  if (cp_menu != prec_cp_menu) {
+    ucg.clearScreen();
+    prec_cp_menu = cp_menu;
+  }
 
 
   ucg.setColor(0, 255, 255, 255);    // Bianco
@@ -225,7 +215,7 @@ void printMenu(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   for (int i = 0; i < cp_menu->get_num_menu_components(); ++i)
   {
     MenuComponent const* cp_m_comp = cp_menu->get_menu_component(i);
-    y = y + y_step;
+    y = y + y_step + y_step_plus;
     ucg.setPrintPos(x, y);
 
     if (cp_menu_sel == cp_m_comp)
