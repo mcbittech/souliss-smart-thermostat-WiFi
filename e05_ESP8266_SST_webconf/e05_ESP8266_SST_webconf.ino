@@ -51,10 +51,13 @@ float encoderValue_prec = 0;
 #include <Arduino.h>
 #include "Ucglib.h"
 
+
 int backLEDvalue = 0;
 int backLEDvalueHIGH = BRIGHT_MAX;
 int backLEDvalueLOW = BRIGHT_MIN_DEFAULT;
 bool FADE = 1;
+
+
 
 // Menu
 MenuSystem* myMenu;
@@ -66,6 +69,8 @@ Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ 2 , /*cs=*/ 15);
 
 // Setup the libraries for Over The Air Update
 OTA_Setup();
+
+
 
 void setup()
 {
@@ -161,6 +166,8 @@ void setup()
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   initMenu();
   myMenu = getMenu(menu_State);
+  display_layout1_set_MenuState(menu_State);
+//  display_layout2_set_MenuState(menu_State);
 
   // Init the OTA
   OTA_Init();
@@ -195,14 +202,15 @@ void loop()
           timerDisplay_setpoint_Tick();
           //SETPOINT PAGE ////////////////////////////////////////////////////////////////
 
-#if(LAYOUT_1)
-          SERIAL_OUT.println("display_setpointPage - layout 1");
-          display_layout1_background(ucg, arrotonda(getEncoderValue()) - arrotonda(setpoint));
-          display_layout1_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity );
-#else if(LAYOUT_2)
-          SERIAL_OUT.println("display_setpointPage - layout 2");
-          display_layout2_Setpoint(ucg, getEncoderValue());
-#endif
+          if (menu_State->bLayout1) {
+            SERIAL_OUT.println("display_setpointPage - layout 1");
+            display_layout1_background(ucg, arrotonda(getEncoderValue()) - arrotonda(setpoint));
+            display_layout1_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity );
+          }
+          else if (menu_State->bLayout2) {
+            SERIAL_OUT.println("display_setpointPage - layout 2");
+            display_layout2_Setpoint(ucg, getEncoderValue());
+          }
         }
 
         if (timerDisplay_setpoint()) {
@@ -294,11 +302,11 @@ void loop()
         FADE = 0;
         //HOMESCREEN ////////////////////////////////////////////////////////////////
         if (!menu_State->bMenuEnabled) {
-#if(LAYOUT_1)
-          display_layout1_HomeScreen(ucg, temperature, humidity, setpoint);
-#else if(LAYOUT_2)
-          //
-#endif
+          if (menu_State->bLayout1) {
+            display_layout1_HomeScreen(ucg, temperature, humidity, setpoint);
+          } else if (menu_State->bLayout2) {
+            //
+          }
         }
       }
     }
@@ -315,14 +323,14 @@ void loop()
 
     SLOW_50s() {
       if (!menu_State->bMenuEnabled) {
-#if(LAYOUT_1)
-        //
-#else if(LAYOUT_2)
-        SERIAL_OUT.println("display_frecce andamento temperatura - layout 2");
-        calcoloAndamento(ucg, temperature);
-        display_layout2_print_datetime(ucg);
-        display_layout2_print_circle_green(ucg);
-#endif
+        if (menu_State->bLayout1) {
+          //
+        } else if (menu_State->bLayout2) {
+          SERIAL_OUT.println("display_frecce andamento temperatura - layout 2");
+          calcoloAndamento(ucg, temperature);
+          display_layout2_print_datetime(ucg);
+          display_layout2_print_circle_green(ucg);
+        }
       }
     }
 
@@ -330,16 +338,16 @@ void loop()
       //*************************************************************************
       //*************************************************************************
       if (!menu_State->bMenuEnabled) {
-#if(LAYOUT_1)
-        getTemp();
-#else if(LAYOUT_2)
-        display_layout2_print_circle_white(ucg);
-        getTemp();
-        display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
-        display_layout2_print_datetime(ucg);
-        display_layout2_print_circle_black(ucg);
-        display_layout2_print_circle_green(ucg);
-#endif
+        if (menu_State->bLayout1) {
+          getTemp();
+        } else if (menu_State->bLayout2) {
+          display_layout2_print_circle_white(ucg);
+          getTemp();
+          display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
+          display_layout2_print_datetime(ucg);
+          display_layout2_print_circle_black(ucg);
+          display_layout2_print_circle_green(ucg);
+        }
       }
     }
     SLOW_15m() {
@@ -391,18 +399,19 @@ void bright(int lum) {
 void initScreen() {
 
   if (!menu_State->bMenuEnabled) {
-#if(LAYOUT_1)
-    display_layout1_HomeScreen(ucg, temperature, humidity, setpoint);
-    getTemp();
-#else if(LAYOUT_2)
-    ucg.clearScreen();
-    getTemp();
-    display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
-    display_layout2_print_circle_white(ucg);
-    display_layout2_print_datetime(ucg);
-    display_layout2_print_circle_black(ucg);
-    display_layout2_print_circle_green(ucg);
-#endif
+    if (menu_State->bLayout1) {
+      display_layout1_HomeScreen(ucg, temperature, humidity, setpoint);
+      getTemp();
+    }
+    else if (menu_State->bLayout2) {
+      ucg.clearScreen();
+      getTemp();
+      display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
+      display_layout2_print_circle_white(ucg);
+      display_layout2_print_datetime(ucg);
+      display_layout2_print_circle_black(ucg);
+      display_layout2_print_circle_green(ucg);
+    }
   }
 }
 

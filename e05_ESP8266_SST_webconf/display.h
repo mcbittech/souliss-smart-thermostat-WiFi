@@ -2,9 +2,12 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #include <Arduino.h>
 #include "Ucglib.h"
+#include "MenuState.h"
 
+void display_layout1_set_MenuState(MenuState*);
 void display_layout1_setpointPage(Ucglib_ILI9341_18x240x320_HWSPI, float, float, float);
 void display_layout1_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI, float, float, float);
+
 
 void display_layout1_print_setpoint(Ucglib_ILI9341_18x240x320_HWSPI, float);
 void display_layout1_print_B3(Ucglib_ILI9341_18x240x320_HWSPI, String , float);
@@ -25,4 +28,5 @@ void display_layout1_background_black(Ucglib_ILI9341_18x240x320_HWSPI);
 boolean timerDisplay_setpoint();//return 1 for timeout
 void timerDisplay_setpoint_Tick();
 float arrotonda(const float);
+
 

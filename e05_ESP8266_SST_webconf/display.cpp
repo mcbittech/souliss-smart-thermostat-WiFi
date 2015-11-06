@@ -5,6 +5,9 @@
 
 #include "Ucglib.h"
 
+
+MenuState *stateM;
+
 float arrotonda(const float v)
 {
   float vX10 = v * 10;
@@ -45,6 +48,8 @@ int startW = 0;
 int baseH = 0;
 int vW_pos_before_point, vW_pos_after_point, vW_pos_grade, baseH_Grade;
 String sTempToPrint = "";
+
+
 
 void display_layout1_printBigChar(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fValTemp) {
   ucg.setFont(FONT_BIG);
@@ -308,7 +313,9 @@ void display_layout1_background_black(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   ucg.setColor(1, 0, 0, 0); // BLACK for the background
 }
 
-
+void display_layout1_set_MenuState(MenuState *mState){
+  stateM=mState;
+  }
 
 
 

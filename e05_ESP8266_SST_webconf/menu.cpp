@@ -41,8 +41,6 @@ Menu muMenu_Layouts(MENU_TEXT_LAYOUTS);
 MenuItem muMenu_mi_Layouts_1(MENU_TEXT_LAYOUT_1);
 MenuItem muMenu_mi_Layouts_2(MENU_TEXT_LAYOUT_2);
 
-
-int iDisplayBright = 100;
 MenuState *state=new MenuState();
 MenuSystem* getMenu(MenuState *mState) {
   state=mState;
@@ -64,47 +62,50 @@ void on_itemBack_selected(MenuItem* p_menu_item)
 void on_item_perc100_selected(MenuItem* p_menu_item)
 {
 
-  iDisplayBright = 100;
+  state->iDisplayBright = 100;
 }
 
 void on_item_perc80_selected(MenuItem* p_menu_item)
 {
-  iDisplayBright = 80;
+  state->iDisplayBright = 80;
 }
 
 void on_item_perc60_selected(MenuItem* p_menu_item)
 {
-  iDisplayBright = 60;
+  state->iDisplayBright = 60;
 
 }
 
 void on_item_perc50_selected(MenuItem* p_menu_item)
 {
-  iDisplayBright = 50;
+  state->iDisplayBright = 50;
 }
 
 void on_item_perc30_selected(MenuItem* p_menu_item)
 {
-  iDisplayBright = 30;
+  state->iDisplayBright = 30;
 }
 
 void on_item_perc5_selected(MenuItem* p_menu_item)
 {
-  iDisplayBright = 5;
+  state->iDisplayBright = 5;
 }
 
 void on_item_perc2_selected(MenuItem* p_menu_item)
 {
-  iDisplayBright = 2;
+  state->iDisplayBright = 2;
 }
 
 void on_item_clockON_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_clockON_selected");
+   state->bClock=true;
+   state->bMenuEnabled=false;
 }
 void on_item_clockOFF_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_clockOFF_selected");
+  state->bClock=false;
 }
 void on_item_cronoON_selected(MenuItem* p_menu_item)
 {
@@ -113,29 +114,37 @@ void on_item_cronoON_selected(MenuItem* p_menu_item)
 void on_item_cronoOFF_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_cronoOFF_selected");
+  state->bCrono=true;
 }
 void on_item_cronoLEARN_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_cronoLEARN_selected");
+  state->bCrono=false;
 }
 
 void on_item_systemON_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_systemON_selected");
+  state->bSystem=true;
 }
 void on_item_systemOFF_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_systemOFF_selected");
+  state->bSystem=false;
 }
 
 
 void on_item_layout1_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_layout1_selected");
+  state->bLayout1=true;
+  state->bLayout2=false;
 }
 void on_item_layout2_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_layout2_selected");
+  state->bLayout1=false;
+  state->bLayout2=true;
 }
 
 void initMenu() {

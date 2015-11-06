@@ -4,7 +4,9 @@
 #include "ntp.h"
 
 #include "Ucglib.h"
+#include "MenuState.h"
 
+MenuState *stateM2 = new MenuState();
 
 float arrotonda2(const float v)
 {
@@ -186,7 +188,7 @@ void display_layout2_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float tempe
     ucg.undoScale();
     //ucg.print("UMIDITA'");
 
-    
+
 
     temp2_prec = temp;
     setpoint2_prec = setpoint;
@@ -197,32 +199,36 @@ void display_layout2_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float tempe
 
 float deltaT = 0;
 float pretemperature = 0;
-void calcoloAndamento(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temperature){
+void calcoloAndamento(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temperature) {
   //CALCOLO ANDAMENTO
-    ///////////////////////////////////////////////////////////////////////////
-    deltaT = temperature - pretemperature;
-    Serial.print("DELTAT "); Serial.println(deltaT, DEC);
-    if (temperature > pretemperature && deltaT || 0) {
-      ucg.setColor(255, 0, 0);              // Rosso
-      ucg.drawTriangle(0, 0, 0, 31, 10, 22);
-      ucg.setColor(0, 0, 0);                //Nero
-      ucg.drawTriangle(0, 240, 0, 209, 10, 218);
-    } else if (deltaT == 0) {
-      ucg.setColor(0, 0, 0);                //Nero
-      ucg.drawTriangle(0, 240, 0, 209, 10, 218);
-      ucg.setColor(0, 0, 0);                //Nero
-      ucg.drawTriangle(0, 0, 0, 31, 10, 22);
-    }
-    else {
-      ucg.setColor(65, 105, 225);           // Blu Reale
-      ucg.drawTriangle(0, 240, 0, 209, 10, 218);
-      ucg.setColor(0, 0, 0);                //Nero
-      ucg.drawTriangle(0, 0, 0, 31, 10, 22);
-    }
-    pretemperature = temperature;
-    ///////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////
+  deltaT = temperature - pretemperature;
+  Serial.print("DELTAT "); Serial.println(deltaT, DEC);
+  if (temperature > pretemperature && deltaT || 0) {
+    ucg.setColor(255, 0, 0);              // Rosso
+    ucg.drawTriangle(0, 0, 0, 31, 10, 22);
+    ucg.setColor(0, 0, 0);                //Nero
+    ucg.drawTriangle(0, 240, 0, 209, 10, 218);
+  } else if (deltaT == 0) {
+    ucg.setColor(0, 0, 0);                //Nero
+    ucg.drawTriangle(0, 240, 0, 209, 10, 218);
+    ucg.setColor(0, 0, 0);                //Nero
+    ucg.drawTriangle(0, 0, 0, 31, 10, 22);
+  }
+  else {
+    ucg.setColor(65, 105, 225);           // Blu Reale
+    ucg.drawTriangle(0, 240, 0, 209, 10, 218);
+    ucg.setColor(0, 0, 0);                //Nero
+    ucg.drawTriangle(0, 0, 0, 31, 10, 22);
+  }
+  pretemperature = temperature;
+  ///////////////////////////////////////////////////////////////////////////
 
 }
+
+//void display_layout2_set_MenuState(MenuState *mState) {
+//  stateM2 = mState;
+//}
 
 
 
