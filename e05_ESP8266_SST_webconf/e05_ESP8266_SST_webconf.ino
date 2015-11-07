@@ -165,6 +165,7 @@ void setup()
   initScreen();
 }
 
+float fVal;
 void loop()
 {
   EXECUTEFAST() {
@@ -178,6 +179,10 @@ void loop()
         SERIAL_OUT.println("Init Screen");
         initScreen();
         setFlag_initScreen(false);
+
+        //write min bright on T19
+        memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1] = getDisplayBright();
+        SERIAL_OUT.println("Set Display Bright: "); SERIAL_OUT.println(memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1]);
       }
 
 
@@ -223,11 +228,11 @@ void loop()
         if (getEncoderValue() != encoderValue_prec)
         {
           if (getEncoderValue() > encoderValue_prec) {
-            //Menu UP
-            myMenu->prev();
-          } else {
             //Menu DOWN
             myMenu->next();
+          } else {
+            //Menu UP
+            myMenu->prev();
           }
           printMenu(ucg);
           encoderValue_prec = getEncoderValue();
@@ -274,6 +279,8 @@ void loop()
       Logic_Thermostat(SLOT_THERMOSTAT);
       // Start the heater and the fans
       nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
+
+      Logic_T19(SLOT_BRIGHT_DISPLAY);
       //*************************************************************************
       //*************************************************************************
     }
@@ -283,11 +290,11 @@ void loop()
       // user interface if the difference is greater than the deadband
       Logic_T52(SLOT_TEMPERATURE);
       Logic_T53(SLOT_HUMIDITY);
-      Logic_T19(SLOT_BRIGHT_DISPLAY);
     }
 
     FAST_910ms() {
       if (timerDisplay_setpoint()) {
+        //if timeout read value of T19
         backLEDvalueLOW =  memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1];
         FADE = 0;
         //HOMESCREEN ////////////////////////////////////////////////////////////////
