@@ -2,11 +2,7 @@
 #include "constants.h"
 #include "language.h"
 #include "ntp.h"
-
 #include "Ucglib.h"
-#include "MenuState.h"
-
-MenuState *stateM2 = new MenuState();
 
 float arrotonda2(const float v)
 {
@@ -47,7 +43,7 @@ void display_layout2_Setpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoin
 String s2PrevDisplay;
 time_t prev2Display = 0; // when the digital clock was displayed
 void display_layout2_print_datetime(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
-
+ if (getClock()){
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SMALL);
   ucg.setFontPosTop();
@@ -69,6 +65,7 @@ void display_layout2_print_datetime(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
     ucg.setPrintPos(228, 52);
     ucg.print(Time);
   }
+ }
 }
 
 void display_layout2_print_circle_green(Ucglib_ILI9341_18x240x320_HWSPI ucg) {

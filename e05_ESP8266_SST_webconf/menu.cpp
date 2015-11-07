@@ -3,7 +3,16 @@
 #include <MenuSystem.h>
 #include "language.h"
 #include "Ucglib.h"
-#include "MenuState.h"
+
+boolean bMenuEnabled = false;
+int iDisplayBright = 30;
+boolean bClock = true;
+boolean bSystem = true;
+boolean bCrono = false;
+boolean bCronoLearn = false;
+boolean bLayout1 = true;
+boolean bLayout2 = false;
+
 
 // Menu variables
 MenuSystem ms;
@@ -41,16 +50,14 @@ Menu muMenu_Layouts(MENU_TEXT_LAYOUTS);
 MenuItem muMenu_mi_Layouts_1(MENU_TEXT_LAYOUT_1);
 MenuItem muMenu_mi_Layouts_2(MENU_TEXT_LAYOUT_2);
 
-MenuState *state=new MenuState();
-MenuSystem* getMenu(MenuState *mState) {
-  state=mState;
+MenuSystem* getMenu() {
   return &ms;
 }
 
 void on_item_MenuExit_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("Exit Selected");
-  state->bMenuEnabled=false;
+  bMenuEnabled = false;
 }
 
 void on_itemBack_selected(MenuItem* p_menu_item)
@@ -62,89 +69,89 @@ void on_itemBack_selected(MenuItem* p_menu_item)
 void on_item_perc100_selected(MenuItem* p_menu_item)
 {
 
-  state->iDisplayBright = 100;
+  iDisplayBright = 100;
 }
 
 void on_item_perc80_selected(MenuItem* p_menu_item)
 {
-  state->iDisplayBright = 80;
+  iDisplayBright = 80;
 }
 
 void on_item_perc60_selected(MenuItem* p_menu_item)
 {
-  state->iDisplayBright = 60;
+  iDisplayBright = 60;
 
 }
 
 void on_item_perc50_selected(MenuItem* p_menu_item)
 {
-  state->iDisplayBright = 50;
+  iDisplayBright = 50;
 }
 
 void on_item_perc30_selected(MenuItem* p_menu_item)
 {
-  state->iDisplayBright = 30;
+  iDisplayBright = 30;
 }
 
 void on_item_perc5_selected(MenuItem* p_menu_item)
 {
-  state->iDisplayBright = 5;
+  iDisplayBright = 5;
 }
 
 void on_item_perc2_selected(MenuItem* p_menu_item)
 {
-  state->iDisplayBright = 2;
+  iDisplayBright = 2;
 }
 
 void on_item_clockON_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_clockON_selected");
-   state->bClock=true;
-   state->bMenuEnabled=false;
+  bClock = true;
 }
 void on_item_clockOFF_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_clockOFF_selected");
-  state->bClock=false;
+  bClock = false;
 }
 void on_item_cronoON_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_cronoON_selected");
+  bCrono = true;
 }
 void on_item_cronoOFF_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_cronoOFF_selected");
-  state->bCrono=true;
+  bCrono = false;
 }
 void on_item_cronoLEARN_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_cronoLEARN_selected");
-  state->bCrono=false;
+  bCronoLearn = true;
 }
 
 void on_item_systemON_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_systemON_selected");
-  state->bSystem=true;
+  bSystem = true;
 }
 void on_item_systemOFF_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_systemOFF_selected");
-  state->bSystem=false;
+  bSystem = false;
 }
 
 
 void on_item_layout1_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_layout1_selected");
-  state->bLayout1=true;
-  state->bLayout2=false;
+  bLayout1 = true;
+  bLayout2 = false;
 }
 void on_item_layout2_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_layout2_selected");
-  state->bLayout1=false;
-  state->bLayout2=true;
+  bLayout1 = false;
+  bLayout2 = true;
 }
 
 void initMenu() {
@@ -192,6 +199,7 @@ void initMenu() {
 }
 
 Menu const* prec_cp_menu;
+boolean bFlagColour = true;
 void printMenu(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   int x = 2;
   int y = 4;
@@ -204,6 +212,7 @@ void printMenu(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   if (cp_menu != prec_cp_menu) {
     ucg.clearScreen();
     prec_cp_menu = cp_menu;
+    bFlagColour = true;
   }
 
 
@@ -228,16 +237,60 @@ void printMenu(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
     ucg.setPrintPos(x, y);
 
     if (cp_menu_sel == cp_m_comp)
+    {
       ucg.print("> ");
-    else
-      ucg.print("  ");
+      ucg.print(cp_m_comp->get_name());
+      if (bFlagColour) {
+        ucg.print("  *");
+        bFlagColour = false;
+      }
 
-    ucg.print(cp_m_comp->get_name());
+    }
+    else
+    {
+      ucg.print("  ");
+      ucg.print(cp_m_comp->get_name());
+    }
+
+
+
+
   }
 }
 
 
+boolean getEnabled() {
+  return bMenuEnabled;
+}
+
+void setEnabled(boolean bVal) {
+  bMenuEnabled = bVal;
+}
 
 
+boolean getLayout1() {
+  return bLayout1;
+}
+boolean getLayout2() {
+  return bLayout2;
+}
 
+int getDisplayBright() {
+  return iDisplayBright;
+}
+
+boolean getClock() {
+  return bClock;
+}
+
+boolean getSystem() {
+  return bSystem;
+}
+
+boolean getCrono() {
+  return bCrono;
+}
+boolean getCronoLearn() {
+  return bCronoLearn;
+}
 

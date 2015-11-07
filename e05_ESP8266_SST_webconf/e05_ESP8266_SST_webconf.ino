@@ -7,10 +7,6 @@
 
 	This example is only supported on ESP8266.
 ***************************************************************************/
-
-
-
-
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
@@ -35,10 +31,9 @@
 #include <Time.h>
 #include <MenuSystem.h>
 #include "menu.h"
-#include "layouts.h"
+//*************************************************************************
+//*************************************************************************
 
-//*************************************************************************
-//*************************************************************************
 DHT dht(DHTPIN, DHTTYPE);
 float temperature = 0;
 float humidity = 0;
@@ -61,7 +56,6 @@ bool FADE = 1;
 
 // Menu
 MenuSystem* myMenu;
-MenuState* menu_State = new MenuState();
 boolean flag_initScreen = false;
 
 // Use hardware SPI
@@ -69,8 +63,6 @@ Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ 2 , /*cs=*/ 15);
 
 // Setup the libraries for Over The Air Update
 OTA_Setup();
-
-
 
 void setup()
 {
@@ -165,9 +157,7 @@ void setup()
   //MENU
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   initMenu();
-  myMenu = getMenu(menu_State);
-  display_layout1_set_MenuState(menu_State);
-//  display_layout2_set_MenuState(menu_State);
+  myMenu = getMenu();
 
   // Init the OTA
   OTA_Init();
@@ -185,7 +175,8 @@ void loop()
 
       //HOMESCREEN ////////////////////////////////////////////////////////////////
       ///update homescreen only if menu exit
-      if (!menu_State->bMenuEnabled && flag_initScreen) {
+      if (!getEnabled() && flag_initScreen) {
+        SERIAL_OUT.println("Init Screen");
         initScreen();
         flag_initScreen = false;
       }
@@ -195,19 +186,19 @@ void loop()
       //set point attuale
       setpoint = Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3);
       //Stampa il setpoint solo se il valore dell'encoder è diverso da quello impostato nel T31
-      if (!menu_State->bMenuEnabled) {
+      if (!getEnabled()) {
         if (arrotonda(getEncoderValue()) != arrotonda(encoderValue_prec)) {
           FADE = 1;
           //TICK TIMER
           timerDisplay_setpoint_Tick();
           //SETPOINT PAGE ////////////////////////////////////////////////////////////////
 
-          if (menu_State->bLayout1) {
+          if (getLayout1()) {
             SERIAL_OUT.println("display_setpointPage - layout 1");
             display_layout1_background(ucg, arrotonda(getEncoderValue()) - arrotonda(setpoint));
             display_layout1_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity );
           }
-          else if (menu_State->bLayout2) {
+          else if (getLayout2()) {
             SERIAL_OUT.println("display_setpointPage - layout 2");
             display_layout2_Setpoint(ucg, getEncoderValue());
           }
@@ -248,15 +239,15 @@ void loop()
     FAST_110ms() {
       //SWITCH ENCODER
       if (!digitalRead(ENCODER_SWITCH)) {
-        if (!menu_State->bMenuEnabled) {
+        if (!getEnabled()) {
           //IF MENU NOT ENABLED
-          menu_State->bMenuEnabled = true;
+          setEnabled(true);
           //il flag viene impostato a true, così quando si esce dal menu la homescreen viene aggiornata ed il flag riportato a false
           flag_initScreen = true;
           ucg.clearScreen();
         } else {
           //IF MENU ENABLED
-          myMenu->select(false);
+          myMenu->select(true);
         }
         printMenu(ucg);
       }
@@ -301,10 +292,10 @@ void loop()
         backLEDvalueLOW =  memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1];
         FADE = 0;
         //HOMESCREEN ////////////////////////////////////////////////////////////////
-        if (!menu_State->bMenuEnabled) {
-          if (menu_State->bLayout1) {
+        if (!getEnabled()) {
+          if (getLayout1()) {
             display_layout1_HomeScreen(ucg, temperature, humidity, setpoint);
-          } else if (menu_State->bLayout2) {
+          } else if (getLayout2()) {
             //
           }
         }
@@ -322,10 +313,10 @@ void loop()
     UPDATESLOW();
 
     SLOW_50s() {
-      if (!menu_State->bMenuEnabled) {
-        if (menu_State->bLayout1) {
+      if (!getEnabled()) {
+        if (getLayout1()) {
           //
-        } else if (menu_State->bLayout2) {
+        } else if (getLayout2()) {
           SERIAL_OUT.println("display_frecce andamento temperatura - layout 2");
           calcoloAndamento(ucg, temperature);
           display_layout2_print_datetime(ucg);
@@ -337,10 +328,10 @@ void loop()
     SLOW_50s() {
       //*************************************************************************
       //*************************************************************************
-      if (!menu_State->bMenuEnabled) {
-        if (menu_State->bLayout1) {
+      if (!getEnabled()) {
+        if (getLayout1()) {
           getTemp();
-        } else if (menu_State->bLayout2) {
+        } else if (getLayout2()) {
           display_layout2_print_circle_white(ucg);
           getTemp();
           display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
@@ -397,21 +388,21 @@ void bright(int lum) {
 
 
 void initScreen() {
+  ucg.clearScreen();
+  if (getLayout1()) {
+    display_layout1_HomeScreen(ucg, temperature, humidity, setpoint);
+    getTemp();
+  }
+  else if (getLayout2()) {
 
-  if (!menu_State->bMenuEnabled) {
-    if (menu_State->bLayout1) {
-      display_layout1_HomeScreen(ucg, temperature, humidity, setpoint);
-      getTemp();
-    }
-    else if (menu_State->bLayout2) {
-      ucg.clearScreen();
-      getTemp();
-      display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
-      display_layout2_print_circle_white(ucg);
-      display_layout2_print_datetime(ucg);
-      display_layout2_print_circle_black(ucg);
-      display_layout2_print_circle_green(ucg);
-    }
+    getTemp();
+    display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
+    display_layout2_print_circle_white(ucg);
+    display_layout2_print_datetime(ucg);
+    display_layout2_print_circle_black(ucg);
+    display_layout2_print_circle_green(ucg);
   }
 }
+
+
 

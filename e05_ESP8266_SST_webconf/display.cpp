@@ -2,11 +2,8 @@
 #include "constants.h"
 #include "language.h"
 #include "ntp.h"
-
 #include "Ucglib.h"
-
-
-MenuState *stateM;
+#include "menu.h"
 
 float arrotonda(const float v)
 {
@@ -243,7 +240,8 @@ void display_print_splash_waiting_connection_peer(Ucglib_ILI9341_18x240x320_HWSP
 }
 
 void display_layout1_print_DateTime(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text) {
-  ucg.print(text);
+  if (getClock())
+    ucg.print(text);
 }
 
 time_t prevDisplay = 0; // when the digital clock was displayed
@@ -313,9 +311,9 @@ void display_layout1_background_black(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   ucg.setColor(1, 0, 0, 0); // BLACK for the background
 }
 
-void display_layout1_set_MenuState(MenuState *mState){
-  stateM=mState;
-  }
+//void display_layout1_set_MenuState(MenuState *mState){
+//  stateM=mState;
+//  }
 
 
 

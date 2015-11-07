@@ -2,9 +2,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #include <Arduino.h>
 #include "Ucglib.h"
-#include "MenuState.h"
 
-void display_layout1_set_MenuState(MenuState*);
 void display_layout1_setpointPage(Ucglib_ILI9341_18x240x320_HWSPI, float, float, float);
 void display_layout1_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI, float, float, float);
 
