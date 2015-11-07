@@ -12,7 +12,7 @@ boolean bCrono = false;
 boolean bCronoLearn = false;
 boolean bLayout1 = true;
 boolean bLayout2 = false;
-
+boolean bFlag_initScreen=true;
 
 // Menu variables
 MenuSystem ms;
@@ -294,3 +294,9 @@ boolean getCronoLearn() {
   return bCronoLearn;
 }
 
+boolean getFlag_initScreen() {
+  return bFlag_initScreen;
+}
+void setFlag_initScreen(boolean bVal) {
+  bFlag_initScreen = bVal;
+}

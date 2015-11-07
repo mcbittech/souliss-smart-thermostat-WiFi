@@ -272,7 +272,8 @@ void display_layout1_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp,
   flag_onetime_clear_SetpointPage = false;
   //uso flag_onetime per visualizzare almeno una volta la schermata, anche in assenza di variazione di temperatura
   //flag_onetime_HomeScreen è rimessa a false display_layout1_setpointPage
-  if (arrotonda(temp) != arrotonda(temp_prec) || (arrotonda(setpoint) != arrotonda(setpoint_prec))) {
+  //flag_initScreen è impostato true all'uscita dal menu
+  if ( getFlag_initScreen() || arrotonda(temp) != arrotonda(temp_prec) || (arrotonda(setpoint) != arrotonda(setpoint_prec))) {
     if (!flag_onetime_HomeScreen) {
       ucg.clearScreen();
     }

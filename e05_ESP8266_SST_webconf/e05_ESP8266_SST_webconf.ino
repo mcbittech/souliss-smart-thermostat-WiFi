@@ -56,7 +56,6 @@ bool FADE = 1;
 
 // Menu
 MenuSystem* myMenu;
-boolean flag_initScreen = false;
 
 // Use hardware SPI
 Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ 2 , /*cs=*/ 15);
@@ -175,10 +174,10 @@ void loop()
 
       //HOMESCREEN ////////////////////////////////////////////////////////////////
       ///update homescreen only if menu exit
-      if (!getEnabled() && flag_initScreen) {
+      if (!getEnabled() && getFlag_initScreen()) {
         SERIAL_OUT.println("Init Screen");
         initScreen();
-        flag_initScreen = false;
+        setFlag_initScreen(false);
       }
 
 
@@ -243,7 +242,7 @@ void loop()
           //IF MENU NOT ENABLED
           setEnabled(true);
           //il flag viene impostato a true, così quando si esce dal menu la homescreen viene aggiornata ed il flag riportato a false
-          flag_initScreen = true;
+          setFlag_initScreen(true);
           ucg.clearScreen();
         } else {
           //IF MENU ENABLED
@@ -390,11 +389,12 @@ void bright(int lum) {
 void initScreen() {
   ucg.clearScreen();
   if (getLayout1()) {
+    SERIAL_OUT.println("HomeScreen Layout 1");
     display_layout1_HomeScreen(ucg, temperature, humidity, setpoint);
     getTemp();
   }
   else if (getLayout2()) {
-
+    SERIAL_OUT.println("HomeScreen Layout 2");
     getTemp();
     display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
     display_layout2_print_circle_white(ucg);
