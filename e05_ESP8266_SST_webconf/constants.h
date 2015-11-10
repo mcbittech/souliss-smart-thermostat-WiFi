@@ -30,6 +30,23 @@
 #define SLOT_HUMIDITY        7     // This is the memory slot used for the execution of the logic
 #define SLOT_BRIGHT_DISPLAY        9
 
+//T31 Commands
+#define Souliss_T3n_InSetPoint      0x01
+#define Souliss_T3n_OutSetPoint     0x02
+#define Souliss_T3n_AsMeasured      0x03
+#define Souliss_T3n_Cooling       0x04
+#define Souliss_T3n_Heating       0x05
+#define Souliss_T3n_FanOff        0x06
+#define Souliss_T3n_FanLow        0x07
+#define Souliss_T3n_FanMed        0x08
+#define Souliss_T3n_FanHigh       0x09
+#define Souliss_T3n_FanAuto       0x0A
+#define Souliss_T3n_FanManual     0x0B
+#define Souliss_T3n_SetTemp       0x0C
+#define Souliss_T3n_ShutDown      0x0D
+
+//Souliss Commands
+#define Souliss_TRIGGED          0x01
 
 
 //PIN

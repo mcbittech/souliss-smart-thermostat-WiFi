@@ -143,7 +143,7 @@ void display_layout1_print_B3(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text, 
   ucg.print("°");
 }
 
-void display_layout1_print_B4(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text, float temp) {
+void display_layout1_print_B4_Hum(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text, float temp) {
   SERIAL_OUT.println("display_print_B4");
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SMALL);
@@ -157,11 +157,23 @@ void display_layout1_print_B4(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text, 
   ucg.print("%");
 }
 
+void display_layout1_print_B4_SystemOff(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text) {
+  SERIAL_OUT.println("display_print_B4");
+  ucg.setFontMode(UCG_FONT_MODE_SOLID);
+  ucg.setFont(FONT_SMALL);
+  ucg.setFontPosBaseline();
+
+  ucg.setColor(0, 255, 255, 255);    // Bianco
+  ucg.setPrintPos(5, ucg.getHeight() - 5);
+  ucg.setColor(111, 0, 255);    // Blu Elettrico
+  ucg.print(text);
+}
+
 
 boolean flag_onetime_HomeScreen = false;
 boolean flag_onetime_clear_SetpointPage = false;
 //compone la pagina dedicata al setpoint
-void display_layout1_setpointPage(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint, float temp, float hum) {
+void display_layout1_setpointPage(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint, float temp, float hum, boolean bSystemOn) {
   SERIAL_OUT.println("display_setpointPage");
 
   if (!flag_onetime_clear_SetpointPage) {
@@ -170,13 +182,16 @@ void display_layout1_setpointPage(Ucglib_ILI9341_18x240x320_HWSPI ucg, float set
     ucg.clearScreen();
   }
 
-
   flag_onetime_HomeScreen = false;
 
   display_layout1_print_setpoint(ucg, setpoint);
 
   display_layout1_print_B3(ucg, TEMP_TEXT, temp) ;
-  display_layout1_print_B4(ucg, HUM_TEXT, hum) ;
+
+  if (bSystemOn)
+    display_layout1_print_B4_Hum(ucg, HUM_TEXT, hum) ;
+  else
+    display_layout1_print_B4_SystemOff(ucg, SYSTEM_OFF_TEXT) ;
 }
 
 
@@ -267,7 +282,7 @@ void display_layout1_print_B1_datetime(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
 float temp_prec = 0;
 float setpoint_prec = 0;
 
-void display_layout1_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp, float hum, float setpoint) {
+void display_layout1_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp, float hum, float setpoint, boolean bSystemOn) {
   //ripristina la variabile bool. Viene fatto il clear della pagina ogni volta soltato una volta
   flag_onetime_clear_SetpointPage = false;
   //uso flag_onetime per visualizzare almeno una volta la schermata, anche in assenza di variazione di temperatura
@@ -288,7 +303,14 @@ void display_layout1_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp,
     setpoint_prec = setpoint;
     flag_onetime_HomeScreen = true;
     display_layout1_print_B3(ucg, SETPOINT_TEXT, setpoint);
-    display_layout1_print_B4(ucg, HUM_TEXT, hum) ;
+
+    if (bSystemOn) {
+      display_layout1_print_B4_Hum(ucg, HUM_TEXT, hum) ;
+    }
+    else
+    {
+      display_layout1_print_B4_SystemOff(ucg, SYSTEM_OFF_TEXT);
+    }
   }
 
   //la funzione display_layout1_print_B1 aggiorna soltanto se l'orario è cambiato
@@ -312,9 +334,7 @@ void display_layout1_background_black(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   ucg.setColor(1, 0, 0, 0); // BLACK for the background
 }
 
-//void display_layout1_set_MenuState(MenuState *mState){
-//  stateM=mState;
-//  }
+
 
 
 

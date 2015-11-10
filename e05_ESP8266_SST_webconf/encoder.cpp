@@ -31,6 +31,5 @@ void encoder() {
 
   encoder0PinALast = encoded; //store this value for next time
   encoderValue = encoder0Pos / 10.0;
-
 }
 

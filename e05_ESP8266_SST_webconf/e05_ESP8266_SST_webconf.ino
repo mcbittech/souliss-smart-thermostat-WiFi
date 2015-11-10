@@ -53,7 +53,6 @@ int backLEDvalueLOW = BRIGHT_MIN_DEFAULT;
 bool FADE = 1;
 
 
-
 // Menu
 MenuSystem* myMenu;
 
@@ -67,7 +66,8 @@ void setup()
 {
   SERIAL_OUT.begin(115200);
   //SPI Frequency
-  SPI.setFrequency(40000000);
+  //SPI.setFrequency(40000000);
+  SPI.setFrequency(80000000);
 
 
   //DISPLAY INIT
@@ -140,8 +140,8 @@ void setup()
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   pinMode (ENCODER_PIN_A, INPUT_PULLUP);
   pinMode (ENCODER_PIN_B, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(ENCODER_PIN_A), encoder, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(ENCODER_PIN_B), encoder, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(ENCODER_PIN_A), encoderFunction, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(ENCODER_PIN_B), encoderFunction, CHANGE);
   // SWITCH ENCODER
   digitalWrite(BACKLED, HIGH);
   pinMode(ENCODER_SWITCH, INPUT);
@@ -171,22 +171,7 @@ void loop()
   EXECUTEFAST() {
     UPDATEFAST();
 
-    FAST_30ms() {
-
-      //HOMESCREEN ////////////////////////////////////////////////////////////////
-      ///update homescreen only if menu exit
-      if (!getEnabled() && getFlag_initScreen()) {
-        SERIAL_OUT.println("Init Screen");
-        initScreen();
-        setFlag_initScreen(false);
-
-        //write min bright on T19
-        memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1] = getDisplayBright();
-        SERIAL_OUT.println("Set Display Bright: "); SERIAL_OUT.println(memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1]);
-      }
-
-
-
+    FAST_50ms() {
       //set point attuale
       setpoint = Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3);
       //Stampa il setpoint solo se il valore dell'encoder è diverso da quello impostato nel T31
@@ -200,7 +185,7 @@ void loop()
           if (getLayout1()) {
             SERIAL_OUT.println("display_setpointPage - layout 1");
             display_layout1_background(ucg, arrotonda(getEncoderValue()) - arrotonda(setpoint));
-            display_layout1_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity );
+            display_layout1_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity, getSystemState() );
           }
           else if (getLayout2()) {
             SERIAL_OUT.println("display_setpointPage - layout 2");
@@ -208,18 +193,6 @@ void loop()
           }
         }
 
-        if (timerDisplay_setpoint()) {
-          //timeout scaduto
-          display_layout1_background_black(ucg);
-          setEncoderValue(setpoint);
-        } else {
-          //timer non scaduto. Memorizzo
-          setpoint = getEncoderValue();
-          //memorizza il setpoint nel T31
-          Souliss_HalfPrecisionFloating((memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3), &setpoint);
-          // Trig the next change of the state
-          data_changed = Souliss_TRIGGED;
-        }
         encoderValue_prec = getEncoderValue();
       } else {
         //Bright high if menu enabled
@@ -241,6 +214,21 @@ void loop()
     }
 
     FAST_110ms() {
+      if (!getEnabled()) {
+        if (timerDisplay_setpoint()) {
+          //timeout scaduto
+          display_layout1_background_black(ucg);
+          setEncoderValue(setpoint);
+        } else {
+          //timer non scaduto. Memorizzo
+          setpoint = getEncoderValue();
+          //memorizza il setpoint nel T31
+          Souliss_HalfPrecisionFloating((memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3), &setpoint);
+          // Trig the next change of the state
+          data_changed = Souliss_TRIGGED;
+        }
+      }
+
       //SWITCH ENCODER
       if (!digitalRead(ENCODER_SWITCH)) {
         if (!getEnabled()) {
@@ -292,6 +280,37 @@ void loop()
       Logic_T53(SLOT_HUMIDITY);
     }
 
+
+    FAST_710ms() {
+      //HOMESCREEN ////////////////////////////////////////////////////////////////
+      ///update homescreen only if menu exit
+      if (!getEnabled() && getFlag_initScreen()) {
+        SERIAL_OUT.println("Init Screen");
+        initScreen();
+        setFlag_initScreen(false);
+
+        //EXIT MENU - Actions
+        //write min bright on T19
+        memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1] = getDisplayBright();
+        SERIAL_OUT.println("Set Display Bright: "); SERIAL_OUT.println(memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1]);
+
+        //write system ON/OFF
+        if (getSystem()) {
+          //ON
+          SERIAL_OUT.println("Set system ON ");
+          set_ThermostatMode(SLOT_THERMOSTAT);        // Set System On
+        } else {
+          //OFF
+          SERIAL_OUT.println("Set system OFF ");
+          memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] &= ~ (Souliss_T3n_SystemOn | Souliss_T3n_FanOn1 | Souliss_T3n_FanOn2 | Souliss_T3n_FanOn3 | Souliss_T3n_CoolingOn | Souliss_T3n_HeatingOn);
+        }
+
+        memory_map[MaCaco_IN_s + SLOT_THERMOSTAT] = Souliss_T3n_RstCmd;          // Reset
+        // Trig the next change of the state
+        data_changed = Souliss_TRIGGED;
+      }
+    }
+
     FAST_910ms() {
       if (timerDisplay_setpoint()) {
         //if timeout read value of T19
@@ -300,7 +319,7 @@ void loop()
         //HOMESCREEN ////////////////////////////////////////////////////////////////
         if (!getEnabled()) {
           if (getLayout1()) {
-            display_layout1_HomeScreen(ucg, temperature, humidity, setpoint);
+            display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSystemState());
           } else if (getLayout2()) {
             //
           }
@@ -362,12 +381,15 @@ void loop()
 }
 
 void set_ThermostatMode(U8 slot) {
-  memory_map[MaCaco_OUT_s + slot] |= Souliss_T3n_SystemOn | Souliss_T3n_HeatingMode;
-
+  memory_map[MaCaco_OUT_s + slot] |= Souliss_T3n_HeatingMode | Souliss_T3n_SystemOn;
+  // Trig the next change of the state
+  data_changed = Souliss_TRIGGED;
 }
 
 void set_DisplayMinBright(U8 slot, U8 val) {
   memory_map[MaCaco_OUT_s + slot + 1] = val;
+  // Trig the next change of the state
+  data_changed = Souliss_TRIGGED;
 }
 
 void getTemp() {
@@ -385,6 +407,10 @@ void getTemp() {
   SERIAL_OUT.print("aquisizione Humidity: "); SERIAL_OUT.println(humidity);
 }
 
+boolean getSystemState(){
+  return memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] | Souliss_T3n_SystemOn;
+}
+
 void bright(int lum) {
   int val = ((float)lum / 100) * 1023;
   if (val > 1023) val = 1023;
@@ -397,7 +423,7 @@ void initScreen() {
   ucg.clearScreen();
   if (getLayout1()) {
     SERIAL_OUT.println("HomeScreen Layout 1");
-    display_layout1_HomeScreen(ucg, temperature, humidity, setpoint);
+    display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSystemState());
     getTemp();
   }
   else if (getLayout2()) {
@@ -411,5 +437,8 @@ void initScreen() {
   }
 }
 
+void encoderFunction() {
+  encoder();
+}
 
 

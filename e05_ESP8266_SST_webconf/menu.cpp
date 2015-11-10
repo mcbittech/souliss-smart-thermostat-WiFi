@@ -38,8 +38,8 @@ MenuItem muMenu_mi_Clock_ON(MENU_TEXT_ON);
 MenuItem muMenu_mi_Clock_OFF(MENU_TEXT_OFF);
 
 Menu muMenu_Crono(MENU_TEXT_CRONO_ENABLE);
-MenuItem muMenu_mi_Crono_ON(MENU_TEXT_ON);
 MenuItem muMenu_mi_Crono_OFF(MENU_TEXT_OFF);
+MenuItem muMenu_mi_Crono_ON(MENU_TEXT_ON);
 MenuItem muMenu_mi_Crono_LEARN(MENU_TEXT_LEARN);
 
 Menu muMenu_System(MENU_TEXT_SYSTEM);
