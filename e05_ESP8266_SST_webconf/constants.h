@@ -29,6 +29,8 @@
 #define SLOT_TEMPERATURE        5     // This is the memory slot used for the execution of the logic in network_address1
 #define SLOT_HUMIDITY        7     // This is the memory slot used for the execution of the logic
 #define SLOT_BRIGHT_DISPLAY        9
+#define SLOT_AWAY                  11
+
 
 //T31 Commands
 #define Souliss_T3n_InSetPoint      0x01
@@ -62,6 +64,9 @@
 //TIMER NTP
 const int timeZone = 2;     // Central European Time
 #define MEMSET_NTP_START 300
+
+//AWAY
+#define TEMP_MINUS 1
 
 #define SERIAL_OUT Serial
 

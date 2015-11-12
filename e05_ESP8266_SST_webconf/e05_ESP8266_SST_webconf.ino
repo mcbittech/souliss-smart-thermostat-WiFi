@@ -126,6 +126,7 @@ void setup()
   Set_T52(SLOT_TEMPERATURE);
   Set_T53(SLOT_HUMIDITY);
   Set_T19(SLOT_BRIGHT_DISPLAY);
+  Set_T11(SLOT_AWAY);
 
   //set default mode
   Set_Thermostat(SLOT_THERMOSTAT);
@@ -211,6 +212,9 @@ void loop()
           encoderValue_prec = getEncoderValue();
         }
       }
+
+      Logic_T19(SLOT_BRIGHT_DISPLAY);
+      Logic_T11(SLOT_AWAY);
     }
 
     FAST_110ms() {
@@ -223,7 +227,8 @@ void loop()
           //timer non scaduto. Memorizzo
           setpoint = getEncoderValue();
           //memorizza il setpoint nel T31
-          Souliss_HalfPrecisionFloating((memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3), &setpoint);
+          setSetpoint(setpoint);
+          
           // Trig the next change of the state
           data_changed = Souliss_TRIGGED;
         }
@@ -268,7 +273,6 @@ void loop()
       // Start the heater and the fans
       nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
 
-      Logic_T19(SLOT_BRIGHT_DISPLAY);
       //*************************************************************************
       //*************************************************************************
     }
@@ -278,6 +282,7 @@ void loop()
       // user interface if the difference is greater than the deadband
       Logic_T52(SLOT_TEMPERATURE);
       Logic_T53(SLOT_HUMIDITY);
+      
     }
 
 
@@ -408,7 +413,8 @@ void getTemp() {
 }
 
 boolean getSystemState(){
-  return memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] | Souliss_T3n_SystemOn;
+    SERIAL_OUT.print("System State: "); SERIAL_OUT.println(memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] & Souliss_T3n_SystemOn);
+  return memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] & Souliss_T3n_SystemOn;
 }
 
 void bright(int lum) {
@@ -441,4 +447,14 @@ void encoderFunction() {
   encoder();
 }
 
+void setSetpoint(float setpoint){
+  //SERIAL_OUT.print("Away: ");SERIAL_OUT.println(memory_map[MaCaco_OUT_s + SLOT_AWAY]);
+  if(memory_map[MaCaco_OUT_s + SLOT_AWAY]) {
+    //is Away 
+    
+  } else {
+    //is not Away
+  }
+  Souliss_HalfPrecisionFloating((memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3), &setpoint);
+}
 
