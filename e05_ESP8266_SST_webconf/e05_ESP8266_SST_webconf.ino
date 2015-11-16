@@ -240,7 +240,7 @@ void loop()
           //IF MENU NOT ENABLED
           setEnabled(true);
           //il flag viene impostato a true, così quando si esce dal menu la homescreen viene aggiornata ed il flag riportato a false
-          setFlag_initScreen(true);
+          setChanged();
           ucg.clearScreen();
         } else {
           //IF MENU ENABLED
@@ -289,10 +289,9 @@ void loop()
     FAST_710ms() {
       //HOMESCREEN ////////////////////////////////////////////////////////////////
       ///update homescreen only if menu exit
-      if (!getEnabled() && getFlag_initScreen()) {
+      if (!getEnabled() && getChanged()) {
         SERIAL_OUT.println("Init Screen");
         initScreen();
-        setFlag_initScreen(false);
 
         //EXIT MENU - Actions
         //write min bright on T19
@@ -304,10 +303,12 @@ void loop()
           //ON
           SERIAL_OUT.println("Set system ON ");
           set_ThermostatMode(SLOT_THERMOSTAT);        // Set System On
+          setSystem(true);
         } else {
           //OFF
           SERIAL_OUT.println("Set system OFF ");
           memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] &= ~ (Souliss_T3n_SystemOn | Souliss_T3n_FanOn1 | Souliss_T3n_FanOn2 | Souliss_T3n_FanOn3 | Souliss_T3n_CoolingOn | Souliss_T3n_HeatingOn);
+          setSystem(false);
         }
 
         memory_map[MaCaco_IN_s + SLOT_THERMOSTAT] = Souliss_T3n_RstCmd;          // Reset
