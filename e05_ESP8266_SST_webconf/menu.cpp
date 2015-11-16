@@ -264,13 +264,8 @@ void printMenu(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
       ucg.print("  ");
       ucg.print(cp_m_comp->get_name());
     }
-
-
-
-
   }
 }
-
 
 boolean getEnabled() {
   return bMenuEnabled;
@@ -292,17 +287,19 @@ int getDisplayBright() {
   return iDisplayBright;
 }
 
+boolean getSystem() {
+  return bSystem;
+}
+
 void setSystem(boolean bVal) {
-  bSystem = false;
-  setChanged();
+  if (getSystem() != bVal) {
+    bSystem = bVal;
+    setChanged();
+  }
 
 }
 boolean getClock() {
   return bClock;
-}
-
-boolean getSystem() {
-  return bSystem;
 }
 
 boolean getCrono() {

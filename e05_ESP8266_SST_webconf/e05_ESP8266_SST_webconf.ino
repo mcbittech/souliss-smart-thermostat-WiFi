@@ -228,7 +228,7 @@ void loop()
           setpoint = getEncoderValue();
           //memorizza il setpoint nel T31
           setSetpoint(setpoint);
-          
+
           // Trig the next change of the state
           data_changed = Souliss_TRIGGED;
         }
@@ -272,6 +272,8 @@ void loop()
       Logic_Thermostat(SLOT_THERMOSTAT);
       // Start the heater and the fans
       nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
+      setSystem(getSystemState());
+
 
       //*************************************************************************
       //*************************************************************************
@@ -282,7 +284,7 @@ void loop()
       // user interface if the difference is greater than the deadband
       Logic_T52(SLOT_TEMPERATURE);
       Logic_T53(SLOT_HUMIDITY);
-      
+
     }
 
 
@@ -296,25 +298,25 @@ void loop()
         //EXIT MENU - Actions
         //write min bright on T19
         memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1] = getDisplayBright();
-        SERIAL_OUT.println("Set Display Bright: "); SERIAL_OUT.println(memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1]);
+        SERIAL_OUT.print("Set Display Bright: "); SERIAL_OUT.println(memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1]);
 
         //write system ON/OFF
         if (getSystem()) {
           //ON
           SERIAL_OUT.println("Set system ON ");
           set_ThermostatMode(SLOT_THERMOSTAT);        // Set System On
-          setSystem(true);
         } else {
           //OFF
           SERIAL_OUT.println("Set system OFF ");
           memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] &= ~ (Souliss_T3n_SystemOn | Souliss_T3n_FanOn1 | Souliss_T3n_FanOn2 | Souliss_T3n_FanOn3 | Souliss_T3n_CoolingOn | Souliss_T3n_HeatingOn);
-          setSystem(false);
         }
 
         memory_map[MaCaco_IN_s + SLOT_THERMOSTAT] = Souliss_T3n_RstCmd;          // Reset
         // Trig the next change of the state
         data_changed = Souliss_TRIGGED;
+        resetChanged();
       }
+
     }
 
     FAST_910ms() {
@@ -413,8 +415,7 @@ void getTemp() {
   SERIAL_OUT.print("aquisizione Humidity: "); SERIAL_OUT.println(humidity);
 }
 
-boolean getSystemState(){
-    SERIAL_OUT.print("System State: "); SERIAL_OUT.println(memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] & Souliss_T3n_SystemOn);
+boolean getSystemState() {
   return memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] & Souliss_T3n_SystemOn;
 }
 
@@ -448,11 +449,11 @@ void encoderFunction() {
   encoder();
 }
 
-void setSetpoint(float setpoint){
+void setSetpoint(float setpoint) {
   //SERIAL_OUT.print("Away: ");SERIAL_OUT.println(memory_map[MaCaco_OUT_s + SLOT_AWAY]);
-  if(memory_map[MaCaco_OUT_s + SLOT_AWAY]) {
-    //is Away 
-    
+  if (memory_map[MaCaco_OUT_s + SLOT_AWAY]) {
+    //is Away
+
   } else {
     //is not Away
   }
