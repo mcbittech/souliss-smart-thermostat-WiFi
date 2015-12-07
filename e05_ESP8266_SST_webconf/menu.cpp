@@ -12,7 +12,7 @@ boolean bCrono = false;
 boolean bCronoLearn = false;
 boolean bLayout1 = true;
 boolean bLayout2 = false;
-boolean bFlag_initScreen=true;
+boolean bChanged = true;
 
 // Menu variables
 MenuSystem ms;
@@ -53,7 +53,15 @@ MenuItem muMenu_mi_Layouts_2(MENU_TEXT_LAYOUT_2);
 MenuSystem* getMenu() {
   return &ms;
 }
-
+boolean getChanged() {
+  return bChanged;
+}
+void setChanged() {
+  bChanged = true;
+}
+void resetChanged() {
+  bChanged = false;
+}
 void on_item_MenuExit_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("Exit Selected");
@@ -107,11 +115,13 @@ void on_item_clockON_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_clockON_selected");
   bClock = true;
+  setChanged();
 }
 void on_item_clockOFF_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_clockOFF_selected");
   bClock = false;
+  setChanged();
 }
 void on_item_cronoON_selected(MenuItem* p_menu_item)
 {
@@ -133,11 +143,13 @@ void on_item_systemON_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_systemON_selected");
   bSystem = true;
+  setChanged();
 }
 void on_item_systemOFF_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_systemOFF_selected");
   bSystem = false;
+  setChanged();
 }
 
 
@@ -146,6 +158,7 @@ void on_item_layout1_selected(MenuItem* p_menu_item)
   SERIAL_OUT.println("on_item_layout1_selected");
   bLayout1 = true;
   bLayout2 = false;
+  setChanged();
 }
 void on_item_layout2_selected(MenuItem* p_menu_item)
 {
@@ -251,13 +264,8 @@ void printMenu(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
       ucg.print("  ");
       ucg.print(cp_m_comp->get_name());
     }
-
-
-
-
   }
 }
-
 
 boolean getEnabled() {
   return bMenuEnabled;
@@ -279,12 +287,19 @@ int getDisplayBright() {
   return iDisplayBright;
 }
 
-boolean getClock() {
-  return bClock;
-}
-
 boolean getSystem() {
   return bSystem;
+}
+
+void setSystem(boolean bVal) {
+  if (getSystem() != bVal) {
+    bSystem = bVal;
+    setChanged();
+  }
+
+}
+boolean getClock() {
+  return bClock;
 }
 
 boolean getCrono() {
@@ -294,9 +309,5 @@ boolean getCronoLearn() {
   return bCronoLearn;
 }
 
-boolean getFlag_initScreen() {
-  return bFlag_initScreen;
-}
-void setFlag_initScreen(boolean bVal) {
-  bFlag_initScreen = bVal;
-}
+
+
