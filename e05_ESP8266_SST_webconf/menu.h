@@ -4,7 +4,7 @@
 
 void initMenu();
 MenuSystem* getMenu();
-boolean getEnabled();
+boolean getMenuEnabled();
 void setEnabled(boolean);
 boolean getLayout1();
 boolean getLayout2();

@@ -20,7 +20,7 @@
 
 //MENU
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define MENU_TEXT_ROOT "Smart Souliss Thermostat"
+#define MENU_TEXT_ROOT "SmartSoulissThermostat"
 #define MENU_TEXT_ON "ON"
 #define MENU_TEXT_OFF "OFF"
 #define MENU_TEXT_BACK "Torna"

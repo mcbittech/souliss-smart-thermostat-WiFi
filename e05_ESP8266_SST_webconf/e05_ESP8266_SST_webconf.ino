@@ -65,10 +65,6 @@ OTA_Setup();
 void setup()
 {
   SERIAL_OUT.begin(115200);
-  //SPI Frequency
-  //SPI.setFrequency(40000000);
-  SPI.setFrequency(80000000);
-
 
   //DISPLAY INIT
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -162,6 +158,9 @@ void setup()
   // Init the OTA
   OTA_Init();
 
+//SPI Frequency
+  SPI.setFrequency(80000000);
+  
   // Init HomeScreen
   initScreen();
 }
@@ -176,7 +175,7 @@ void loop()
       //set point attuale
       setpoint = Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3);
       //Stampa il setpoint solo se il valore dell'encoder è diverso da quello impostato nel T31
-      if (!getEnabled()) {
+      if (!getMenuEnabled()) {
         if (arrotonda(getEncoderValue()) != arrotonda(encoderValue_prec)) {
           FADE = 1;
           //TICK TIMER
@@ -218,7 +217,7 @@ void loop()
     }
 
     FAST_110ms() {
-      if (!getEnabled()) {
+      if (!getMenuEnabled()) {
         if (timerDisplay_setpoint()) {
           //timeout scaduto
           display_layout1_background_black(ucg);
@@ -236,7 +235,7 @@ void loop()
 
       //SWITCH ENCODER
       if (!digitalRead(ENCODER_SWITCH)) {
-        if (!getEnabled()) {
+        if (!getMenuEnabled()) {
           //IF MENU NOT ENABLED
           setEnabled(true);
           //il flag viene impostato a true, così quando si esce dal menu la homescreen viene aggiornata ed il flag riportato a false
@@ -291,7 +290,7 @@ void loop()
     FAST_710ms() {
       //HOMESCREEN ////////////////////////////////////////////////////////////////
       ///update homescreen only if menu exit
-      if (!getEnabled() && getChanged()) {
+      if (!getMenuEnabled() && getChanged()) {
         SERIAL_OUT.println("Init Screen");
         initScreen();
 
@@ -325,7 +324,7 @@ void loop()
         backLEDvalueLOW =  memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1];
         FADE = 0;
         //HOMESCREEN ////////////////////////////////////////////////////////////////
-        if (!getEnabled()) {
+        if (!getMenuEnabled()) {
           if (getLayout1()) {
             display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSystemState());
           } else if (getLayout2()) {
@@ -346,7 +345,7 @@ void loop()
     UPDATESLOW();
 
     SLOW_50s() {
-      if (!getEnabled()) {
+      if (!getMenuEnabled()) {
         if (getLayout1()) {
           //
         } else if (getLayout2()) {
@@ -361,7 +360,7 @@ void loop()
     SLOW_50s() {
       //*************************************************************************
       //*************************************************************************
-      if (!getEnabled()) {
+      if (!getMenuEnabled()) {
         if (getLayout1()) {
           getTemp();
         } else if (getLayout2()) {

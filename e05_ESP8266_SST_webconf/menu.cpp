@@ -66,49 +66,56 @@ void on_item_MenuExit_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("Exit Selected");
   bMenuEnabled = false;
+  setChanged();
 }
 
 void on_itemBack_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("Back Selected");
+  setChanged();
   ms.back();
 }
 
 void on_item_perc100_selected(MenuItem* p_menu_item)
 {
-
   iDisplayBright = 100;
+  setChanged();
 }
 
 void on_item_perc80_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 80;
+setChanged();  
 }
 
 void on_item_perc60_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 60;
-
+setChanged();
 }
 
 void on_item_perc50_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 50;
+  setChanged();
 }
 
 void on_item_perc30_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 30;
+  setChanged();
 }
 
 void on_item_perc5_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 5;
+  setChanged();
 }
 
 void on_item_perc2_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 2;
+  setChanged();
 }
 
 void on_item_clockON_selected(MenuItem* p_menu_item)
@@ -127,16 +134,19 @@ void on_item_cronoON_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_cronoON_selected");
   bCrono = true;
+  setChanged();
 }
 void on_item_cronoOFF_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_cronoOFF_selected");
   bCrono = false;
+  setChanged();
 }
 void on_item_cronoLEARN_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_cronoLEARN_selected");
   bCronoLearn = true;
+  setChanged();
 }
 
 void on_item_systemON_selected(MenuItem* p_menu_item)
@@ -165,6 +175,7 @@ void on_item_layout2_selected(MenuItem* p_menu_item)
   SERIAL_OUT.println("on_item_layout2_selected");
   bLayout1 = false;
   bLayout2 = true;
+  setChanged();
 }
 
 void initMenu() {
@@ -267,7 +278,7 @@ void printMenu(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   }
 }
 
-boolean getEnabled() {
+boolean getMenuEnabled() {
   return bMenuEnabled;
 }
 
