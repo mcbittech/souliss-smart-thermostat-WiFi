@@ -7,6 +7,10 @@
 
 	This example is only supported on ESP8266.
 ***************************************************************************/
+#define HOST_NAME_INSKETCH
+#define HOST_NAME "Souliss-Termostato-Piano-Terra"
+
+
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
