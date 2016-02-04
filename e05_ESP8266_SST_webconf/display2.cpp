@@ -61,12 +61,14 @@ void display_layout2_print_datetime(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
     String Date = "";
     Time = digitalClockDisplay_simple();
     Date = digitalDataDisplay();
-    ucg.setFont(ucg_font_inr19_mf);
+    //ucg.setFont(ucg_font_inr19_mf);
+    ucg.setFont(ucg_font_helvB14_hf);
     ucg.setColor(0, 255, 255, 255);       // Bianco
-    ucg.setPrintPos(160, 5);
+    ucg.setPrintPos(160, 4);
     ucg.print(Date);
-    ucg.setFont(ucg_font_inb21_mr);
-    ucg.setPrintPos(228, 52);
+    //ucg.setFont(ucg_font_inb21_mr);
+    ucg.setFont(ucg_font_helvB18_hf);
+    ucg.setPrintPos(260, 4);
     ucg.print(Time);
     SERIAL_OUT.print("New Clock: "); SERIAL_OUT.println(Time);
   }
