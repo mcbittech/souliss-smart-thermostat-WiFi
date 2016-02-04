@@ -76,25 +76,45 @@ void display_layout2_print_datetime(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
 void display_layout2_print_circle_green(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   SERIAL_OUT.println("Refresh Circle Green "); 
   ucg.setColor(102, 255, 0);    // Verde Chiaro
+  SERIAL_OUT.println("Refresh Circle Green - Set Color "); 
   ucg.drawCircle(85, 120, 110, UCG_DRAW_ALL);
+  SERIAL_OUT.println("Refresh Circle Green 1 "); 
   ucg.drawCircle(85, 119, 110, UCG_DRAW_ALL);
+  SERIAL_OUT.println("Refresh Circle Green 2 ");
   ucg.drawCircle(85, 120, 111, UCG_DRAW_ALL);
+  SERIAL_OUT.println("Refresh Circle Green 3 ");
   ucg.drawCircle(85, 119, 111, UCG_DRAW_ALL);
+  SERIAL_OUT.println("Refresh Circle Green 4 ");
   ucg.drawCircle(85, 120, 112, UCG_DRAW_ALL);
+  SERIAL_OUT.println("Refresh Circle Green 5 ");
   ucg.drawCircle(85, 119, 112, UCG_DRAW_ALL);
+  SERIAL_OUT.println("Refresh Circle Green 6 ");
   ucg.drawCircle(85, 120, 113, UCG_DRAW_ALL);
+  SERIAL_OUT.println("Refresh Circle Green 7 ");
   ucg.drawCircle(85, 119, 113, UCG_DRAW_ALL);
+  SERIAL_OUT.println("Refresh Circle Green 8 ");
   ucg.drawCircle(85, 120, 114, UCG_DRAW_ALL);
+  SERIAL_OUT.println("Refresh Circle Green 9 ");
   ucg.drawCircle(85, 119, 114, UCG_DRAW_ALL);
+  SERIAL_OUT.println("Refresh Circle Green 10 ");
   ucg.drawCircle(85, 120, 115, UCG_DRAW_ALL);
+  SERIAL_OUT.println("Refresh Circle Green 11 ");
   ucg.drawCircle(85, 119, 115, UCG_DRAW_ALL);
+  SERIAL_OUT.println("Refresh Circle Green 12 ");
   ucg.drawCircle(85, 120, 116, UCG_DRAW_ALL);
+  SERIAL_OUT.println("Refresh Circle Green 13 ");
   ucg.drawCircle(85, 119, 116, UCG_DRAW_ALL);
+  SERIAL_OUT.println("Refresh Circle Green 14 ");
   ucg.drawCircle(85, 120, 117, UCG_DRAW_ALL);
+  SERIAL_OUT.println("Refresh Circle Green 15 ");
   ucg.drawCircle(85, 119, 117, UCG_DRAW_ALL);
+  SERIAL_OUT.println("Refresh Circle Green 16 ");
   ucg.drawCircle(85, 120, 118, UCG_DRAW_ALL);
+  SERIAL_OUT.println("Refresh Circle Green 17 ");
   ucg.drawCircle(85, 119, 118, UCG_DRAW_ALL);
+  SERIAL_OUT.println("Refresh Circle Green 18 ");
   ucg.drawCircle(85, 120, 119, UCG_DRAW_ALL);
+  SERIAL_OUT.println("Refresh Circle Green 19 ");
   ucg.drawCircle(85, 119, 119, UCG_DRAW_ALL);
   SERIAL_OUT.println("Refresh Circle Green OK "); 
 }
