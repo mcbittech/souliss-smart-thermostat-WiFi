@@ -67,7 +67,7 @@ void setup()
   SERIAL_OUT.begin(115200);
   //SPI Frequency
   //SPI.setFrequency(40000000);
-  SPI.setFrequency(80000000);
+  //SPI.setFrequency(3200000);
 
 
   //DISPLAY INIT
@@ -75,7 +75,7 @@ void setup()
   ucg.begin(UCG_FONT_MODE_SOLID);
   ucg.setColor(0, 0, 0);
   ucg.setRotate90();
-
+  SPI.setFrequency(3200000);
   //BACK LED
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   digitalWrite(BACKLED, HIGH);
@@ -119,6 +119,7 @@ void setup()
     // to configure any parameter here.
     SetDynamicAddressing();
     GetAddress();
+    SERIAL_OUT.println("Address received");
   }
 
   //*************************************************************************
@@ -343,19 +344,6 @@ void loop()
     UPDATESLOW();
 
     SLOW_50s() {
-      if (!getEnabled()) {
-        if (getLayout1()) {
-          //
-        } else if (getLayout2()) {
-          SERIAL_OUT.println("display_frecce andamento temperatura - layout 2");
-          calcoloAndamento(ucg, temperature);
-          display_layout2_print_datetime(ucg);
-          display_layout2_print_circle_green(ucg);
-        }
-      }
-    }
-
-    SLOW_50s() {
       //*************************************************************************
       //*************************************************************************
       if (!getEnabled()) {
@@ -371,6 +359,19 @@ void loop()
         }
       }
     }
+
+    SLOW_70s() {
+      if (!getEnabled()) {
+        if (getLayout1()) {
+          //
+        } else if (getLayout2()) {
+          calcoloAndamento(ucg, temperature);
+          display_layout2_print_datetime(ucg);
+          display_layout2_print_circle_green(ucg);
+        }
+      }
+    }
+    
     SLOW_15m() {
       //NTP
       /////////////////////////////////////////////////////////////////////////////////////////////////////////
