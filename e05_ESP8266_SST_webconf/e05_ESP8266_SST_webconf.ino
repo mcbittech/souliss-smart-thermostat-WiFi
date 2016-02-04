@@ -75,7 +75,7 @@ void setup()
   ucg.begin(UCG_FONT_MODE_SOLID);
   ucg.setColor(0, 0, 0);
   ucg.setRotate90();
-  SPI.setFrequency(3200000);
+  SPI.setFrequency(160000000);
   //BACK LED
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   digitalWrite(BACKLED, HIGH);
@@ -355,6 +355,7 @@ void loop()
           display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
           display_layout2_print_datetime(ucg);
           display_layout2_print_circle_black(ucg);
+          yield();
           display_layout2_print_circle_green(ucg);
         }
       }
@@ -375,7 +376,9 @@ void loop()
     SLOW_15m() {
       //NTP
       /////////////////////////////////////////////////////////////////////////////////////////////////////////
+      yield();
       initNTP();
+      yield();
     }
 
     // If running as Peer
@@ -440,6 +443,7 @@ void initScreen() {
     display_layout2_print_circle_white(ucg);
     display_layout2_print_datetime(ucg);
     display_layout2_print_circle_black(ucg);
+    yield();
     display_layout2_print_circle_green(ucg);
   }
 }

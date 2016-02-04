@@ -10,8 +10,8 @@ boolean bClock = true;
 boolean bSystem = true;
 boolean bCrono = false;
 boolean bCronoLearn = false;
-boolean bLayout1 = true;
-boolean bLayout2 = false;
+boolean bLayout1 = false;
+boolean bLayout2 = true;
 boolean bFlag_initScreen=true;
 
 // Menu variables
