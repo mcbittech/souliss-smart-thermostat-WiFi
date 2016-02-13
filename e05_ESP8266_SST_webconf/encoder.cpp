@@ -6,7 +6,7 @@
 
 int encoder0Pos = 220;
 int encoder_PinALast = LOW;
-float encoderValue = 18.0;
+float encoderValue = 20.0;
 int n;
 
 float getEncoderValue() {

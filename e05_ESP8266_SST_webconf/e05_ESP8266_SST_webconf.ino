@@ -75,7 +75,6 @@ void setup()
   ucg.begin(UCG_FONT_MODE_SOLID);
   ucg.setColor(0, 0, 0);
   ucg.setRotate90();
-
   //BACK LED
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   digitalWrite(BACKLED, HIGH);
@@ -119,6 +118,7 @@ void setup()
     // to configure any parameter here.
     SetDynamicAddressing();
     GetAddress();
+    SERIAL_OUT.println("Address received");
   }
 
   //*************************************************************************
@@ -351,21 +351,6 @@ void loop()
     SLOW_50s() {
       if (!getMenuEnabled()) {
         if (getLayout1()) {
-          //
-        } else if (getLayout2()) {
-          SERIAL_OUT.println("display_frecce andamento temperatura - layout 2");
-          calcoloAndamento(ucg, temperature);
-          display_layout2_print_datetime(ucg);
-          display_layout2_print_circle_green(ucg);
-        }
-      }
-    }
-
-    SLOW_50s() {
-      //*************************************************************************
-      //*************************************************************************
-      if (!getMenuEnabled()) {
-        if (getLayout1()) {
           getTemp();
         } else if (getLayout2()) {
           display_layout2_print_circle_white(ucg);
@@ -373,14 +358,30 @@ void loop()
           display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
           display_layout2_print_datetime(ucg);
           display_layout2_print_circle_black(ucg);
+          yield();
           display_layout2_print_circle_green(ucg);
         }
       }
     }
+
+    SLOW_70s() {
+      if (!getMenuEnabled()) {
+        if (getLayout1()) {
+          //
+        } else if (getLayout2()) {
+          calcoloAndamento(ucg, temperature);
+          display_layout2_print_datetime(ucg);
+          display_layout2_print_circle_green(ucg);
+        }
+      }
+    }
+    
     SLOW_15m() {
       //NTP
       /////////////////////////////////////////////////////////////////////////////////////////////////////////
+      yield();
       initNTP();
+      yield();
     }
 
     // If running as Peer
@@ -444,6 +445,7 @@ void initScreen() {
     display_layout2_print_circle_white(ucg);
     display_layout2_print_datetime(ucg);
     display_layout2_print_circle_black(ucg);
+    yield();
     display_layout2_print_circle_green(ucg);
   }
 }
