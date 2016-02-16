@@ -3,14 +3,28 @@
 #include "tools/store/store.h"          
 #include "read_save.h"
 
-byte a=0;
 
-void save_eeprom(){ 
-  //Store_8bit(index,value);
-  Store_8bit(400,2);
+
+void save_eeprom_byte(int index,byte value){ 
+  Store_8bit(index,value);
+  Serial.print("SaveEepromByte index");Serial.print(index);Serial.println(value);
+  Store_Commit();
 }
 
-void read_eeprom(){ 
-  //Return_8bit(index);
-  a=Return_8bit(400);
+void save_eeprom_int(int index,int value){ 
+  Store_16bit(index,value);
+  Serial.print("SaveEepromInt index");Serial.print(index);Serial.println(value);
+  Store_Commit();
+}
+
+
+void read_eeprom_byte(int index,int value){
+  value=Return_8bit(index);
+  Serial.print("readEepromByte index");Serial.print(index);Serial.println(value);
+}
+
+
+void read_eeprom_int(int index,int value){
+  value=Return_16bit(index);
+  Serial.print("ReadEepromInt index");Serial.print(index);Serial.println(value);
 }
