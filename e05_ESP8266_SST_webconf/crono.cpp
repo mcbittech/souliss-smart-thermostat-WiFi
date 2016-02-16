@@ -328,8 +328,8 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   //MIN-MAX dDaysel
   //////////////////////////////////////////////////////////////  
   if(boxSelected<0){
-    boxSelected=3;
-  }else if(boxSelected>3){
+    boxSelected=4;
+  }else if(boxSelected>4){
     boxSelected=0;
   }
     
