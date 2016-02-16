@@ -207,7 +207,8 @@ void initMenu() {
   // Menu setup
   mmRoot.add_item(&mm_miExit, &on_item_MenuExit_selected);
   mmRoot.add_menu(&muMenu);
-  mmRoot.add_menu(&muCrono);
+  //Crono item in first page only if it is enable on preferences.h
+if(CRONO) mmRoot.add_menu(&muCrono);
 
   muMenu.add_item(&mm_miBack, &on_itemBack_selected);
   muMenu.add_menu(&muMenu_mi_Bright);
