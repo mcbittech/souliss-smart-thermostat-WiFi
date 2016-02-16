@@ -11,12 +11,15 @@ boolean getLayout2();
 int getDisplayBright();
 boolean getClock();
 void setSystem(boolean bVal);
-boolean getSystem();
+boolean getLocalSystem();
 boolean getCrono();
 boolean getCronoLearn();
 
-boolean getChanged();
+boolean getUIChanged();
+boolean getSystemChanged();
 void setChanged();
-void resetChanged();
+
+void resetUIChanged();
+void resetSystemChanged();
 
 void printMenu(Ucglib_ILI9341_18x240x320_HWSPI);

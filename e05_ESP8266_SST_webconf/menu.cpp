@@ -1,18 +1,20 @@
 #include <Arduino.h>
 #include "constants.h"
+#include "preferences.h"
 #include <MenuSystem.h>
 #include "language.h"
 #include "Ucglib.h"
 
 boolean bMenuEnabled = false;
-int iDisplayBright = 30;
-boolean bClock = true;
+int iDisplayBright = BRIGHT;
+boolean bClock = CLOCK;
 boolean bSystem = true;
-boolean bCrono = false;
-boolean bCronoLearn = false;
-boolean bLayout1 = false;
-boolean bLayout2 = true;
-boolean bChanged = true;
+boolean bCrono = CRONO;
+boolean bCronoLearn = CRONOLEARN;
+boolean bLayout1 = LAYOUT_LINEAR;
+boolean bLayout2 = LAYOUT1_CIRCULAR;
+boolean bUIChanged = true;
+boolean bSystemChanged = true;
 
 // Menu variables
 MenuSystem ms;
@@ -53,14 +55,36 @@ MenuItem muMenu_mi_Layouts_2(MENU_TEXT_LAYOUT_2);
 MenuSystem* getMenu() {
   return &ms;
 }
-boolean getChanged() {
-  return bChanged;
+boolean getUIChanged() {
+  return bUIChanged;
+}
+boolean getSystemChanged() {
+  return bSystemChanged;
 }
 void setChanged() {
-  bChanged = true;
+  bUIChanged = true;
+  bSystemChanged = true;
 }
-void resetChanged() {
-  bChanged = false;
+
+void resetUIChanged() {
+  bUIChanged = false;
+}
+void resetSystemChanged() {
+  bSystemChanged = false;
+}
+
+boolean getLocalSystem() {
+  return bSystem;
+}
+
+void setSystem(boolean bVal) {
+  SERIAL_OUT.print("Actual System State: "); SERIAL_OUT.println(getLocalSystem());
+  if (getLocalSystem() != bVal) {
+    bSystem = bVal;
+    SERIAL_OUT.print("System setted to "); SERIAL_OUT.println(bVal);
+    setChanged();
+  }
+
 }
 void on_item_MenuExit_selected(MenuItem* p_menu_item)
 {
@@ -85,13 +109,13 @@ void on_item_perc100_selected(MenuItem* p_menu_item)
 void on_item_perc80_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 80;
-setChanged();  
+  setChanged();
 }
 
 void on_item_perc60_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 60;
-setChanged();
+  setChanged();
 }
 
 void on_item_perc50_selected(MenuItem* p_menu_item)
@@ -152,13 +176,13 @@ void on_item_cronoLEARN_selected(MenuItem* p_menu_item)
 void on_item_systemON_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_systemON_selected");
-  bSystem = true;
+  setSystem(true);
   setChanged();
 }
 void on_item_systemOFF_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_systemOFF_selected");
-  bSystem = false;
+  setSystem(false);
   setChanged();
 }
 
@@ -298,17 +322,6 @@ int getDisplayBright() {
   return iDisplayBright;
 }
 
-boolean getSystem() {
-  return bSystem;
-}
-
-void setSystem(boolean bVal) {
-  if (getSystem() != bVal) {
-    bSystem = bVal;
-    setChanged();
-  }
-
-}
 boolean getClock() {
   return bClock;
 }

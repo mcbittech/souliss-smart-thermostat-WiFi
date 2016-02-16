@@ -157,7 +157,7 @@ void display_layout1_print_B3(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text, 
 }
 
 void display_layout1_print_B4_Hum(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text, float temp) {
-  SERIAL_OUT.println("display_print_B4");
+  SERIAL_OUT.println("display_print_B4 [Humidity]");
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SMALL);
   ucg.setFontPosBaseline();
@@ -171,7 +171,7 @@ void display_layout1_print_B4_Hum(Ucglib_ILI9341_18x240x320_HWSPI ucg, String te
 }
 
 void display_layout1_print_B4_SystemOff(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text) {
-  SERIAL_OUT.println("display_print_B4");
+  SERIAL_OUT.println("display_print_B4 [SystemOff]");
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SMALL);
   ucg.setFontPosBaseline();
@@ -299,7 +299,7 @@ void display_layout1_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp,
   //uso flag_onetime per visualizzare almeno una volta la schermata, anche in assenza di variazione di temperatura
   //flag_onetime_HomeScreen è rimessa a false display_layout1_setpointPage
   //flag_initScreen è impostato true all'uscita dal menu
-  if ( getChanged() || arrotonda(temp) != arrotonda(temp_prec) || (arrotonda(setpoint) != arrotonda(setpoint_prec))) {
+  if ( getUIChanged() || arrotonda(temp) != arrotonda(temp_prec) || (arrotonda(setpoint) != arrotonda(setpoint_prec))) {
     if (!flag_onetime_HomeScreen) {
       ucg.clearScreen();
     }
@@ -322,7 +322,7 @@ void display_layout1_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp,
     {
       display_layout1_print_B4_SystemOff(ucg, SYSTEM_OFF_TEXT);
     }
-    resetChanged();
+    resetUIChanged();
   }
 
   //la funzione display_layout1_print_B1 aggiorna soltanto se l'orario è cambiato

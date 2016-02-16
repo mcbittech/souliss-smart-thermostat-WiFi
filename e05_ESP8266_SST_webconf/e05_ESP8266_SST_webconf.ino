@@ -130,7 +130,7 @@ void setup()
 
   //set default mode
   Set_Thermostat(SLOT_THERMOSTAT);
-  set_ThermostatMode(SLOT_THERMOSTAT);
+  set_ThermostatModeOn(SLOT_THERMOSTAT);
   set_DisplayMinBright(SLOT_BRIGHT_DISPLAY, BRIGHT_MIN_DEFAULT);
 
   // Define output pins
@@ -162,9 +162,9 @@ void setup()
   // Init the OTA
   OTA_Init();
 
-//SPI Frequency
+  //SPI Frequency
   SPI.setFrequency(80000000);
-  
+
   // Init HomeScreen
   initScreen();
 }
@@ -189,7 +189,7 @@ void loop()
           if (getLayout1()) {
             SERIAL_OUT.println("display_setpointPage - layout 1");
             display_layout1_background(ucg, arrotonda(getEncoderValue()) - arrotonda(setpoint));
-            display_layout1_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity, getSystemState() );
+            display_layout1_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity, getSoulissSystemState() );
           }
           else if (getLayout2()) {
             SERIAL_OUT.println("display_setpointPage - layout 2");
@@ -233,7 +233,7 @@ void loop()
           setSetpoint(setpoint);
 
           // Trig the next change of the state
-          data_changed = Souliss_TRIGGED;
+          setSoulissDataChanged();
         }
       }
 
@@ -275,8 +275,11 @@ void loop()
       Logic_Thermostat(SLOT_THERMOSTAT);
       // Start the heater and the fans
       nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
-      setSystem(getSystemState());
-
+      //if menu disabled and nothing changed
+      if (!getMenuEnabled() && !getSystemChanged()) {
+        if (getLocalSystem() != getSoulissSystemState())
+          setSystem(getSoulissSystemState());
+      }
 
       //*************************************************************************
       //*************************************************************************
@@ -294,30 +297,31 @@ void loop()
     FAST_710ms() {
       //HOMESCREEN ////////////////////////////////////////////////////////////////
       ///update homescreen only if menu exit
-      if (!getMenuEnabled() && getChanged()) {
-        SERIAL_OUT.println("Init Screen");
-        initScreen();
-
+      if (!getMenuEnabled() && getSystemChanged()) {
         //EXIT MENU - Actions
         //write min bright on T19
         memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1] = getDisplayBright();
         SERIAL_OUT.print("Set Display Bright: "); SERIAL_OUT.println(memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1]);
 
         //write system ON/OFF
-        if (getSystem()) {
+        if (getLocalSystem()) {
           //ON
           SERIAL_OUT.println("Set system ON ");
-          set_ThermostatMode(SLOT_THERMOSTAT);        // Set System On
+          set_ThermostatModeOn(SLOT_THERMOSTAT);        // Set System On
         } else {
           //OFF
           SERIAL_OUT.println("Set system OFF ");
-          memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] &= ~ (Souliss_T3n_SystemOn | Souliss_T3n_FanOn1 | Souliss_T3n_FanOn2 | Souliss_T3n_FanOn3 | Souliss_T3n_CoolingOn | Souliss_T3n_HeatingOn);
+          set_ThermostatOff(SLOT_THERMOSTAT);
         }
 
         memory_map[MaCaco_IN_s + SLOT_THERMOSTAT] = Souliss_T3n_RstCmd;          // Reset
         // Trig the next change of the state
-        data_changed = Souliss_TRIGGED;
-        resetChanged();
+        setSoulissDataChanged();
+
+        SERIAL_OUT.println("Init Screen");
+        initScreen();
+        
+        resetSystemChanged();
       }
 
     }
@@ -330,7 +334,7 @@ void loop()
         //HOMESCREEN ////////////////////////////////////////////////////////////////
         if (!getMenuEnabled()) {
           if (getLayout1()) {
-            display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSystemState());
+            display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSoulissSystemState());
           } else if (getLayout2()) {
             //
           }
@@ -375,7 +379,7 @@ void loop()
         }
       }
     }
-    
+
     SLOW_15m() {
       //NTP
       /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -392,16 +396,26 @@ void loop()
   OTA_Process();
 }
 
-void set_ThermostatMode(U8 slot) {
+void set_ThermostatModeOn(U8 slot) {
+  SERIAL_OUT.println("set_ThermostatModeOn");
   memory_map[MaCaco_OUT_s + slot] |= Souliss_T3n_HeatingMode | Souliss_T3n_SystemOn;
+  //memory_map[MaCaco_IN_s + slot] == Souliss_T3n_Heating;
+  //memory_map[MaCaco_OUT_s + slot] |= Souliss_T3n_SystemOn;
   // Trig the next change of the state
-  data_changed = Souliss_TRIGGED;
+  setSoulissDataChanged();
+}
+
+void set_ThermostatOff(U8 slot) {
+  SERIAL_OUT.println("set_ThermostatOff");
+  //memory_map[MaCaco_IN_s + slot] = Souliss_T3n_ShutDown;
+  memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] &= ~ (Souliss_T3n_SystemOn | Souliss_T3n_FanOn1 | Souliss_T3n_FanOn2 | Souliss_T3n_FanOn3 | Souliss_T3n_CoolingOn | Souliss_T3n_HeatingOn);
+  setSoulissDataChanged();
 }
 
 void set_DisplayMinBright(U8 slot, U8 val) {
   memory_map[MaCaco_OUT_s + slot + 1] = val;
   // Trig the next change of the state
-  data_changed = Souliss_TRIGGED;
+  setSoulissDataChanged();
 }
 
 void getTemp() {
@@ -419,7 +433,7 @@ void getTemp() {
   SERIAL_OUT.print("aquisizione Humidity: "); SERIAL_OUT.println(humidity);
 }
 
-boolean getSystemState() {
+boolean getSoulissSystemState() {
   return memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] & Souliss_T3n_SystemOn;
 }
 
@@ -435,7 +449,7 @@ void initScreen() {
   ucg.clearScreen();
   if (getLayout1()) {
     SERIAL_OUT.println("HomeScreen Layout 1");
-    display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSystemState());
+    display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSoulissSystemState());
     getTemp();
   }
   else if (getLayout2()) {
@@ -463,5 +477,11 @@ void setSetpoint(float setpoint) {
     //is not Away
   }
   Souliss_HalfPrecisionFloating((memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3), &setpoint);
+}
+
+
+void setSoulissDataChanged(){
+  SERIAL_OUT.println("setSoulissDataChanged");
+  data_changed = Souliss_TRIGGED;
 }
 
