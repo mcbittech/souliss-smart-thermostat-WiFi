@@ -80,6 +80,10 @@ void setup()
   ucg.begin(UCG_FONT_MODE_SOLID);
   ucg.setColor(0, 0, 0);
   ucg.setRotate90();
+
+  //SPI Frequency
+  SPI.setFrequency(100000000);
+  
   //BACK LED
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   digitalWrite(BACKLED, HIGH);
@@ -168,10 +172,6 @@ void setup()
 
   // Init the OTA
   OTA_Init();
-
-  //SPI Frequency
-  SPI.setFrequency(100000000);
-
 
   // Init HomeScreen
   initScreen();
