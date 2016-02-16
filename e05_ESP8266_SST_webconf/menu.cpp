@@ -3,24 +3,27 @@
 #include <MenuSystem.h>
 #include "language.h"
 #include "Ucglib.h"
+#include "crono.h"
+
 
 boolean bMenuEnabled = false;
 int iDisplayBright = 30;
 boolean bClock = true;
 boolean bSystem = true;
-boolean bCrono = false;
+boolean bCrono = true;
+boolean bProgCrono = false;
 boolean bCronoLearn = false;
 boolean bLayout1 = false;
 boolean bLayout2 = true;
-boolean bChanged = true;
+boolean bFlag_initScreen=true;
 
 // Menu variables
 MenuSystem ms;
-Menu mmRoot(MENU_TEXT_ROOT);
+//Menu mmRoot(MENU_TEXT_ROOT);
 MenuItem mm_miBack(MENU_TEXT_BACK);
 MenuItem mm_miExit(MENU_TEXT_BACK);
 Menu muMenu(MENU_TEXT_MENU);
-Menu muCrono(MENU_TEXT_CRONO_SCREEN);
+//Menu muCrono(MENU_TEXT_CRONO_SCREEN);
 
 Menu muMenu_mi_Bright(MENU_TEXT_BRIGHT);
 MenuItem muMenu_mi_Bright_100("100%");
@@ -42,6 +45,10 @@ MenuItem muMenu_mi_Crono_OFF(MENU_TEXT_OFF);
 MenuItem muMenu_mi_Crono_ON(MENU_TEXT_ON);
 MenuItem muMenu_mi_Crono_LEARN(MENU_TEXT_LEARN);
 
+Menu muMenu_SetCrono(MENU_TEXT_CRONO_SET);
+
+MenuItem muMenu_mi_ProgCrono(MENU_TEXT_CRONO_PROGRAM);
+
 Menu muMenu_System(MENU_TEXT_SYSTEM);
 MenuItem muMenu_mi_System_ON(MENU_TEXT_ON);
 MenuItem muMenu_mi_System_OFF(MENU_TEXT_OFF);
@@ -53,113 +60,114 @@ MenuItem muMenu_mi_Layouts_2(MENU_TEXT_LAYOUT_2);
 MenuSystem* getMenu() {
   return &ms;
 }
-boolean getChanged() {
-  return bChanged;
-}
-void setChanged() {
-  bChanged = true;
-}
-void resetChanged() {
-  bChanged = false;
-}
+
 void on_item_MenuExit_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("Exit Selected");
   bMenuEnabled = false;
-  setChanged();
 }
 
 void on_itemBack_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("Back Selected");
-  setChanged();
   ms.back();
 }
 
 void on_item_perc100_selected(MenuItem* p_menu_item)
 {
+
   iDisplayBright = 100;
-  setChanged();
 }
 
 void on_item_perc80_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 80;
-setChanged();  
 }
 
 void on_item_perc60_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 60;
-setChanged();
+
 }
 
 void on_item_perc50_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 50;
-  setChanged();
 }
 
 void on_item_perc30_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 30;
-  setChanged();
 }
 
 void on_item_perc5_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 5;
-  setChanged();
 }
 
 void on_item_perc2_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 2;
-  setChanged();
 }
 
 void on_item_clockON_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_clockON_selected");
   bClock = true;
-  setChanged();
 }
 void on_item_clockOFF_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_clockOFF_selected");
   bClock = false;
-  setChanged();
 }
 void on_item_cronoON_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_cronoON_selected");
-  bCrono = true;
-  setChanged();
+  bCrono = true; 
+  SERIAL_OUT.print("Variabile bCrono:"); 
+  SERIAL_OUT.println(bCrono); 
 }
 void on_item_cronoOFF_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_cronoOFF_selected");
   bCrono = false;
-  setChanged();
+  SERIAL_OUT.print("Variabile bCrono:"); 
+  SERIAL_OUT.println(bCrono); 
 }
+void on_item_cronoSET_selected(MenuItem* p_menu_item)
+{
+  SERIAL_OUT.println("on_item_cronoSET_selected");
+  
+ }
+
+void on_item_ProgCrono_selected(MenuItem* p_menu_item)
+{
+  SERIAL_OUT.println("on_item_ProgCrono_selected");
+  bProgCrono = true;
+  //drawCrono(ucg);
+}
+
+void on_item_ProgCrono_deselected()
+{
+  SERIAL_OUT.println("on_item_ProgCrono_deselected");
+  bProgCrono = false;
+}
+
 void on_item_cronoLEARN_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_cronoLEARN_selected");
   bCronoLearn = true;
-  setChanged();
 }
 
 void on_item_systemON_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_systemON_selected");
   bSystem = true;
-  setChanged();
 }
 void on_item_systemOFF_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_systemOFF_selected");
   bSystem = false;
-  setChanged();
 }
 
 
@@ -168,24 +176,23 @@ void on_item_layout1_selected(MenuItem* p_menu_item)
   SERIAL_OUT.println("on_item_layout1_selected");
   bLayout1 = true;
   bLayout2 = false;
-  setChanged();
 }
 void on_item_layout2_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_layout2_selected");
   bLayout1 = false;
   bLayout2 = true;
-  setChanged();
 }
 
 void initMenu() {
 
   // Menu setup
-  mmRoot.add_item(&mm_miExit, &on_item_MenuExit_selected);
-  mmRoot.add_menu(&muMenu);
-  mmRoot.add_menu(&muCrono);
+  //mmRoot.add_item(&mm_miExit, &on_item_MenuExit_selected);
+  //mmRoot.add_menu(&muMenu);
+  // mmRoot.add_menu(&muCrono);
 
-  muMenu.add_item(&mm_miBack, &on_itemBack_selected);
+  muMenu.add_item(&mm_miExit, &on_item_MenuExit_selected);
+  //  muMenu.add_item(&mm_miBack, &on_itemBack_selected);
   muMenu.add_menu(&muMenu_mi_Bright);
   muMenu_mi_Bright.add_item(&mm_miBack, &on_itemBack_selected);
   muMenu_mi_Bright.add_item(&muMenu_mi_Bright_100, &on_item_perc100_selected);
@@ -207,7 +214,17 @@ void initMenu() {
   muMenu_Crono.add_item(&mm_miBack, &on_itemBack_selected);
   muMenu_Crono.add_item(&muMenu_mi_Crono_ON, &on_item_cronoON_selected);
   muMenu_Crono.add_item(&muMenu_mi_Crono_OFF, &on_item_cronoOFF_selected);
+  
+  
+  muMenu_Crono.add_menu(&muMenu_SetCrono);
+  muMenu_SetCrono.add_item(&mm_miBack, &on_itemBack_selected);
+  
   muMenu_Crono.add_item(&muMenu_mi_Crono_LEARN, &on_item_cronoLEARN_selected);
+
+  if (bCrono) {
+  muMenu.add_item(&muMenu_mi_ProgCrono, &on_item_ProgCrono_selected);
+  SERIAL_OUT.println("Aggiungo la voce di menu ProgCrono");   
+  }
 
   muMenu.add_menu(&muMenu_System);
   muMenu_System.add_item(&mm_miBack, &on_itemBack_selected);
@@ -219,7 +236,8 @@ void initMenu() {
   muMenu_Layouts.add_item(&muMenu_mi_Layouts_1, &on_item_layout1_selected);
   muMenu_Layouts.add_item(&muMenu_mi_Layouts_2, &on_item_layout2_selected);
 
-  ms.set_root_menu(&mmRoot);
+  //ms.set_root_menu(&mmRoot);
+  ms.set_root_menu(&muMenu);
 }
 
 Menu const* prec_cp_menu;
@@ -275,10 +293,13 @@ void printMenu(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
       ucg.print("  ");
       ucg.print(cp_m_comp->get_name());
     }
+
+
   }
 }
 
-boolean getMenuEnabled() {
+
+boolean getEnabled() {
   return bMenuEnabled;
 }
 
@@ -298,27 +319,29 @@ int getDisplayBright() {
   return iDisplayBright;
 }
 
-boolean getSystem() {
-  return bSystem;
-}
-
-void setSystem(boolean bVal) {
-  if (getSystem() != bVal) {
-    bSystem = bVal;
-    setChanged();
-  }
-
-}
 boolean getClock() {
   return bClock;
+}
+
+boolean getSystem() {
+  return bSystem;
 }
 
 boolean getCrono() {
   return bCrono;
 }
+
+boolean getProgCrono() {
+  return bProgCrono;
+}
+
 boolean getCronoLearn() {
   return bCronoLearn;
 }
 
-
-
+boolean getFlag_initScreen() {
+  return bFlag_initScreen;
+}
+void setFlag_initScreen(boolean bVal) {
+  bFlag_initScreen = bVal;
+}

@@ -40,19 +40,6 @@ boolean timerDisplay_setpoint() {
 void timerDisplay_setpoint_Tick() {
   lastClickTime = millis();
 }
-void setBianco(Ucglib_ILI9341_18x240x320_HWSPI *ucg) {
-  ucg->setColor(0, 255, 255, 255);    // Bianco
-}
-void setVerde(Ucglib_ILI9341_18x240x320_HWSPI *ucg) {
-  ucg->setColor(102, 255, 0);    // Verde Chiaro
-}
-void setBlu(Ucglib_ILI9341_18x240x320_HWSPI *ucg) {
-  ucg->setColor(111, 0, 255);    // Blu Elettrico
-}
-
-void setRosso(Ucglib_ILI9341_18x240x320_HWSPI *ucg) {
-  ucg->setColor(233, 4, 4);    // Rosso
-}
 
 int startW = 0;
 int baseH = 0;
@@ -135,7 +122,7 @@ void display_layout1_printBigChar(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVa
 //Stampa soltanto il setpoint grande al centro del display
 void display_layout1_print_setpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint) {
   SERIAL_OUT.println("display_print_setpoint");
-  setVerde(&ucg);
+  ucg.setColor(102, 255, 0);    // Verde Chiaro
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   display_layout1_printBigChar(ucg, setpoint);
 }
@@ -148,7 +135,7 @@ void display_layout1_print_B3(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text, 
   String str = text + "00.00";
   const char * c = str.c_str();
 
-  setVerde(&ucg);
+  ucg.setColor(102, 255, 0);    // Verde Chiaro
   ucg.setPrintPos(ucg.getWidth() - ucg.getStrWidth(c) - 5, ucg.getHeight() - 5);
   ucg.print(text);
   ucg.print(temp, 1);
@@ -162,9 +149,9 @@ void display_layout1_print_B4_Hum(Ucglib_ILI9341_18x240x320_HWSPI ucg, String te
   ucg.setFont(FONT_SMALL);
   ucg.setFontPosBaseline();
 
-  setBianco(&ucg);    // Bianco
+  ucg.setColor(0, 255, 255, 255);    // Bianco
   ucg.setPrintPos(5, ucg.getHeight() - 5);
-  setBlu(&ucg);
+  ucg.setColor(111, 0, 255);    // Blu Elettrico
   ucg.print(text);
   ucg.print(temp, 1);
   ucg.print("%");
@@ -175,8 +162,10 @@ void display_layout1_print_B4_SystemOff(Ucglib_ILI9341_18x240x320_HWSPI ucg, Str
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SMALL);
   ucg.setFontPosBaseline();
-  setRosso(&ucg);
+
+  ucg.setColor(0, 255, 255, 255);    // Bianco
   ucg.setPrintPos(5, ucg.getHeight() - 5);
+  ucg.setColor(111, 0, 255);    // Blu Elettrico
   ucg.print(text);
 }
 
@@ -223,7 +212,7 @@ void display_print_splash_screen(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
 
 void display_print_splash_waiting_need_configuration(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   SERIAL_OUT.println("display_print_splash_waiting_need_configuration");
-  setBianco(&ucg);    // Bianco
+  ucg.setColor(0, 255, 255, 255);    // Bianco
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SPLASH_SCREEN);
   ucg.setPrintPos(4, 28);
@@ -239,7 +228,7 @@ void display_print_splash_waiting_need_configuration(Ucglib_ILI9341_18x240x320_H
 
 void display_print_splash_waiting_connection_gateway(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   SERIAL_OUT.println("display_print_splash_waiting_connection_gateway");
-  setBianco(&ucg);    // Bianco
+  ucg.setColor(0, 255, 255, 255);    // Bianco
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SPLASH_SCREEN);
   ucg.setPrintPos(4, 28);
@@ -253,7 +242,7 @@ void display_print_splash_waiting_connection_gateway(Ucglib_ILI9341_18x240x320_H
 
 void display_print_splash_waiting_connection_peer(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   SERIAL_OUT.println("display_print_splash_waiting_connection_peer");
-  setBianco(&ucg);    // Bianco
+  ucg.setColor(0, 255, 255, 255);    // Bianco
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SPLASH_SCREEN);
   ucg.setPrintPos(4, 28);
@@ -282,7 +271,7 @@ void display_layout1_print_B1_datetime(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   String dateAndTime = "";
   if (now() != prevDisplay) { //update the display only if time has changed
     prevDisplay = now();
-    setBianco(&ucg);    // Bianco
+    ucg.setColor(0, 255, 255, 255);    // Bianco
     dateAndTime = digitalClockDisplay();
     ucg.setPrintPos(5, 5);
     display_layout1_print_DateTime(ucg, dateAndTime);
@@ -299,12 +288,12 @@ void display_layout1_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp,
   //uso flag_onetime per visualizzare almeno una volta la schermata, anche in assenza di variazione di temperatura
   //flag_onetime_HomeScreen è rimessa a false display_layout1_setpointPage
   //flag_initScreen è impostato true all'uscita dal menu
-  if ( getChanged() || arrotonda(temp) != arrotonda(temp_prec) || (arrotonda(setpoint) != arrotonda(setpoint_prec))) {
+  if ( getFlag_initScreen() || arrotonda(temp) != arrotonda(temp_prec) || (arrotonda(setpoint) != arrotonda(setpoint_prec))) {
     if (!flag_onetime_HomeScreen) {
       ucg.clearScreen();
     }
 
-    setBianco(&ucg);    // Bianco
+    ucg.setColor(0, 255, 255, 255);    // Bianco
 
     ucg.setFontMode(UCG_FONT_MODE_SOLID);
 
@@ -322,7 +311,6 @@ void display_layout1_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp,
     {
       display_layout1_print_B4_SystemOff(ucg, SYSTEM_OFF_TEXT);
     }
-    resetChanged();
   }
 
   //la funzione display_layout1_print_B1 aggiorna soltanto se l'orario è cambiato
@@ -345,6 +333,9 @@ void display_layout1_background(Ucglib_ILI9341_18x240x320_HWSPI ucg, float diff)
 void display_layout1_background_black(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   ucg.setColor(1, 0, 0, 0); // BLACK for the background
 }
+
+
+
 
 
 
