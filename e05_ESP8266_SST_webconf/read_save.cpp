@@ -17,12 +17,16 @@ void save_eeprom_int(int index,int value){
   Store_Commit();
 }
 
-void read_eeprom_byte(int index,int value){
+byte read_eeprom_byte(int index){
+  byte value;
   value=Return_8bit(index+offset);
   Serial.print("readEepromByte index");Serial.print(index+offset);Serial.println(value);
+  return value;
 }
 
-void read_eeprom_int(int index,int value){
+int read_eeprom_int(int index){
+  int value;
   value=Return_16bit(index+offset);
   Serial.print("ReadEepromInt index");Serial.print(index+offset);Serial.println(value);
+  return value;
 }

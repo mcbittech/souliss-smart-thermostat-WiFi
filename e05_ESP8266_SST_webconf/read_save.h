@@ -3,6 +3,6 @@
 
 void save_eeprom_byte(int,byte);
 void save_eeprom_int(int,int);
-void read_eeprom_byte(int,byte);
-void read_eeprom_int(int,int);
+byte read_eeprom_byte(int,byte);
+int read_eeprom_int(int,int);
 
