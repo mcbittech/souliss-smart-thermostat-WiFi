@@ -6,10 +6,6 @@
 void display_layout1_setpointPage(Ucglib_ILI9341_18x240x320_HWSPI, float, float, float, boolean);
 void display_layout1_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI, float, float, float, boolean);
 
-void setBianco(Ucglib_ILI9341_18x240x320_HWSPI*);
-void setVerde(Ucglib_ILI9341_18x240x320_HWSPI*);
-void setBlu(Ucglib_ILI9341_18x240x320_HWSPI*);
-void setRosso(Ucglib_ILI9341_18x240x320_HWSPI*);
 
 void display_layout1_print_setpoint(Ucglib_ILI9341_18x240x320_HWSPI, float);
 void display_layout1_print_B3(Ucglib_ILI9341_18x240x320_HWSPI, String , float);
@@ -33,7 +29,5 @@ void display_layout1_background_black(Ucglib_ILI9341_18x240x320_HWSPI);
 boolean timerDisplay_setpoint();//return 1 for timeout
 void timerDisplay_setpoint_Tick();
 float arrotonda(const float);
-
-
 
 

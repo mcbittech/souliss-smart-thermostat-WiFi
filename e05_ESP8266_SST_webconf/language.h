@@ -18,16 +18,17 @@
 #define SETPOINT_TEXT "Set: "
 #define TEMP_TEXT "T: "
 #define HUM_TEXT "H: "
-#define SYSTEM_OFF_TEXT "SPENTO    "
+#define SYSTEM_OFF_TEXT "SPENTO"
 
 //MENU
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define MENU_TEXT_ROOT "SmartSoulissThermostat"
+#define MENU_TEXT_ROOT "Smart Souliss Thermostat"
 #define MENU_TEXT_ON "ON"
 #define MENU_TEXT_OFF "OFF"
 #define MENU_TEXT_BACK "Torna"
 #define MENU_TEXT_MENU "Menu"
-#define MENU_TEXT_CRONO_SCREEN "Crono"
+#define MENU_TEXT_CRONO_PROGRAM "Programmazione Crono"
+#define MENU_TEXT_CRONO_SET "Impostazioni Crono"
 #define MENU_TEXT_CRONO_ENABLE "Crono"
 #define MENU_TEXT_LEARN "Autoapprendimento"
 #define MENU_TEXT_CLOCK "Orologio"
@@ -36,4 +37,6 @@
 #define MENU_TEXT_LAYOUTS "Layouts"
 #define MENU_TEXT_LAYOUT_1 "Lineare"
 #define MENU_TEXT_LAYOUT_2 "Circolare"
+
+
 

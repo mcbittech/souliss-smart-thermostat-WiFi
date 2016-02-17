@@ -109,7 +109,7 @@ void setup()
 
   //set default mode
   Set_Thermostat(SLOT_THERMOSTAT);
-  set_ThermostatModeOn(SLOT_THERMOSTAT);
+   set_ThermostatModeOn(SLOT_THERMOSTAT);
   set_DisplayMinBright(SLOT_BRIGHT_DISPLAY, BRIGHT_MIN_DEFAULT);
 
   // Define output pins
@@ -133,6 +133,11 @@ void setup()
   //*************************************************************************
   //*************************************************************************
 
+  // EEPROM 
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Store_Init();
+  ReadAllSettingsFromEEPROM();
+
   //MENU
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   initMenu();
@@ -140,6 +145,7 @@ void setup()
 
   // Init the OTA
   OTA_Init();
+
 
   //SPI Frequency
   SPI.setFrequency(80000000);
@@ -168,7 +174,6 @@ void loop()
           if (getLayout1()) {
             SERIAL_OUT.println("display_setpointPage - layout 1");
             display_layout1_background(ucg, arrotonda(getEncoderValue()) - arrotonda(setpoint));
-            display_layout1_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity, getSoulissSystemState() );
           }
           else if (getLayout2()) {
             SERIAL_OUT.println("display_setpointPage - layout 2");
@@ -227,6 +232,22 @@ void loop()
         } else {
           //IF MENU ENABLED
           myMenu->select(true);
+          yield();
+          /// CRONO 
+          if (getProgCrono()) { 
+          byte menu;
+            ucg.clearScreen();
+            drawCrono(ucg); 
+            menu=1;
+                  while(menu==1){
+                    setDay(ucg);
+                    drawBoxes(ucg);
+                    setBoxes(ucg);
+                    //delay(2000);
+                    if(digitalRead(ENCODER_SWITCH)==LOW)
+                    {menu=0; }
+                  }
+          }
         }
         printMenu(ucg);
       }
@@ -254,6 +275,7 @@ void loop()
       Logic_Thermostat(SLOT_THERMOSTAT);
       // Start the heater and the fans
       nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
+
       //if menu disabled and nothing changed
       if (!getMenuEnabled() && !getSystemChanged()) {
         if (getLocalSystem() != getSoulissSystemState())
@@ -295,6 +317,7 @@ void loop()
 
         memory_map[MaCaco_IN_s + SLOT_THERMOSTAT] = Souliss_T3n_RstCmd;          // Reset
         // Trig the next change of the state
+
         setSoulissDataChanged();
 
         SERIAL_OUT.println("Init Screen");
@@ -367,6 +390,7 @@ void loop()
       yield();
     }
 
+
 #if(DYNAMIC_CONNECTION==1)
     DYNAMIC_CONNECTION_slow();
 #endif
@@ -375,12 +399,13 @@ void loop()
   OTA_Process();
 }
 
+
 void set_ThermostatModeOn(U8 slot) {
   SERIAL_OUT.println("set_ThermostatModeOn");
   memory_map[MaCaco_OUT_s + slot] |= Souliss_T3n_HeatingMode | Souliss_T3n_SystemOn;
-  //memory_map[MaCaco_IN_s + slot] == Souliss_T3n_Heating;
-  //memory_map[MaCaco_OUT_s + slot] |= Souliss_T3n_SystemOn;
+
   // Trig the next change of the state
+
   setSoulissDataChanged();
 }
 
@@ -394,6 +419,7 @@ void set_ThermostatOff(U8 slot) {
 void set_DisplayMinBright(U8 slot, U8 val) {
   memory_map[MaCaco_OUT_s + slot + 1] = val;
   // Trig the next change of the state
+  
   setSoulissDataChanged();
 }
 
@@ -428,6 +454,7 @@ void initScreen() {
   ucg.clearScreen();
   if (getLayout1()) {
     SERIAL_OUT.println("HomeScreen Layout 1");
+
     display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSoulissSystemState());
     getTemp();
   }
