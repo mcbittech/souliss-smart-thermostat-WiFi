@@ -6,7 +6,7 @@
 #include "Ucglib.h"
 
 boolean bMenuEnabled = false;
-int iDisplayBright = BRIGHT;
+int iDisplayBright = BRIGHT_MIN_DEFAULT;
 boolean bClock = CLOCK;
 boolean bSystem = true;
 boolean bCrono = CRONO;

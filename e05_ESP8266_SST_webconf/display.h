@@ -22,6 +22,8 @@ void display_layout1_setFont_Zone_B3_B4(Ucglib_ILI9341_18x240x320_HWSPI);
 void display_print_splash_waiting_need_configuration(Ucglib_ILI9341_18x240x320_HWSPI);
 void display_print_splash_waiting_connection_gateway(Ucglib_ILI9341_18x240x320_HWSPI);
 void display_print_splash_waiting_connection_peer(Ucglib_ILI9341_18x240x320_HWSPI);
+void display_print_splash_connection_to_home_wifi(Ucglib_ILI9341_18x240x320_HWSPI);
+
 void display_print_splash_screen(Ucglib_ILI9341_18x240x320_HWSPI);
 void display_layout1_printBigChar();
 void display_layout1_background(Ucglib_ILI9341_18x240x320_HWSPI, float);

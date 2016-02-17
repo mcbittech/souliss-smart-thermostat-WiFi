@@ -1,3 +1,9 @@
+#define MaCaco_DEBUG_INSKETCH
+  #define MaCaco_DEBUG   1
+
+#define VNET_DEBUG_INSKETCH
+  #define VNET_DEBUG    1
+
 /**************************************************************************
    Souliss - Web Configuration
 
@@ -7,10 +13,6 @@
 
 	This example is only supported on ESP8266.
 ***************************************************************************/
-#define HOST_NAME_INSKETCH
-#define HOST_NAME "Souliss-Termostato-Piano-Terra"
-
-
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
@@ -20,9 +22,17 @@
 
 // Configure the Souliss framework
 #include "bconf/MCU_ESP8266.h"              // Load the code directly on the ESP8266
+#include "preferences.h"
+
+#if(DYNAMIC_CONNECTION==1)
 #include "conf/RuntimeGateway.h"            // This node is a Peer and can became a Gateway at runtime
 #include "conf/DynamicAddressing.h"         // Use dynamically assigned addresses
 #include "conf/WEBCONFinterface.h"          // Enable the WebConfig interface
+#include "connection_dynamic.h"
+#else
+#include "conf/IPBroadcast.h"
+#include "connection_static.h"
+#endif
 
 #include "Souliss.h"
 
@@ -35,6 +45,8 @@
 #include <Time.h>
 #include <MenuSystem.h>
 #include "menu.h"
+
+
 //*************************************************************************
 //*************************************************************************
 
@@ -83,44 +95,11 @@ void setup()
   display_print_splash_screen(ucg);
   Initialize();
 
-  // Read the IP configuration from the EEPROM, if not available start
-  // the node as access point
-  if (!ReadIPConfiguration())
-  {
-    // Start the node as access point with a configuration WebServer
-    SetAccessPoint();
-    startWebServer();
-    SERIAL_OUT.println("display_print_splash_waiting_need_configuration");
-    display_print_splash_waiting_need_configuration(ucg);
-    // We have nothing more than the WebServer for the configuration
-    // to run, once configured the node will quit this.
-    while (1)
-    {
-      yield();
-      runWebServer();
-    }
-
-  }
-
-  if (IsRuntimeGateway())
-  {
-    SERIAL_OUT.println("display_print_splash_waiting_connection_gateway");
-    display_print_splash_waiting_connection_gateway(ucg);
-    // Connect to the WiFi network and get an address from DHCP
-    SetAsGateway(myvNet_dhcp);       // Set this node as gateway for SoulissApp
-    SetAddressingServer();
-  }
-  else
-  {
-    SERIAL_OUT.println("display_print_splash_waiting_connection_peer");
-    display_print_splash_waiting_connection_peer(ucg);
-    // This board request an address to the gateway at runtime, no need
-    // to configure any parameter here.
-    SetDynamicAddressing();
-    GetAddress();
-    SERIAL_OUT.println("Address received");
-  }
-
+#if(DYNAMIC_CONNECTION==1)
+  DYNAMIC_CONNECTION_Init();
+#else
+  STATIC_CONNECTION_Init();
+#endif
   //*************************************************************************
   //*************************************************************************
   Set_T52(SLOT_TEMPERATURE);
@@ -320,7 +299,7 @@ void loop()
 
         SERIAL_OUT.println("Init Screen");
         initScreen();
-        
+
         resetSystemChanged();
       }
 
@@ -342,11 +321,11 @@ void loop()
       }
     }
 
-    // Run communication as Gateway or Peer
-    if (IsRuntimeGateway())
-      FAST_GatewayComms();
-    else
-      FAST_PeerComms();
+#if(DYNAMIC_CONNECTION)
+    DYNAMIC_CONNECTION_fast();
+#else
+    STATIC_CONNECTION_fast();
+#endif
   }
 
   EXECUTESLOW() {
@@ -388,9 +367,9 @@ void loop()
       yield();
     }
 
-    // If running as Peer
-    if (!IsRuntimeGateway())
-      SLOW_PeerJoin();
+#if(DYNAMIC_CONNECTION==1)
+    DYNAMIC_CONNECTION_slow();
+#endif
   }
   // Look for a new sketch to update over the air
   OTA_Process();
@@ -480,7 +459,7 @@ void setSetpoint(float setpoint) {
 }
 
 
-void setSoulissDataChanged(){
+void setSoulissDataChanged() {
   SERIAL_OUT.println("setSoulissDataChanged");
   data_changed = Souliss_TRIGGED;
 }

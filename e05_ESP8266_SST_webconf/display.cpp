@@ -4,6 +4,7 @@
 #include "ntp.h"
 #include "Ucglib.h"
 #include "menu.h"
+#include "preferences.h"
 
 float arrotonda(const float v)
 {
@@ -261,6 +262,22 @@ void display_print_splash_waiting_connection_peer(Ucglib_ILI9341_18x240x320_HWSP
   ucg.setPrintPos(4, 58);
   ucg.println(SPLASH_PEER_LINE2);
   ucg.setPrintPos(4, 88);
+  ucg.print("IP ");
+  ucg.print(WiFi.localIP());
+}
+
+void display_print_splash_connection_to_home_wifi(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
+  SERIAL_OUT.println("display_print_splash_connection_to_home_wifi");
+  setBianco(&ucg);    // Bianco
+  ucg.setFontMode(UCG_FONT_MODE_SOLID);
+  ucg.setFont(FONT_SPLASH_SCREEN);
+  ucg.setPrintPos(4, 28);
+  ucg.println(SPLASH_SSID_LINE1);
+  ucg.setPrintPos(4, 58);
+  ucg.print("WiFi SSID: ");
+  ucg.setPrintPos(4, 88);
+  ucg.print(WiFi_SSID);
+  ucg.setPrintPos(4, 118);
   ucg.print("IP ");
   ucg.print(WiFi.localIP());
 }
