@@ -20,3 +20,4 @@ boolean getFlag_initScreen();
 void setFlag_initScreen(boolean);
 void on_item_ProgCrono_deselected();
 void printMenu(Ucglib_ILI9341_18x240x320_HWSPI);
+void ReadAllSettingsFromEEPROM();

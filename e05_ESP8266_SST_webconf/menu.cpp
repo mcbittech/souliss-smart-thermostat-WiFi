@@ -4,18 +4,20 @@
 #include "language.h"
 #include "Ucglib.h"
 #include "crono.h"
+#include "read_save.h"
 
 
 boolean bMenuEnabled = false;
-int iDisplayBright = 30;
-boolean bClock = true;
-boolean bSystem = true;
-boolean bCrono = true;
+int iDisplayBright;
+boolean bClock ;
+boolean bSystem;
+boolean bCrono ;
 boolean bProgCrono = false;
-boolean bCronoLearn = false;
-boolean bLayout1 = false;
-boolean bLayout2 = true;
+boolean bCronoLearn;
+boolean bLayout1;
+boolean bLayout2;
 boolean bFlag_initScreen=true;
+
 
 // Menu variables
 MenuSystem ms;
@@ -34,7 +36,6 @@ MenuItem muMenu_mi_Bright_30("30%");
 MenuItem muMenu_mi_Bright_10("10%");
 MenuItem muMenu_mi_Bright_5("5%");
 MenuItem muMenu_mi_Bright_2("2%");
-
 
 Menu muMenu_Clock(MENU_TEXT_CLOCK);
 MenuItem muMenu_mi_Clock_ON(MENU_TEXT_ON);
@@ -57,6 +58,7 @@ Menu muMenu_Layouts(MENU_TEXT_LAYOUTS);
 MenuItem muMenu_mi_Layouts_1(MENU_TEXT_LAYOUT_1);
 MenuItem muMenu_mi_Layouts_2(MENU_TEXT_LAYOUT_2);
 
+
 MenuSystem* getMenu() {
   return &ms;
 }
@@ -77,53 +79,63 @@ void on_item_perc100_selected(MenuItem* p_menu_item)
 {
 
   iDisplayBright = 100;
+  save_eeprom_int(1,iDisplayBright);
 }
 
 void on_item_perc80_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 80;
+  save_eeprom_int(1,iDisplayBright);
 }
 
 void on_item_perc60_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 60;
+  save_eeprom_int(1,iDisplayBright);
 
 }
 
 void on_item_perc50_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 50;
+  save_eeprom_int(1,iDisplayBright);
 }
 
 void on_item_perc30_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 30;
+  save_eeprom_int(1,iDisplayBright);
 }
 
 void on_item_perc5_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 5;
+  save_eeprom_int(1,iDisplayBright);
 }
 
 void on_item_perc2_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 2;
+  save_eeprom_int(1,iDisplayBright);
 }
 
 void on_item_clockON_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_clockON_selected");
   bClock = true;
+  save_eeprom_byte(3,bClock);
 }
 void on_item_clockOFF_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_clockOFF_selected");
   bClock = false;
+  save_eeprom_byte(3,bClock);
 }
 void on_item_cronoON_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_cronoON_selected");
   bCrono = true; 
+  save_eeprom_byte(4,bCrono);
   SERIAL_OUT.print("Variabile bCrono:"); 
   SERIAL_OUT.println(bCrono); 
 }
@@ -131,20 +143,19 @@ void on_item_cronoOFF_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_cronoOFF_selected");
   bCrono = false;
+  save_eeprom_byte(4,bCrono);
   SERIAL_OUT.print("Variabile bCrono:"); 
   SERIAL_OUT.println(bCrono); 
 }
 void on_item_cronoSET_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_cronoSET_selected");
-  
- }
+}
 
 void on_item_ProgCrono_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_ProgCrono_selected");
   bProgCrono = true;
-  //drawCrono(ucg);
 }
 
 void on_item_ProgCrono_deselected()
@@ -157,17 +168,20 @@ void on_item_cronoLEARN_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_cronoLEARN_selected");
   bCronoLearn = true;
+  save_eeprom_byte(5,bCronoLearn);
 }
 
 void on_item_systemON_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_systemON_selected");
   bSystem = true;
+  save_eeprom_byte(6,bSystem);
 }
 void on_item_systemOFF_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_systemOFF_selected");
   bSystem = false;
+  save_eeprom_byte(6,bSystem);
 }
 
 
@@ -176,12 +190,16 @@ void on_item_layout1_selected(MenuItem* p_menu_item)
   SERIAL_OUT.println("on_item_layout1_selected");
   bLayout1 = true;
   bLayout2 = false;
+  save_eeprom_byte(7,bLayout1);
+  save_eeprom_byte(8,bLayout2);
 }
 void on_item_layout2_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_layout2_selected");
   bLayout1 = false;
   bLayout2 = true;
+  save_eeprom_byte(7,bLayout1);
+  save_eeprom_byte(8,bLayout2);
 }
 
 void initMenu() {
@@ -236,6 +254,8 @@ void initMenu() {
   muMenu_Layouts.add_item(&muMenu_mi_Layouts_1, &on_item_layout1_selected);
   muMenu_Layouts.add_item(&muMenu_mi_Layouts_2, &on_item_layout2_selected);
 
+  
+  
   //ms.set_root_menu(&mmRoot);
   ms.set_root_menu(&muMenu);
 }
@@ -345,3 +365,31 @@ boolean getFlag_initScreen() {
 void setFlag_initScreen(boolean bVal) {
   bFlag_initScreen = bVal;
 }
+
+void ReadAllSettingsFromEEPROM() {
+   //EEPROM
+  SERIAL_OUT.println("Read ALL EEPROM value....");
+  
+  iDisplayBright=read_eeprom_int(1);
+  //SERIAL_OUT.print("Read EEPROM value iDisplayBright : ");
+  //SERIAL_OUT.println(iDisplayBright);
+  bClock=read_eeprom_byte(3);
+  //SERIAL_OUT.print("Read EEPROM value bClock : ");
+  //SERIAL_OUT.println(bClock);
+  bCrono=read_eeprom_byte(4);
+  //SERIAL_OUT.print("Read EEPROM value bCrono : ");
+  //SERIAL_OUT.println(bCrono);
+  bCronoLearn=read_eeprom_byte(5);
+  //SERIAL_OUT.print("Read EEPROM value bCronoLearn : ");
+  //SERIAL_OUT.println(bCronoLearn);
+  bSystem=read_eeprom_byte(6);
+  //SERIAL_OUT.print("Read EEPROM value bSystem : ");
+  //SERIAL_OUT.println(bSystem);
+  bLayout1=read_eeprom_byte(7);
+  //SERIAL_OUT.print("Read EEPROM value bLayout1 : ");
+  //SERIAL_OUT.println(bLayout1);
+  bLayout2=read_eeprom_byte(8);
+  //SERIAL_OUT.print("Read EEPROM value bLayout2 : ");
+  //SERIAL_OUT.println(bLayout2);
+}
+

@@ -40,6 +40,7 @@
 #include "crono.h"
 #include "read_save.h"
 
+
 //*************************************************************************
 //*************************************************************************
 
@@ -126,8 +127,9 @@ void setup()
     display_print_splash_waiting_connection_peer(ucg);
     // This board request an address to the gateway at runtime, no need
     // to configure any parameter here.
-    SetDynamicAddressing();
-    GetAddress();
+    //SetDynamicAddressing();
+    //GetAddress();
+    
     SERIAL_OUT.println("Address received");
   }
 
@@ -164,18 +166,24 @@ void setup()
   //*************************************************************************
   //*************************************************************************
 
+  // EEPROM 
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Store_Init();
+  ReadAllSettingsFromEEPROM();
+
   //MENU
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   initMenu();
   myMenu = getMenu();
-
-  
 
   // Init the OTA
   OTA_Init();
 
   // Init HomeScreen
   initScreen();
+
+
+ 
 }
 
 float fVal;
@@ -332,7 +340,7 @@ void loop()
         //EXIT MENU - Actions
         //write min bright on T19
         memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1] = getDisplayBright();
-        SERIAL_OUT.println("Set Display Bright: "); SERIAL_OUT.println(memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1]);
+        SERIAL_OUT.print("Set Display Bright: "); SERIAL_OUT.println(memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1]);
 
         //write system ON/OFF
         if (getSystem()) {
