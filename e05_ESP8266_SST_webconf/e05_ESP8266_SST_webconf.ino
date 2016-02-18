@@ -1,8 +1,8 @@
-#define MaCaco_DEBUG_INSKETCH
-  #define MaCaco_DEBUG   1
-
-#define VNET_DEBUG_INSKETCH
-  #define VNET_DEBUG    1
+//#define MaCaco_DEBUG_INSKETCH
+//  #define MaCaco_DEBUG   1
+//
+//#define VNET_DEBUG_INSKETCH
+//  #define VNET_DEBUG    1
 
 /**************************************************************************
    Souliss - Web Configuration
@@ -45,7 +45,7 @@
 #include <Time.h>
 #include <MenuSystem.h>
 #include "menu.h"
-
+#include "crono.h"
 
 //*************************************************************************
 //*************************************************************************

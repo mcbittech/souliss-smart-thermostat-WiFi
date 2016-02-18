@@ -42,6 +42,21 @@ void timerDisplay_setpoint_Tick() {
   lastClickTime = millis();
 }
 
+
+void setBianco(Ucglib_ILI9341_18x240x320_HWSPI *ucg) {
+  ucg->setColor(0, 255, 255, 255);    // Bianco
+}
+void setVerde(Ucglib_ILI9341_18x240x320_HWSPI *ucg) {
+  ucg->setColor(102, 255, 0);    // Verde Chiaro
+}
+void setBlu(Ucglib_ILI9341_18x240x320_HWSPI *ucg) {
+  ucg->setColor(111, 0, 255);    // Blu Elettrico
+}
+
+void setRosso(Ucglib_ILI9341_18x240x320_HWSPI *ucg) {
+  ucg->setColor(233, 4, 4);    // Rosso
+}
+
 int startW = 0;
 int baseH = 0;
 int vW_pos_before_point, vW_pos_after_point, vW_pos_grade, baseH_Grade;
@@ -351,7 +366,6 @@ void display_layout1_background(Ucglib_ILI9341_18x240x320_HWSPI ucg, float diff)
 void display_layout1_background_black(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   ucg.setColor(1, 0, 0, 0); // BLACK for the background
 }
-
 
 
 
