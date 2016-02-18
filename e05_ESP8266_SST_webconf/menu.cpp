@@ -13,6 +13,7 @@ int iDisplayBright = BRIGHT_MIN_DEFAULT;
 boolean bClock = CLOCK;
 boolean bSystem = true;
 boolean bCrono = CRONO;
+boolean bProgCrono = false;
 boolean bCronoLearn = CRONOLEARN;
 boolean bLayout1 = LAYOUT_LINEAR;
 boolean bLayout2 = LAYOUT1_CIRCULAR;
@@ -340,6 +341,7 @@ void printMenu(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   }
 }
 
+boolean getMenuEnabled() {
   return bMenuEnabled;
 }
 
@@ -359,11 +361,6 @@ int getDisplayBright() {
   return iDisplayBright;
 }
 
-
-boolean getLocalSystem() {
-  return bSystem;
-}
-
 boolean getCrono() {
   return bCrono;
 }
@@ -375,9 +372,6 @@ boolean getClock() {
   return bClock;
 }
 
-boolean getCrono() {
-  return bCrono;
-}
 boolean getCronoLearn() {
   return bCronoLearn;
 }

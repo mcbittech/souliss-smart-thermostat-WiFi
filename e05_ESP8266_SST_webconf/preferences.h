@@ -23,11 +23,13 @@
 
 //OTA Name
 #define HOST_NAME_INSKETCH
-#define HOST_NAME "Souliss-Termostato-Piano-Terra"
+#define HOST_NAME "Souliss-Thermostat"
 
 //WIFI CONNECTION
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define DYNAMIC_CONNECTION 0
+//0 Static Connection
+//1 Dynamic Connection
+#define DYNAMIC_CONNECTION 0 
 
 
 // **** Define the WiFi name and password ****

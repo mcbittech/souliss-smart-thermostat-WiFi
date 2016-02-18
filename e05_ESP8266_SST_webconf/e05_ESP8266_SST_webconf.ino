@@ -24,7 +24,7 @@
 #include "bconf/MCU_ESP8266.h"              // Load the code directly on the ESP8266
 #include "preferences.h"
 
-#if(DYNAMIC_CONNECTION==1)
+#if(DYNAMIC_CONNECTION)
 #include "conf/RuntimeGateway.h"            // This node is a Peer and can became a Gateway at runtime
 #include "conf/DynamicAddressing.h"         // Use dynamically assigned addresses
 #include "conf/WEBCONFinterface.h"          // Enable the WebConfig interface
@@ -32,10 +32,11 @@
 #else
 #include "conf/IPBroadcast.h"
 #include "connection_static.h"
+#define USEEEPROM_INSKETCH
+#define USEEEPROM             1
 #endif
 
 #include "Souliss.h"
-
 #include "encoder.h"
 #include "constants.h"
 #include "display.h"
@@ -96,7 +97,7 @@ void setup()
   display_print_splash_screen(ucg);
   Initialize();
 
-#if(DYNAMIC_CONNECTION==1)
+#if(DYNAMIC_CONNECTION)
   DYNAMIC_CONNECTION_Init();
 #else
   STATIC_CONNECTION_Init();
@@ -280,7 +281,7 @@ void loop()
       //if menu disabled and nothing changed
       if (!getMenuEnabled() && !getSystemChanged()) {
         if (getLocalSystem() != getSoulissSystemState())
-          setLocalSystem(getSoulissSystemState());
+          setSystem(getSoulissSystemState());
       }
 
       //*************************************************************************

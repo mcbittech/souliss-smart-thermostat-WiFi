@@ -21,8 +21,8 @@
   if (!ReadIPConfiguration()) \
   { \
     /** Start the node as access point with a configuration WebServer */ \
-    SetAccessPoint(); \
-    startWebServer(); \
+    SetAccessPoint();\
+    startWebServer();\
     SERIAL_OUT.println("display_print_splash_waiting_need_configuration"); \
     display_print_splash_waiting_need_configuration(ucg); \
     /** We have nothing more than the WebServer for the configuration */ \
