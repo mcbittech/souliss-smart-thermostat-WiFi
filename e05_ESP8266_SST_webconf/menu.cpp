@@ -360,7 +360,7 @@ int getDisplayBright() {
 }
 
 
-boolean getSystem() {
+boolean getLocalSystem() {
   return bSystem;
 }
 

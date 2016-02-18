@@ -280,7 +280,7 @@ void loop()
       //if menu disabled and nothing changed
       if (!getMenuEnabled() && !getSystemChanged()) {
         if (getLocalSystem() != getSoulissSystemState())
-          setSystem(getSoulissSystemState());
+          setLocalSystem(getSoulissSystemState());
       }
 
       //*************************************************************************

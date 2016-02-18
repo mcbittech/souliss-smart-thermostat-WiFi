@@ -11,7 +11,7 @@ boolean getLayout1();
 boolean getLayout2();
 int getDisplayBright();
 boolean getClock();
-boolean getSystem();
+
 boolean getLocalSystem();
 boolean getCrono();
 boolean getCronoSet();
