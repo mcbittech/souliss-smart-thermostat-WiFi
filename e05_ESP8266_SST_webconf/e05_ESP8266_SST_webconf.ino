@@ -237,22 +237,22 @@ void loop()
           myMenu->select(true);
 
           /// CRONO
-//          if (getProgCrono()) {
-//            byte menu;
-//            ucg.clearScreen();
-//            drawCrono(ucg);
-//            menu = 1;
-//            while (menu == 1) {
-//              setDay(ucg);
-//              drawBoxes(ucg);
-//              setBoxes(ucg);
-//              //delay(2000);
-//              if (digitalRead(ENCODER_SWITCH) == LOW)
-//              {
-//                menu = 0;
-//              }
-//            }
-//          }
+          if (getProgCrono()) {
+            byte menu;
+            ucg.clearScreen();
+            drawCrono(ucg);
+            menu = 1;
+            while (menu == 1) {
+              setDay(ucg);
+              drawBoxes(ucg);
+              setBoxes(ucg);
+              //delay(2000);
+              if (digitalRead(ENCODER_SWITCH) == LOW)
+              {
+                menu = 0;
+              }
+            }
+          }
         }
          SERIAL_OUT.println("print Menu");
         printMenu(ucg);

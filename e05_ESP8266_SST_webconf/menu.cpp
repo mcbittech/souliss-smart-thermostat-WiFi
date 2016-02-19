@@ -108,73 +108,73 @@ void on_item_perc100_selected(MenuItem* p_menu_item)
 {
 
   iDisplayBright = 100;
-  save_eeprom_int(1,iDisplayBright);
+  save_eeprom_int(1, iDisplayBright);
 }
 
 void on_item_perc80_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 80;
-  save_eeprom_int(1,iDisplayBright);
+  save_eeprom_int(1, iDisplayBright);
 }
 
 void on_item_perc60_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 60;
-  save_eeprom_int(1,iDisplayBright);
+  save_eeprom_int(1, iDisplayBright);
 
 }
 
 void on_item_perc50_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 50;
-  save_eeprom_int(1,iDisplayBright);
+  save_eeprom_int(1, iDisplayBright);
 }
 
 void on_item_perc30_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 30;
-  save_eeprom_int(1,iDisplayBright);
+  save_eeprom_int(1, iDisplayBright);
 }
 
 void on_item_perc5_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 5;
-  save_eeprom_int(1,iDisplayBright);
+  save_eeprom_int(1, iDisplayBright);
 }
 
 void on_item_perc2_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 2;
-  save_eeprom_int(1,iDisplayBright);
+  save_eeprom_int(1, iDisplayBright);
 }
 
 void on_item_clockON_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_clockON_selected");
   bClock = true;
-  save_eeprom_byte(3,bClock);
+  save_eeprom_byte(3, bClock);
 }
 void on_item_clockOFF_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_clockOFF_selected");
   bClock = false;
-  save_eeprom_byte(3,bClock);
+  save_eeprom_byte(3, bClock);
 }
 void on_item_cronoON_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_cronoON_selected");
-  bCrono = true; 
-  save_eeprom_byte(4,bCrono);
-  SERIAL_OUT.print("Variabile bCrono:"); 
-  SERIAL_OUT.println(bCrono); 
+  bCrono = true;
+  save_eeprom_byte(4, bCrono);
+  SERIAL_OUT.print("Variabile bCrono:");
+  SERIAL_OUT.println(bCrono);
 }
 void on_item_cronoOFF_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_cronoOFF_selected");
   bCrono = false;
-  save_eeprom_byte(4,bCrono);
-  SERIAL_OUT.print("Variabile bCrono:"); 
-  SERIAL_OUT.println(bCrono); 
+  save_eeprom_byte(4, bCrono);
+  SERIAL_OUT.print("Variabile bCrono:");
+  SERIAL_OUT.println(bCrono);
 }
 void on_item_cronoSET_selected(MenuItem* p_menu_item)
 {
@@ -197,20 +197,20 @@ void on_item_cronoLEARN_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_cronoLEARN_selected");
   bCronoLearn = true;
-  save_eeprom_byte(5,bCronoLearn);
+  save_eeprom_byte(5, bCronoLearn);
 }
 
 void on_item_systemON_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_systemON_selected");
   setSystem(true);
-  save_eeprom_byte(6,bSystem);
+  save_eeprom_byte(6, bSystem);
 }
 void on_item_systemOFF_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_systemOFF_selected");
   setSystem(false);
-  save_eeprom_byte(6,bSystem);
+  save_eeprom_byte(6, bSystem);
 }
 
 
@@ -219,16 +219,16 @@ void on_item_layout1_selected(MenuItem* p_menu_item)
   SERIAL_OUT.println("on_item_layout1_selected");
   bLayout1 = true;
   bLayout2 = false;
-  save_eeprom_byte(7,bLayout1);
-  save_eeprom_byte(8,bLayout2);
+  save_eeprom_byte(7, bLayout1);
+  save_eeprom_byte(8, bLayout2);
 }
 void on_item_layout2_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_layout2_selected");
   bLayout1 = false;
   bLayout2 = true;
-  save_eeprom_byte(7,bLayout1);
-  save_eeprom_byte(8,bLayout2);
+  save_eeprom_byte(7, bLayout1);
+  save_eeprom_byte(8, bLayout2);
 }
 
 void initMenu() {
@@ -257,9 +257,10 @@ void initMenu() {
   muMenu_Crono.add_item(&muMenu_mi_Crono_ON, &on_item_cronoON_selected);
   muMenu_Crono.add_item(&muMenu_mi_Crono_OFF, &on_item_cronoOFF_selected);
   muMenu_Crono.add_item(&muMenu_mi_Crono_LEARN, &on_item_cronoLEARN_selected);
-  
   muMenu_Crono.add_menu(&muMenu_SetCrono);
+
   muMenu_SetCrono.add_item(&mm_miBack, &on_itemBack_selected);
+  MenuItem muMenu_mi_ProgCrono(MENU_TEXT_CRONO_PROGRAM);
 
   muMenu.add_menu(&muMenu_System);
   muMenu_System.add_item(&mm_miBack, &on_itemBack_selected);
@@ -367,28 +368,28 @@ boolean getCronoLearn() {
 
 
 void ReadAllSettingsFromEEPROM() {
-   //EEPROM
+  //EEPROM
   SERIAL_OUT.println("Read ALL EEPROM value....");
-  
-  iDisplayBright=read_eeprom_int(1);
+
+  iDisplayBright = read_eeprom_int(1);
   //SERIAL_OUT.print("Read EEPROM value iDisplayBright : ");
   //SERIAL_OUT.println(iDisplayBright);
-  bClock=read_eeprom_byte(3);
+  bClock = read_eeprom_byte(3);
   //SERIAL_OUT.print("Read EEPROM value bClock : ");
   //SERIAL_OUT.println(bClock);
-  bCrono=read_eeprom_byte(4);
+  bCrono = read_eeprom_byte(4);
   //SERIAL_OUT.print("Read EEPROM value bCrono : ");
   //SERIAL_OUT.println(bCrono);
-  bCronoLearn=read_eeprom_byte(5);
+  bCronoLearn = read_eeprom_byte(5);
   //SERIAL_OUT.print("Read EEPROM value bCronoLearn : ");
   //SERIAL_OUT.println(bCronoLearn);
-  bSystem=read_eeprom_byte(6);
+  bSystem = read_eeprom_byte(6);
   //SERIAL_OUT.print("Read EEPROM value bSystem : ");
   //SERIAL_OUT.println(bSystem);
-  bLayout1=read_eeprom_byte(7);
+  bLayout1 = read_eeprom_byte(7);
   //SERIAL_OUT.print("Read EEPROM value bLayout1 : ");
   //SERIAL_OUT.println(bLayout1);
-  bLayout2=read_eeprom_byte(8);
+  bLayout2 = read_eeprom_byte(8);
   //SERIAL_OUT.print("Read EEPROM value bLayout2 : ");
   //SERIAL_OUT.println(bLayout2);
 }
