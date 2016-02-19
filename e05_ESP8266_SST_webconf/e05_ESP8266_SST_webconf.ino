@@ -111,7 +111,7 @@ void setup()
 
   //set default mode
   Set_Thermostat(SLOT_THERMOSTAT);
-   set_ThermostatModeOn(SLOT_THERMOSTAT);
+  set_ThermostatModeOn(SLOT_THERMOSTAT);
   set_DisplayMinBright(SLOT_BRIGHT_DISPLAY, BRIGHT_MIN_DEFAULT);
 
   // Define output pins
@@ -135,10 +135,10 @@ void setup()
   //*************************************************************************
   //*************************************************************************
 
-  // EEPROM 
+  // EEPROM
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   Store_Init();
-  ReadAllSettingsFromEEPROM();
+  // ReadAllSettingsFromEEPROM();
 
   //MENU
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -176,6 +176,7 @@ void loop()
           if (getLayout1()) {
             SERIAL_OUT.println("display_setpointPage - layout 1");
             display_layout1_background(ucg, arrotonda(getEncoderValue()) - arrotonda(setpoint));
+            display_layout1_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity, getSoulissSystemState() );
           }
           else if (getLayout2()) {
             SERIAL_OUT.println("display_setpointPage - layout 2");
@@ -228,29 +229,32 @@ void loop()
         if (!getMenuEnabled()) {
           //IF MENU NOT ENABLED
           setEnabled(true);
-          //il flag viene impostato a true, così quando si esce dal menu la homescreen viene aggiornata ed il flag riportato a false
+          //il flag viene impostato a true (indica che il menu è attivo). Quando si esce dal menu la homescreen viene aggiornata ed il flag riportato a false
           setChanged();
           ucg.clearScreen();
         } else {
           //IF MENU ENABLED
           myMenu->select(true);
-          yield();
-          /// CRONO 
-          if (getProgCrono()) { 
-          byte menu;
-            ucg.clearScreen();
-            drawCrono(ucg); 
-            menu=1;
-                  while(menu==1){
-                    setDay(ucg);
-                    drawBoxes(ucg);
-                    setBoxes(ucg);
-                    //delay(2000);
-                    if(digitalRead(ENCODER_SWITCH)==LOW)
-                    {menu=0; }
-                  }
-          }
+
+          /// CRONO
+//          if (getProgCrono()) {
+//            byte menu;
+//            ucg.clearScreen();
+//            drawCrono(ucg);
+//            menu = 1;
+//            while (menu == 1) {
+//              setDay(ucg);
+//              drawBoxes(ucg);
+//              setBoxes(ucg);
+//              //delay(2000);
+//              if (digitalRead(ENCODER_SWITCH) == LOW)
+//              {
+//                menu = 0;
+//              }
+//            }
+//          }
         }
+         SERIAL_OUT.println("print Menu");
         printMenu(ucg);
       }
 
@@ -421,7 +425,7 @@ void set_ThermostatOff(U8 slot) {
 void set_DisplayMinBright(U8 slot, U8 val) {
   memory_map[MaCaco_OUT_s + slot + 1] = val;
   // Trig the next change of the state
-  
+
   setSoulissDataChanged();
 }
 
@@ -454,6 +458,7 @@ void bright(int lum) {
 
 void initScreen() {
   ucg.clearScreen();
+  SERIAL_OUT.println("clearScreen ok");
   if (getLayout1()) {
     SERIAL_OUT.println("HomeScreen Layout 1");
 

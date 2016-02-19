@@ -161,13 +161,12 @@ void display_layout1_print_B3(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text, 
 
 void display_layout1_print_B4_Hum(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text, float temp) {
   SERIAL_OUT.println("display_print_B4 [Humidity]");
+  SERIAL_OUT.println("display_print_B4 [Humidity]");
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SMALL);
   ucg.setFontPosBaseline();
-
-  ucg.setColor(0, 255, 255, 255);    // Bianco
   ucg.setPrintPos(5, ucg.getHeight() - 5);
-  ucg.setColor(111, 0, 255);    // Blu Elettrico
+  setBlu(&ucg);
   ucg.print(text);
   ucg.print(temp, 1);
   ucg.print("%");
@@ -178,10 +177,8 @@ void display_layout1_print_B4_SystemOff(Ucglib_ILI9341_18x240x320_HWSPI ucg, Str
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SMALL);
   ucg.setFontPosBaseline();
-
-  ucg.setColor(0, 255, 255, 255);    // Bianco
+  setRosso(&ucg);
   ucg.setPrintPos(5, ucg.getHeight() - 5);
-  ucg.setColor(111, 0, 255);    // Blu Elettrico
   ucg.print(text);
 }
 
@@ -342,7 +339,7 @@ void display_layout1_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp,
     {
       display_layout1_print_B4_SystemOff(ucg, SYSTEM_OFF_TEXT);
     }
-    
+
     resetUIChanged();
   }
 

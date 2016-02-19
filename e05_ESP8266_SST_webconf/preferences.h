@@ -3,7 +3,7 @@
 //LAYOUT
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define LAYOUT_LINEAR 1
-#define LAYOUT1_CIRCULAR 0
+#define LAYOUT_CIRCULAR 0
 
 //LOCAL CRONO FUNCTION
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -35,8 +35,8 @@
 // **** Define the WiFi name and password ****
 //Only for DYNAMIC_CONNECTION = 0
 #define WIFICONF_INSKETCH
-#define WiFi_SSID               "mywifi"
-#define WiFi_Password           "mypassword"  
+#define WiFi_SSID               "asterix"
+#define WiFi_Password           "ttony2013"  
 
 // Define the network configuration according to your router settingsuration according to your router settings
 // and the other on the wireless oneless one

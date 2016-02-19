@@ -16,7 +16,7 @@ boolean bCrono = CRONO;
 boolean bProgCrono = false;
 boolean bCronoLearn = CRONOLEARN;
 boolean bLayout1 = LAYOUT_LINEAR;
-boolean bLayout2 = LAYOUT1_CIRCULAR;
+boolean bLayout2 = LAYOUT_CIRCULAR;
 boolean bUIChanged = true;
 boolean bSystemChanged = true;
 
@@ -234,12 +234,7 @@ void on_item_layout2_selected(MenuItem* p_menu_item)
 void initMenu() {
 
   // Menu setup
-  //mmRoot.add_item(&mm_miExit, &on_item_MenuExit_selected);
-  //mmRoot.add_menu(&muMenu);
-  // mmRoot.add_menu(&muCrono);
-
   muMenu.add_item(&mm_miExit, &on_item_MenuExit_selected);
-  //  muMenu.add_item(&mm_miBack, &on_itemBack_selected);
   muMenu.add_menu(&muMenu_mi_Bright);
   muMenu_mi_Bright.add_item(&mm_miBack, &on_itemBack_selected);
   muMenu_mi_Bright.add_item(&muMenu_mi_Bright_100, &on_item_perc100_selected);
@@ -261,17 +256,10 @@ void initMenu() {
   muMenu_Crono.add_item(&mm_miBack, &on_itemBack_selected);
   muMenu_Crono.add_item(&muMenu_mi_Crono_ON, &on_item_cronoON_selected);
   muMenu_Crono.add_item(&muMenu_mi_Crono_OFF, &on_item_cronoOFF_selected);
-  
+  muMenu_Crono.add_item(&muMenu_mi_Crono_LEARN, &on_item_cronoLEARN_selected);
   
   muMenu_Crono.add_menu(&muMenu_SetCrono);
   muMenu_SetCrono.add_item(&mm_miBack, &on_itemBack_selected);
-  
-  muMenu_Crono.add_item(&muMenu_mi_Crono_LEARN, &on_item_cronoLEARN_selected);
-
-  if (bCrono) {
-  muMenu.add_item(&muMenu_mi_ProgCrono, &on_item_ProgCrono_selected);
-  SERIAL_OUT.println("Aggiungo la voce di menu ProgCrono");   
-  }
 
   muMenu.add_menu(&muMenu_System);
   muMenu_System.add_item(&mm_miBack, &on_itemBack_selected);
@@ -283,6 +271,7 @@ void initMenu() {
   muMenu_Layouts.add_item(&muMenu_mi_Layouts_1, &on_item_layout1_selected);
   muMenu_Layouts.add_item(&muMenu_mi_Layouts_2, &on_item_layout2_selected);
 
+  ms.set_root_menu(&muMenu);
 }
 
 Menu const* prec_cp_menu;
