@@ -19,6 +19,7 @@ byte boxPointerView=0;
 byte hourSel_Box1=0;
 byte hourSel_Box2=0;
 int encoder0PinBLast1=0;
+int longpress=0;
 bool na=0;
 bool np=0;
 byte dS=0;
@@ -372,24 +373,33 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   
   //ESCAPE FROM WHILE with longpress
   //////////////////////////////////////////////////////////////  
-  int longpress;
-  if(np==LOW){
-    longpress++;
-    Serial.print("longpress ");Serial.println(longpress);
-    }else{
-    longpress=0;
-    }
+  
 
-  if(longpress >= 2000){
-    Serial.println("Saving Crono Program... ");
-    //EEPROM SAVE
-    SaveCronoMatrix();
-    Serial.println("longpress ");
+  if((longpress >= 1000 & longpress < 4000) & np==HIGH){
+    longpress=0;
+    setDay(ucg);
+    Serial.println("longpress 1");
     pushed=1;   
     }
     else{
     pushed=0;}
+
+  if(longpress >= 4000 & np==HIGH){
+    longpress=0;
+    Serial.println("Saving Crono Program... ");
+    //EEPROM SAVE
+    SaveCronoMatrix();
+    Serial.println("longpress 2");
+    pushed=1; 
+      
+    }
     
+  if(np==LOW){
+    longpress++;
+    Serial.print("longpress ");Serial.println(longpress);
+    }else{ 
+    longpress=0;
+    }    
 
   //OnChange
   //////////////////////////////////////////////////////////////  
