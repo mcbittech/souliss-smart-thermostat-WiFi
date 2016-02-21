@@ -18,10 +18,13 @@ byte boxPointer=0;
 byte boxPointerView=0;
 byte hourSel_Box1=0;
 byte hourSel_Box2=0;
-int encoder0PinBLast1 = 0;
-bool na = 0;
-bool np = 0;
-
+int encoder0PinBLast1=0;
+bool na=0;
+bool np=0;
+byte dS=0;
+byte gS=0;
+int i;
+int ii;
 
 //LAYOUT
 ///////////////////////////////////////////////////////////
@@ -45,7 +48,7 @@ byte dDaysel = 1;         //Day Selected
 byte lastDaysel=0;
 byte lastBoxsel=0;
 byte line=0;
-byte dHourSel[7][48]={0}; //Array Matrix
+byte dHourSel[8][48]={0};   //Array Matrix
 float setP1 = 18.0;         //Setpoint Eco
 float setP2 = 20.4;         //Setpoint Normal
 float setP3 = 22.5;         //Setpoint Comfort
@@ -257,6 +260,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*3))+(offset_y*line) , dim_x_set , dim_y_set);   
           //OverP4
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*4))+(offset_y*line) , dim_x_set , dim_y_set);
+          Serial.print("daySelected+boxPointer=");Serial.print(daySelected);Serial.print("  ");Serial.print(boxPointer);Serial.print(" = ");Serial.print("boxSelected ");Serial.println(boxSelected);
           break;
         case 1:
           dHourSel[daySelected][boxPointer]=1;                 
@@ -270,6 +274,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set); 
           //P4
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*3))+(offset_y*line) , dim_x_set , dim_y_set);    
+          Serial.print("daySelected+boxPointer=");Serial.print(daySelected);Serial.print("  ");Serial.print(boxPointer);Serial.print(" = ");Serial.print("boxSelected ");Serial.println(boxSelected);
           break;
         case 2:
           dHourSel[daySelected][boxPointer]=2;
@@ -283,6 +288,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);
           //P4
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*3))+(offset_y*line) , dim_x_set , dim_y_set);   
+          Serial.print("daySelected+boxPointer=");Serial.print(daySelected);Serial.print("  ");Serial.print(boxPointer);Serial.print(" = ");Serial.print("boxSelected ");Serial.println(boxSelected);
           break;
         case 3:
           dHourSel[daySelected][boxPointer]=3;          
@@ -296,9 +302,10 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
           ucg.setColor(0, 0, 0);            //Nero  
           //P4
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*3))+(offset_y*line) , dim_x_set , dim_y_set);   
+          Serial.print("daySelected+boxPointer=");Serial.print(daySelected);Serial.print("  ");Serial.print(boxPointer);Serial.print(" = ");Serial.print("boxSelected ");Serial.println(boxSelected);
           break;
-          case 4:
-          dHourSel[daySelected][boxPointer]=3;          
+        case 4:
+          dHourSel[daySelected][boxPointer]=4;          
           ucg.setColor(102, 255, 0);           // Verde Chiaro
           //P1
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2))+(offset_y*line), dim_x_set , dim_y_set);
@@ -308,6 +315,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);
           //P4
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*3))+(offset_y*line) , dim_x_set , dim_y_set);   
+          Serial.print("daySelected+boxPointer=");Serial.print(daySelected);Serial.print("  ");Serial.print(boxPointer);Serial.print(" = ");Serial.print("boxSelected ");Serial.println(boxSelected);
           break;
         default: 
         break;
@@ -367,13 +375,18 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   int longpress;
   if(np==LOW){
     longpress++;
+    Serial.print("longpress ");Serial.println(longpress);
     }else{
     longpress=0;
     }
 
   if(longpress >= 2000){
+    Serial.println("Saving Crono Program... ");
+    //EEPROM SAVE
+    SaveCronoMatrix();
     Serial.println("longpress ");
-    pushed=1;}
+    pushed=1;   
+    }
     else{
     pushed=0;}
     
@@ -384,7 +397,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     changebox=1;}
   lastBoxsel=boxSelected; 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-delay(1); 
+delay(1);
 }
 ucg.setColor(255, 255, 255);      //Bianco     
 ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , start_y+(offset_y*line) , dim_x , dim_y);
@@ -393,4 +406,38 @@ boxPointerView=0;
 pushed=0;
 }
 
+void SaveCronoMatrix() {
+  dS=0;
+  gS=0;
+  i=0;
+  for (byte dS=1;dS<8;dS++){ 
+    for (byte gS=0;gS<48;gS++){
+      save_eeprom_byte(i+10,dHourSel[dS][gS]);
+        //byte pS=dHourSel[dS][gS];
+        //Serial.print("save_eeprom_byte :  index ");Serial.print(i);Serial.print(" day ");Serial.print(dS);Serial.print(" hour/2 ");Serial.print(gS);Serial.print(" value ");Serial.println(pS);
+      delay(1);
+      i++;
+    }
+    gS=0;
+  }
+  dS=0;
+  i=0;  
+}
 
+void ReadCronoMatrix() {
+  dS=0;
+  gS=0;
+  ii=0;
+  for (byte dS=1;dS<8;dS++){ 
+    for (byte gS=0;gS<48;gS++){
+      dHourSel[dS][gS]=read_eeprom_byte(ii+10);
+        //byte pS=dHourSel[dS][gS];
+        //Serial.print("save_eeprom_byte :  index ");Serial.print(i);Serial.print(" day ");Serial.print(dS);Serial.print(" hour/2 ");Serial.print(gS);Serial.print(" value ");Serial.println(pS);
+      delay(1);  
+      ii++;
+    }    
+    gS=0;
+  }
+  dS=0;
+  ii=0;  
+}

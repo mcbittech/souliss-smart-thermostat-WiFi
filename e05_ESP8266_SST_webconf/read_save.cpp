@@ -1,20 +1,21 @@
 #include <Arduino.h>
 #include <EEPROM.h>
+#include "constants.h"
 #include "tools/store/store.h"          
-#include "read_save.h"
-
-int offset=550; // meno di 550 non salva su eeprom perchè occupata da webconf
+#include "read_save.h" 
 
 void save_eeprom_byte(int index,byte value){ 
   Store_8bit(index+offset,value);
   Serial.print("SaveEepromByte index:");Serial.print(index+offset);Serial.print(" value:");Serial.println(value);
   Store_Commit();
+  delay(1);
 }
 
 void save_eeprom_int(int index,int value){ 
   Store_16bit(index+offset,value);
   Serial.print("SaveEepromInt index:");Serial.print(index+offset);Serial.print(" value:");Serial.println(value);
   Store_Commit();
+  delay(1);
 }
 
 byte read_eeprom_byte(int index){
@@ -22,6 +23,7 @@ byte read_eeprom_byte(int index){
  value=Return_8bit(index+offset);
  Serial.print("readEepromByte index:");Serial.print(index+offset);Serial.print(" value:");Serial.println(value);
  return value;
+ delay(1);
 }
 
 int read_eeprom_int(int index){
@@ -29,6 +31,7 @@ int read_eeprom_int(int index){
  value=Return_16bit(index+offset);
  Serial.print("ReadEepromInt index:");Serial.print(index+offset);Serial.print(" value:");Serial.println(value);
  return value;
+ delay(1);
 }
 
 
@@ -43,7 +46,7 @@ DATA          AUTORE       FILE        RIGA              ALLOCAZIONE  VAR       
 17/02/2016    Dariocdj     menu.cpp    179,185           6            bSystem            byte
 17/02/2016    Dariocdj     menu.cpp    194,202           7            bLayout1           byte
 17/02/2016    Dariocdj     menu.cpp    195,203           8            bLayout2           byte
-17/02/2016    Dariocdj     crono.cpp   377 e seguenti    9-345        dHourSel           byte
+17/02/2016    mcbittech    crono.cpp   377 e seguenti    9-345        dHourSel[7][48]    byte 7*48 matrix
 
 
 

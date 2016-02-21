@@ -77,7 +77,6 @@ void on_itemBack_selected(MenuItem* p_menu_item)
 
 void on_item_perc100_selected(MenuItem* p_menu_item)
 {
-
   iDisplayBright = 100;
   save_eeprom_int(1,iDisplayBright);
 }
@@ -369,27 +368,12 @@ void setFlag_initScreen(boolean bVal) {
 void ReadAllSettingsFromEEPROM() {
    //EEPROM
   SERIAL_OUT.println("Read ALL EEPROM value....");
-  
   iDisplayBright=read_eeprom_int(1);
-  //SERIAL_OUT.print("Read EEPROM value iDisplayBright : ");
-  //SERIAL_OUT.println(iDisplayBright);
   bClock=read_eeprom_byte(3);
-  //SERIAL_OUT.print("Read EEPROM value bClock : ");
-  //SERIAL_OUT.println(bClock);
   bCrono=read_eeprom_byte(4);
-  //SERIAL_OUT.print("Read EEPROM value bCrono : ");
-  //SERIAL_OUT.println(bCrono);
   bCronoLearn=read_eeprom_byte(5);
-  //SERIAL_OUT.print("Read EEPROM value bCronoLearn : ");
-  //SERIAL_OUT.println(bCronoLearn);
   bSystem=read_eeprom_byte(6);
-  //SERIAL_OUT.print("Read EEPROM value bSystem : ");
-  //SERIAL_OUT.println(bSystem);
   bLayout1=read_eeprom_byte(7);
-  //SERIAL_OUT.print("Read EEPROM value bLayout1 : ");
-  //SERIAL_OUT.println(bLayout1);
   bLayout2=read_eeprom_byte(8);
-  //SERIAL_OUT.print("Read EEPROM value bLayout2 : ");
-  //SERIAL_OUT.println(bLayout2);
 }
 
