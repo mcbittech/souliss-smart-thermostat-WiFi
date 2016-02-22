@@ -3,6 +3,7 @@
 #include "constants.h"
 #include "menu.h"
 #include "crono.h"
+#include "encoder.h"
 #include "read_save.h"
 
 
@@ -12,6 +13,7 @@ bool pushed=0;
 bool changeday=0;
 bool changebox=0;
 bool delday=0;
+byte setSelected=0;
 byte daySelected=0;
 byte boxSelected=0;
 byte boxPointer=0;
@@ -20,6 +22,7 @@ byte hourSel_Box1=0;
 byte hourSel_Box2=0;
 int encoder0PinBLast1=0;
 int longpress=0;
+bool ns=0;
 bool na=0;
 bool np=0;
 byte dS=0;
@@ -30,9 +33,9 @@ int ii;
 //LAYOUT
 ///////////////////////////////////////////////////////////
 byte start_x = 12;        //Start Position Layout X (pixel)
-byte start_y = 90;        //Start Position Layout Y (pixel)
+byte start_y = 110;        //Start Position Layout Y (pixel)
 byte offset_x = 25;       //Offset between  columns (pixel)
-byte offset_y = 95;       //Offset between  rows (pixel)
+byte offset_y = 75;       //Offset between  rows (pixel)
 byte offset_text = 25;    //Offset between Text (pixel)
 byte dim_x = 10;          //Box Dimension in X (pixel)
 byte dim_y = 5;           //Box Dimension in Y (pixel)
@@ -50,10 +53,9 @@ byte lastDaysel=0;
 byte lastBoxsel=0;
 byte line=0;
 byte dHourSel[8][48]={0};   //Array Matrix
-float setP1 = 18.0;         //Setpoint Eco
-float setP2 = 20.4;         //Setpoint Normal
-float setP3 = 22.5;         //Setpoint Comfort
-float setP4 = 25.0;         //Setpoint Comfort2
+float setP[5] = { 18.0,20.0,21.5,23.0 };                  //Setpoint Eco,Normal,Comfort,Comfort+
+char* descP[5] = {"Eco","Normal","Comfort","Comfort+"};   //Setpoint Eco,Normal,Comfort,Comfort+
+int rosso[4][3]={ { 255, 191, 0 }, { 207, 77, 90 }, { 236, 83, 0 }, { 255, 0, 0 } };   //da sx +chiaro a -chiaro
 
 
 //drawCrono
@@ -64,13 +66,15 @@ void drawCrono(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   ucg.setColor(0, 0, 0);                                      //Nero
   ucg.drawBox(0, 0, ucg.getWidth(), ucg.getHeight());
   //PREPARO LAYOUT
-  ucg.setColor(255, 255, 255);                                //Bianco
-  ucg.setFontMode(UCG_FONT_MODE_TRANSPARENT);
-  ucg.setFont(ucg_font_helvB14_hf);
-  ucg.setPrintPos(25,20);
-  ucg.print("Programmazione Giornaliera"); 
-  ucg.setFont(ucg_font_helvB12_hf);
+    //OLD
+    //ucg.setColor(255, 255, 255);                                //Bianco
+    //ucg.setFontMode(UCG_FONT_MODE_TRANSPARENT);
+    //ucg.setFont(ucg_font_helvB14_hf);
+    //ucg.setPrintPos(25,20);
+    //ucg.print("Programmazione Giornaliera");    
   //Quadri BASE
+  ucg.setColor(255, 255, 255);                                //Bianco
+  ucg.setFont(ucg_font_helvB12_hf);
   for(byte nv=0;nv<2;nv++){
     //Serial.print("VERTICALE ");Serial.println(nv);
     for(byte nh=0;nh<12;nh++){
@@ -85,8 +89,78 @@ void drawCrono(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     }
   }
   texthour=0; 
+  drawSetpoint(ucg); 
+  setSetpoint(ucg);
 }
 
+
+//drawSetpoint
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void drawSetpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg){
+    //NEW SETPOINT
+  ucg.setFontMode(UCG_FONT_MODE_SOLID);
+  for(int s=0;s<4;s++){
+    ucg.setColor(255, 255, 255);                                //Bianco
+    ucg.setFont(ucg_font_helvB10_hf);
+    ucg.setPrintPos((start_x*2)+(72*s),20);
+    ucg.print(descP[s]);
+    ucg.setColor(rosso[s][0], rosso[s][1], rosso[s][2]);        //Colore Variabile
+    ucg.setFont(ucg_font_helvB18_hf);
+    ucg.setPrintPos((start_x*2)+(72*s),45);
+    ucg.print(setP[s],1);  
+    ucg.drawBox((start_x*2)+(72*s) , 50 , dim_x*5 , dim_y);
+  }
+}
+
+
+//setSetpoint
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void setSetpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg){
+    //NEW SETPOINT
+  ucg.setFontMode(UCG_FONT_MODE_SOLID);
+  setSelected=0;
+  while(pushed==0){  
+      ucg.setColor(255, 255, 255);                                //Bianco
+      ucg.drawBox((start_x*2)+(72*setSelected) , 50 , dim_x*5 , dim_y);    
+      ucg.setColor(rosso[setSelected][0], rosso[setSelected][1], rosso[setSelected][2]);        //Colore Variabile
+      ucg.setFont(ucg_font_helvB18_hf);
+      ucg.setPrintPos((start_x*2)+(72*setSelected),45);
+      setEncoderValue(setP[setSelected]);
+      setP[setSelected]=getEncoderValue();
+      ucg.print(setP[setSelected],1);  
+      delay(1);
+      
+  //ENCODER
+  //////////////////////////////////////////////////////////////  
+
+  if(digitalRead(ENCODER_SWITCH)==LOW && (ns == HIGH)) { 
+       setSelected++;
+       delay(250);   
+       }   
+  ns = digitalRead(ENCODER_SWITCH);     
+
+  //MAX setSelected
+  //////////////////////////////////////////////////////////////  
+  if(setSelected>3){
+    setSelected=3;
+  }   
+    
+  //ESCAPE FROM WHILE
+  //////////////////////////////////////////////////////////////  
+  if(digitalRead(ENCODER_SWITCH)==LOW & setSelected>=3){
+    pushed=1;}
+  else{
+    pushed=0;}
+    
+delay(1);
+  }//endwhile
+  for(int f=0;f<4;f++){
+    ucg.setColor(rosso[f][0], rosso[f][1], rosso[f][2]);        //Colore Variabile 
+    ucg.drawBox((start_x*2)+(72*f) , 50 , dim_x*5 , dim_y);
+  }
+pushed=0;
+}//end setSetpoint
+    
 
 //setDay
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -106,27 +180,35 @@ void setDay(Ucglib_ILI9341_18x240x320_HWSPI ucg){
       ucg.drawBox(155,220,150,20);
       ucg.setColor(255, 255, 255);      //Bianco     
       ucg.setPrintPos(160,235);
+      daySelected=dDaysel;
       switch (dDaysel){
         case 1:
           ucg.print("LUNEDI'");
+            drawBoxes(ucg); 
           break;
         case 2:
           ucg.print("MARTEDI'"); 
+            drawBoxes(ucg); 
           break;
         case 3:
-          ucg.print("MERCOLEDI'"); 
+          ucg.print("MERCOLEDI'");
+            drawBoxes(ucg); 
           break;
         case 4:
-          ucg.print("GIOVEDI'"); 
+          ucg.print("GIOVEDI'");
+            drawBoxes(ucg);  
           break;
         case 5:
-          ucg.print("VENERDI'"); 
+          ucg.print("VENERDI'");
+            drawBoxes(ucg);   
           break;
         case 6:
-          ucg.print("SABATO"); 
+          ucg.print("SABATO");
+            drawBoxes(ucg);  
           break;
         case 7:
-          ucg.print("DOMENICA"); 
+          ucg.print("DOMENICA");
+            drawBoxes(ucg); 
           break;
         default: 
         break;
@@ -162,8 +244,7 @@ void setDay(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   //OnChange
   //////////////////////////////////////////////////////////////  
   if(dDaysel!=lastDaysel){
-    changeday=1;
-    drawBoxes(ucg);      }
+    changeday=1;      }
   lastDaysel=dDaysel;  
 //////////////////////////////////////////////////////////////////////////////////////
   
@@ -244,8 +325,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   Serial.println("MENU' setBoxes ");
   while(pushed==0){
     if(changebox==1){
-      //ucg.setColor(102, 255, 0);           // Verde Chiaro
-      ucg.setColor(233, 114, 19);           // Arancione
+      ucg.setColor(102, 255, 0);           // Verde Chiaro
       ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , start_y+(offset_y*line) , dim_x , dim_y);
       Serial.print("boxSelected ");Serial.println(boxSelected);
       Serial.print("boxPointer ");Serial.println(boxPointer); 
@@ -268,7 +348,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
         case 1:
           dHourSel[daySelected][boxPointer]=1;                 
           //ucg.setColor(102, 255, 0);           // Verde Chiaro
-          ucg.setColor(233, 114, 19);           // Arancione
+          ucg.setColor(rosso[boxSelected-1][0], rosso[boxSelected-1][1], rosso[boxSelected-1][2]);        //Colore Variabile
           //P1
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2))+(offset_y*line), dim_x_set , dim_y_set);        
           ucg.setColor(0, 0, 0);            //Nero
@@ -283,7 +363,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
         case 2:
           dHourSel[daySelected][boxPointer]=2;
           //ucg.setColor(102, 255, 0);           // Verde Chiaro
-          ucg.setColor(233, 114, 19);           // Arancione
+          ucg.setColor(rosso[boxSelected-1][0], rosso[boxSelected-1][1], rosso[boxSelected-1][2]);        //Colore Variabile
           //P1
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2))+(offset_y*line), dim_x_set , dim_y_set);
           //P2
@@ -298,7 +378,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
         case 3:
           dHourSel[daySelected][boxPointer]=3;          
           //ucg.setColor(102, 255, 0);           // Verde Chiaro
-          ucg.setColor(233, 114, 19);           // Arancione
+          ucg.setColor(rosso[boxSelected-1][0], rosso[boxSelected-1][1], rosso[boxSelected-1][2]);        //Colore Variabile
           //P1
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2))+(offset_y*line), dim_x_set , dim_y_set);
           //P2
@@ -313,7 +393,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
         case 4:
           dHourSel[daySelected][boxPointer]=4;          
           //ucg.setColor(102, 255, 0);           // Verde Chiaro
-          ucg.setColor(233, 114, 19);           // Arancione
+          ucg.setColor(rosso[boxSelected-1][0], rosso[boxSelected-1][1], rosso[boxSelected-1][2]);        //Colore Variabile
           //P1
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2))+(offset_y*line), dim_x_set , dim_y_set);
           //P2
@@ -386,6 +466,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     setDay(ucg);
     Serial.println("longpress 1");
     pushed=1;   
+    break;
     }
     else{
     pushed=0;}
@@ -394,10 +475,10 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     longpress=0;
     Serial.println("Saving Crono Program... ");
     //EEPROM SAVE
-    SaveCronoMatrix();
+    SaveCronoMatrix(ucg);
     Serial.println("longpress 2");
     pushed=1; 
-      
+    break;  
     }
     
   if(np==LOW){
@@ -422,22 +503,34 @@ boxPointerView=0;
 pushed=0;
 }
 
-void SaveCronoMatrix() {
+void SaveCronoMatrix(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   dS=0;
   gS=0;
   i=0;
   for (byte dS=1;dS<8;dS++){ 
     for (byte gS=0;gS<48;gS++){
+      ucg.setColor(102, 255, 0);           // Verde Chiaro
+      ucg.drawBox(3, 217, 60, 21);           //Rettangolo basso sx
+      ucg.setColor(255, 255, 255);           //Bianco
+      ucg.setFont(ucg_font_helvB10_hf);
+      ucg.setPrintPos(5,233);
+      ucg.print("SAVING"); 
       save_eeprom_byte(i+10,dHourSel[dS][gS]);
         //byte pS=dHourSel[dS][gS];
         //Serial.print("save_eeprom_byte :  index ");Serial.print(i);Serial.print(" day ");Serial.print(dS);Serial.print(" hour/2 ");Serial.print(gS);Serial.print(" value ");Serial.println(pS);
       delay(1);
       i++;
+      ucg.setColor(0, 0, 0);                //Nero
+      ucg.drawBox(3, 217, 60, 21);           //Rettangolo basso sx    
     }
     gS=0;
   }
   dS=0;
   i=0;  
+  save_eeprom_int(400,setP[0]);
+  save_eeprom_int(402,setP[1]);
+  save_eeprom_int(404,setP[2]);
+  save_eeprom_int(406,setP[3]);
 }
 
 void ReadCronoMatrix() {
@@ -456,4 +549,8 @@ void ReadCronoMatrix() {
   }
   dS=0;
   ii=0;  
+  setP[0]=read_eeprom_int(400);
+  setP[1]=read_eeprom_int(402);
+  setP[2]=read_eeprom_int(404);
+  setP[3]=read_eeprom_int(406);
 }

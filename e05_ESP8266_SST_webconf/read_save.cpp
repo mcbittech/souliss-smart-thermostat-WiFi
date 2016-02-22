@@ -46,8 +46,8 @@ DATA          AUTORE       FILE        RIGA              ALLOCAZIONE  VAR       
 17/02/2016    Dariocdj     menu.cpp    179,185           6            bSystem            byte
 17/02/2016    Dariocdj     menu.cpp    194,202           7            bLayout1           byte
 17/02/2016    Dariocdj     menu.cpp    195,203           8            bLayout2           byte
-17/02/2016    mcbittech    crono.cpp   377 e seguenti    9-345        dHourSel[7][48]    byte 7*48 matrix
-
+22/02/2016    mcbittech    crono.cpp   511 e seguenti    10-394       dHourSel[7][48]    byte 7*48 matrix
+22/02/2016    mcbittech    crono.cpp   511 e seguenti    400-410      setP[1...5]        byte 7*48 matrix
 
 
  
