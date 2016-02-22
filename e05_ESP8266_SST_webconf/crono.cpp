@@ -162,7 +162,8 @@ void setDay(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   //OnChange
   //////////////////////////////////////////////////////////////  
   if(dDaysel!=lastDaysel){
-    changeday=1;}
+    changeday=1;
+    drawBoxes(ucg);      }
   lastDaysel=dDaysel;  
 //////////////////////////////////////////////////////////////////////////////////////
   
@@ -243,7 +244,8 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   Serial.println("MENU' setBoxes ");
   while(pushed==0){
     if(changebox==1){
-      ucg.setColor(102, 255, 0);           // Verde Chiaro
+      //ucg.setColor(102, 255, 0);           // Verde Chiaro
+      ucg.setColor(233, 114, 19);           // Arancione
       ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , start_y+(offset_y*line) , dim_x , dim_y);
       Serial.print("boxSelected ");Serial.println(boxSelected);
       Serial.print("boxPointer ");Serial.println(boxPointer); 
@@ -265,7 +267,8 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
           break;
         case 1:
           dHourSel[daySelected][boxPointer]=1;                 
-          ucg.setColor(102, 255, 0);           // Verde Chiaro
+          //ucg.setColor(102, 255, 0);           // Verde Chiaro
+          ucg.setColor(233, 114, 19);           // Arancione
           //P1
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2))+(offset_y*line), dim_x_set , dim_y_set);        
           ucg.setColor(0, 0, 0);            //Nero
@@ -279,7 +282,8 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
           break;
         case 2:
           dHourSel[daySelected][boxPointer]=2;
-          ucg.setColor(102, 255, 0);           // Verde Chiaro
+          //ucg.setColor(102, 255, 0);           // Verde Chiaro
+          ucg.setColor(233, 114, 19);           // Arancione
           //P1
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2))+(offset_y*line), dim_x_set , dim_y_set);
           //P2
@@ -293,7 +297,8 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
           break;
         case 3:
           dHourSel[daySelected][boxPointer]=3;          
-          ucg.setColor(102, 255, 0);           // Verde Chiaro
+          //ucg.setColor(102, 255, 0);           // Verde Chiaro
+          ucg.setColor(233, 114, 19);           // Arancione
           //P1
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2))+(offset_y*line), dim_x_set , dim_y_set);
           //P2
@@ -307,7 +312,8 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
           break;
         case 4:
           dHourSel[daySelected][boxPointer]=4;          
-          ucg.setColor(102, 255, 0);           // Verde Chiaro
+          //ucg.setColor(102, 255, 0);           // Verde Chiaro
+          ucg.setColor(233, 114, 19);           // Arancione
           //P1
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2))+(offset_y*line), dim_x_set , dim_y_set);
           //P2
