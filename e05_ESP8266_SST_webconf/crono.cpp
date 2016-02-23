@@ -185,7 +185,7 @@ void setDay(Ucglib_ILI9341_18x240x320_HWSPI ucg){
       daySelected=dDaysel;
       switch (dDaysel){
         case 1:
-          ucg.print("DOMENICA'");
+          ucg.print("DOMENICA");
             drawBoxes(ucg); 
           break;
         case 2:
@@ -568,32 +568,39 @@ void checkNTPcrono() {
   int hourday=getNTPhour();
   int minuteday=getNTPminute();
   int minute_30_59; 
+  int pointernow=dHourSel[deyweek][(hourday*2)+minute_30_59];
   if(minuteday>30){
     minute_30_59=1;
   }else{
     minute_30_59=0;    
   }
-  Serial.print("CRONO: GIORNO,ORA,MINUTI,0-1after30");Serial.print(deyweek);Serial.print(hourday);Serial.print(minuteday);Serial.print(minute_30_59);
-  if(dHourSel[deyweek][(hourday*2)+minuteday]==1){
-    Serial.print("dHourSel[deyweek][(hourday*2)+minuteday]");Serial.print(dHourSel[deyweek][(hourday*2)+minuteday]);
-    setSetpoint(setP[0]);
-    Serial.println("CRONO: Attivo P0");
+  Serial.print("dayweek: ");Serial.print(deyweek);Serial.print("  hourday*2: ");Serial.print(hourday*2);Serial.print("  minuteday: ");Serial.println(minute_30_59);
+  Serial.print("pointernow ");Serial.println(pointernow);
+  if(pointernow > 0){
+  switch(pointernow){
+    case 0:
+          break;
+    case 1:
+          //setSetpoint(setP[0]);
+          Serial.println("CRONO: Attivo P0"); 
+          break;
+    case 2:
+          //setSetpoint(setP[1]);          
+          Serial.println("CRONO: Attivo P1"); 
+          break;
+    case 3:
+          //setSetpoint(setP[2]);
+          Serial.println("CRONO: Attivo P2"); 
+          break;
+    case 4:
+          //setSetpoint(setP[3]); 
+          Serial.println("CRONO: Attivo P3"); 
+          break;
+    default: 
+    break;
+    }
   }
-  if(dHourSel[deyweek][(hourday*2)+minuteday]==2){
-    Serial.print("dHourSel[deyweek][(hourday*2)+minuteday]");Serial.print(dHourSel[deyweek][(hourday*2)+minuteday]);
-    setSetpoint(setP[1]);
-    Serial.println("CRONO: Attivo P1");
-  }
-  if(dHourSel[deyweek][(hourday*2)+minuteday]==3){
-    Serial.print("dHourSel[deyweek][(hourday*2)+minuteday]");Serial.print(dHourSel[deyweek][(hourday*2)+minuteday]);
-    setSetpoint(setP[2]);
-    Serial.println("CRONO: Attivo P2");
-  }
-  if(dHourSel[deyweek][(hourday*2)+minuteday]==4){
-    Serial.print("dHourSel[deyweek][(hourday*2)+minuteday]");Serial.print(dHourSel[deyweek][(hourday*2)+minuteday]);
-    setSetpoint(setP[3]);
-    Serial.println("CRONO: Attivo P3");
-  }
+}    
   
-}
+
 

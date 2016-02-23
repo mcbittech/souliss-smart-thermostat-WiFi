@@ -10,14 +10,14 @@ float encoderValue = 20.0;
 int n;
 
 float getEncoderValue() {
-    Serial.print("encoderValue: ");Serial.println(encoderValue);
+  //Serial.print("encoderValue: ");Serial.println(encoderValue);
   return encoderValue;
 }
 
 void setEncoderValue(float val) {
   encoder0Pos = val * 10;
-  encoderValue = encoder0Pos / 10.0;
-  Serial.print("encoder0Pos+encoderValue: ");Serial.print(encoder0Pos);Serial.print(" + ");Serial.println(encoderValue);
+  //encoderValue = encoder0Pos / 10.0;
+  //Serial.print("encoder0Pos+encoderValue: ");Serial.print(encoder0Pos);Serial.print(" + ");Serial.println(encoderValue);
 }
 
 int encoder0PinALast = LOW;
