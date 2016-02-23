@@ -3,6 +3,7 @@
 #include "constants.h"
 #include "menu.h"
 #include "crono.h"
+#include "ntp.h"
 #include "encoder.h"
 #include "read_save.h"
 
@@ -55,8 +56,9 @@ byte line=0;
 byte dHourSel[8][48]={0};   //Array Matrix
 float setP[5] = { 18.0,20.0,21.5,23.0 };                  //Setpoint Eco,Normal,Comfort,Comfort+
 char* descP[5] = {"Eco","Normal","Comfort","Comfort+"};   //Setpoint Eco,Normal,Comfort,Comfort+
-int rosso[4][3]={ { 255, 191, 0 }, { 207, 77, 90 }, { 236, 83, 0 }, { 255, 0, 0 } };   //da sx +chiaro a -chiaro
+int rosso[4][3]={ { 102, 255, 0 }, { 255, 255, 153 }, { 255, 204, 0 }, { 255, 0, 0 } };   //da sx +chiaro a -chiaro
 
+  
 
 //drawCrono
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -183,31 +185,31 @@ void setDay(Ucglib_ILI9341_18x240x320_HWSPI ucg){
       daySelected=dDaysel;
       switch (dDaysel){
         case 1:
-          ucg.print("LUNEDI'");
+          ucg.print("DOMENICA'");
             drawBoxes(ucg); 
           break;
         case 2:
-          ucg.print("MARTEDI'"); 
+          ucg.print("LUNEDI'"); 
             drawBoxes(ucg); 
           break;
         case 3:
-          ucg.print("MERCOLEDI'");
+          ucg.print("MARTEDI'");
             drawBoxes(ucg); 
           break;
         case 4:
-          ucg.print("GIOVEDI'");
+          ucg.print("MERCOLEDI'");
             drawBoxes(ucg);  
           break;
         case 5:
-          ucg.print("VENERDI'");
+          ucg.print("GIOVEDI'");
             drawBoxes(ucg);   
           break;
         case 6:
-          ucg.print("SABATO");
+          ucg.print("VENERDI'");
             drawBoxes(ucg);  
           break;
         case 7:
-          ucg.print("DOMENICA");
+          ucg.print("SABATO");
             drawBoxes(ucg); 
           break;
         default: 
@@ -527,10 +529,10 @@ void SaveCronoMatrix(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   }
   dS=0;
   i=0;  
-  save_eeprom_int(400,setP[0]);
-  save_eeprom_int(402,setP[1]);
-  save_eeprom_int(404,setP[2]);
-  save_eeprom_int(406,setP[3]);
+  save_eeprom_int(400,setP[0]*100);
+  save_eeprom_int(402,setP[1]*100);
+  save_eeprom_int(404,setP[2]*100);
+  save_eeprom_int(406,setP[3]*100);
 }
 
 void ReadCronoMatrix() {
@@ -549,8 +551,40 @@ void ReadCronoMatrix() {
   }
   dS=0;
   ii=0;  
-  setP[0]=read_eeprom_int(400);
-  setP[1]=read_eeprom_int(402);
-  setP[2]=read_eeprom_int(404);
-  setP[3]=read_eeprom_int(406);
+  setP[0]=read_eeprom_int(400)*0.01;
+  setP[1]=read_eeprom_int(402)*0.01;
+  setP[2]=read_eeprom_int(404)*0.01;
+  setP[3]=read_eeprom_int(406)*0.01;
 }
+
+//Hook crono data from NTP Time
+/*
+byte dHourSel[8][48]={0};   //Array Matrix
+float setP[5] = { 18.0,20.0,21.5,23.0 };                  //Setpoint Eco,Normal,Comfort,Comfort+
+char* descP[5] = {"Eco","Normal","Comfort","Comfort+"};   //Setpoint Eco,Normal,Comfort,Comfort+
+*/
+void checkNTPcrono() {
+  int deyweek=getNTPday();
+  int hourday=getNTPhour();
+  int minuteday=getNTPminute();
+  int minute_30_59; 
+  if(minuteday>30){
+    minute_30_59=1;
+  }else{
+    minute_30_59=0;    
+  }
+  if(dHourSel[deyweek][(hourday*2)+minuteday]==1){
+    Serial.println("CRONO: Attivo P1");
+  }
+  if(dHourSel[deyweek][(hourday*2)+minuteday]==2){
+    Serial.println("CRONO: Attivo P2");
+  }
+  if(dHourSel[deyweek][(hourday*2)+minuteday]==3){
+    Serial.println("CRONO: Attivo P3");
+  }
+  if(dHourSel[deyweek][(hourday*2)+minuteday]==4){
+    Serial.println("CRONO: Attivo P4");
+  }
+  
+}
+

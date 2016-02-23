@@ -94,6 +94,20 @@ String digitalDataDisplay() {
   return printDigits(day()) + "." + (month()) + "." + (year());
 }
 
+//Crono var
+//Day of week  Sunday is day 0 
+int getNTPday(){
+  return weekday();  
+}
+//Hour of day
+int getNTPhour(){
+  return hour();
+}
+//minute of day
+int getNTPminute(){
+  return minute();
+}
+
 void initNTP() {
 
   udp_NTP.begin(localPort);

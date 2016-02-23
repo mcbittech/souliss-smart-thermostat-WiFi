@@ -401,6 +401,7 @@ void loop()
           yield();
           display_layout2_print_circle_green(ucg);
         }
+        checkNTPcrono();
       }
     }
 
