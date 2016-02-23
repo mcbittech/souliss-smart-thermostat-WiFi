@@ -4,6 +4,7 @@
 #include "menu.h"
 #include "crono.h"
 #include "ntp.h"
+#include "display2.h"
 #include "encoder.h"
 #include "read_save.h"
 
@@ -581,19 +582,23 @@ void checkNTPcrono() {
     case 0:
           break;
     case 1:
-          //setSetpoint(setP[0]);
+          //setEncoderValue(setP[0]);
+          //display_layout2_Setpoint(ucg,setP[0]);
           Serial.println("CRONO: Attivo P0"); 
           break;
     case 2:
-          //setSetpoint(setP[1]);          
+          //setEncoderValue(setP[1]);       
+          //display_layout2_Setpoint(ucg,setP[1]);   
           Serial.println("CRONO: Attivo P1"); 
           break;
     case 3:
-          //setSetpoint(setP[2]);
+          //setEncoderValue(setP[2]);
+          //display_layout2_Setpoint(ucg,setP[2]);
           Serial.println("CRONO: Attivo P2"); 
           break;
     case 4:
-          //setSetpoint(setP[3]); 
+          //setEncoderValue(setP[3]); 
+          //display_layout2_Setpoint(ucg,setP[3]);
           Serial.println("CRONO: Attivo P3"); 
           break;
     default: 
