@@ -504,4 +504,3 @@ void setSoulissDataChanged() {
   SERIAL_OUT.println("setSoulissDataChanged");
   data_changed = Souliss_TRIGGED;
 }
-

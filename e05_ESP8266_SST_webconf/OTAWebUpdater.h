@@ -21,13 +21,17 @@
     \ingroup
 */
 #define OTA_WebUpdater_Setup()     				const char* host = "esp8266-webupdate";\
-                  ESP8266WebServer httpServer(80);\
-									ESP8266HTTPUpdateServer httpUpdater;\
+                                          ESP8266WebServer httpServer(80);\
+									                        ESP8266HTTPUpdateServer httpUpdater;\
 
-#define OTA_WebUpdater_Init()       									httpUpdater.setup(&httpServer);\
+#define OTA_WebUpdater_Init()       									\
+                                    MDNS.begin(host);\
+                                    httpUpdater.setup(&httpServer);\
 									                  httpServer.begin();\
-									MDNS.addService("http", "tcp", 80);\
-									Serial.printf("HTTPUpdateServer ready! Open http://%s.local/update in your browser\n", host);\
-
+                  									MDNS.addService("http", "tcp", 80);\
+                   									Serial.printf("HTTPUpdateServer ready! Open http://%s.local/update in your browser\n", host);\
+                  
 #define OTA_WebUpdater_Process()    								httpServer.handleClient();\
+
+
 
