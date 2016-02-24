@@ -564,7 +564,7 @@ byte dHourSel[8][48]={0};   //Array Matrix
 float setP[5] = { 18.0,20.0,21.5,23.0 };                  //Setpoint Eco,Normal,Comfort,Comfort+
 char* descP[5] = {"Eco","Normal","Comfort","Comfort+"};   //Setpoint Eco,Normal,Comfort,Comfort+
 */
-void checkNTPcrono() {
+void checkNTPcrono(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   int deyweek=getNTPday();
   int hourday=getNTPhour();
   int minuteday=getNTPminute();
@@ -578,27 +578,36 @@ void checkNTPcrono() {
   Serial.print("dayweek: ");Serial.print(deyweek);Serial.print("  hourday*2: ");Serial.print(hourday*2);Serial.print("  minuteday: ");Serial.println(minute_30_59);
   Serial.print("pointernow ");Serial.println(pointernow);
   if(pointernow > 0){
-  switch(pointernow){
+      ucg.setFontMode(UCG_FONT_MODE_SOLID);
+      ucg.setFont(ucg_font_helvB14_hf);
+      ucg.setColor(255, 0, 0);       // Rosso
+      ucg.setPrintPos(143, 90);
+    switch(pointernow){
     case 0:
+          ucg.print("off");
           break;
     case 1:
           //setEncoderValue(setP[0]);
           //display_layout2_Setpoint(ucg,setP[0]);
+          ucg.print("Sp0");
           Serial.println("CRONO: Attivo P0"); 
           break;
     case 2:
           //setEncoderValue(setP[1]);       
           //display_layout2_Setpoint(ucg,setP[1]);   
+          ucg.print("Sp1");
           Serial.println("CRONO: Attivo P1"); 
           break;
     case 3:
           //setEncoderValue(setP[2]);
           //display_layout2_Setpoint(ucg,setP[2]);
+          ucg.print("Sp2");
           Serial.println("CRONO: Attivo P2"); 
           break;
     case 4:
           //setEncoderValue(setP[3]); 
           //display_layout2_Setpoint(ucg,setP[3]);
+          ucg.print("Sp3");
           Serial.println("CRONO: Attivo P3"); 
           break;
     default: 

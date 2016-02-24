@@ -14,4 +14,4 @@ void clearScreen(Ucglib_ILI9341_18x240x320_HWSPI);
 void refreshPointer();
 void SaveCronoMatrix(Ucglib_ILI9341_18x240x320_HWSPI);
 void ReadCronoMatrix();
-void checkNTPcrono();
+void checkNTPcrono(Ucglib_ILI9341_18x240x320_HWSPI);

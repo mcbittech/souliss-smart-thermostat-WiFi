@@ -403,7 +403,7 @@ void loop()
           display_layout2_print_circle_green(ucg);
         }
       Serial.println("CRONO: aggiornamento");
-      checkNTPcrono();
+      checkNTPcrono(ucg);
       }
     }
 
