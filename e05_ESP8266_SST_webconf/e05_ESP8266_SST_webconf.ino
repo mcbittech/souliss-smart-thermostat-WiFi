@@ -1,4 +1,4 @@
-#include <SoulissBase.h> // load patch to the library for IDE 1.6.7
+//#include <SoulissBase.h> // load patch to the library for IDE 1.6.7
 //#define MaCaco_DEBUG_INSKETCH
 //  #define MaCaco_DEBUG   1
 //
