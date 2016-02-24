@@ -588,25 +588,25 @@ void checkNTPcrono(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
           break;
     case 1:
           //setEncoderValue(setP[0]);
-          //display_layout2_Setpoint(ucg,setP[0]);
+          display_layout2_Setpoint(ucg,setP[0]);
           ucg.print("Sp0");
           Serial.println("CRONO: Attivo P0"); 
           break;
     case 2:
           //setEncoderValue(setP[1]);       
-          //display_layout2_Setpoint(ucg,setP[1]);   
+          display_layout2_Setpoint(ucg,setP[1]);   
           ucg.print("Sp1");
           Serial.println("CRONO: Attivo P1"); 
           break;
     case 3:
           //setEncoderValue(setP[2]);
-          //display_layout2_Setpoint(ucg,setP[2]);
+          display_layout2_Setpoint(ucg,setP[2]);
           ucg.print("Sp2");
           Serial.println("CRONO: Attivo P2"); 
           break;
     case 4:
           //setEncoderValue(setP[3]); 
-          //display_layout2_Setpoint(ucg,setP[3]);
+          display_layout2_Setpoint(ucg,setP[3]);
           ucg.print("Sp3");
           Serial.println("CRONO: Attivo P3"); 
           break;
