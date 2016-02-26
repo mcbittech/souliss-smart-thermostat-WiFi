@@ -69,6 +69,7 @@ const int timeZone = 2;     // Central European Time
 #define TEMP_MINUS 1
 
 //EEPROM
+#define STORE__USER_EEPROM 2048
 const int offset=200;       //start address for eeprom data save
 
 #define SERIAL_OUT Serial
