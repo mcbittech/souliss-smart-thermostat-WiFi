@@ -393,16 +393,20 @@ void loop()
       if (!getEnabled()) {
         if (getLayout1()) {
           getTemp();
-          Serial.println("CRONO: aggiornamento");
-          checkNTPcrono(ucg);
+          if (getCrono()) {
+            Serial.println("CRONO: aggiornamento");
+            setpoint=checkNTPcrono(ucg);            
+          }
         } else if (getLayout2()) {
           display_layout2_print_circle_white(ucg);
           getTemp();
           display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
           display_layout2_print_datetime(ucg);
           display_layout2_print_circle_black(ucg);
-          Serial.println("CRONO: aggiornamento");
-          checkNTPcrono(ucg);
+          if (getCrono()) {
+            Serial.println("CRONO: aggiornamento");
+            setpoint=checkNTPcrono(ucg);          
+          }
           yield();
           display_layout2_print_circle_green(ucg);
         }

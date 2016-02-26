@@ -564,7 +564,8 @@ byte dHourSel[8][48]={0};   //Array Matrix
 float setP[5] = { 18.0,20.0,21.5,23.0 };                  //Setpoint Eco,Normal,Comfort,Comfort+
 char* descP[5] = {"Eco","Normal","Comfort","Comfort+"};   //Setpoint Eco,Normal,Comfort,Comfort+
 */
-void checkNTPcrono(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
+float checkNTPcrono(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
+  float getsetpoint;
   int deyweek=getNTPday();
   int hourday=getNTPhour();
   int minuteday=getNTPminute();
@@ -588,33 +589,34 @@ void checkNTPcrono(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
           ucg.print("off");
           break;
     case 1:
-          setEncoderValue(setP[0]);
-          display_layout2_Setpoint(ucg,setP[0]);
-          ucg.print("Sp0");
-          Serial.println("CRONO: Attivo P0"); 
+          getsetpoint=setP[0];
+          //display_layout2_Setpoint(ucg,setP[0]);
+          ucg.print("Eco");
+          Serial.println("CRONO: Attivo Eco"); 
           break;
     case 2:
-          setEncoderValue(setP[1]);       
-          display_layout2_Setpoint(ucg,setP[1]);   
-          ucg.print("Sp1");
-          Serial.println("CRONO: Attivo P1"); 
+          getsetpoint=setP[1];   
+          //display_layout2_Setpoint(ucg,setP[1]);   
+          ucg.print("Nor");
+          Serial.println("CRONO: Attivo Normal"); 
           break;
     case 3:
-          setEncoderValue(setP[2]);
-          display_layout2_Setpoint(ucg,setP[2]);
-          ucg.print("Sp2");
-          Serial.println("CRONO: Attivo P2"); 
+          getsetpoint=setP[2];
+          //display_layout2_Setpoint(ucg,setP[2]);
+          ucg.print("Co");
+          Serial.println("CRONO: Attivo Comfort"); 
           break;
     case 4:
-          setEncoderValue(setP[3]); 
-          display_layout2_Setpoint(ucg,setP[3]);
-          ucg.print("Sp3");
-          Serial.println("CRONO: Attivo P3"); 
+          getsetpoint=setP[3]; 
+          //display_layout2_Setpoint(ucg,setP[3]);
+          ucg.print("Co+");
+          Serial.println("CRONO: Attivo Comfort+"); 
           break;
     default: 
     break;
     }
   }
+  return getsetpoint;
 }    
   
 
