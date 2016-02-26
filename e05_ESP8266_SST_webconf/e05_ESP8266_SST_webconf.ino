@@ -21,7 +21,7 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <ESP8266HTTPUpdateServer.h>
-                  
+
 // Configure the Souliss framework
 #include "bconf/MCU_ESP8266.h"              /** Load the code directly on the ESP8266 */
 #include "preferences.h"
@@ -42,6 +42,7 @@
 #include "Souliss.h"
 #include "encoder.h"
 #include "constants.h"
+#include "topics.h"
 #include "display.h"
 #include "display2.h"
 #include "language.h"
@@ -167,15 +168,15 @@ void bright(int lum) {
   analogWrite(BACKLED, val);
 }
 
-void OTA_Progress(){
-   SERIAL_OUT.println(".");
+void OTA_Progress() {
+  SERIAL_OUT.println(".");
 }
 void setup()
 {
   SERIAL_OUT.begin(115200);
   SERIAL_OUT.println("Start");
-  SERIAL_OUT.print(MENU_TEXT_ROOT);SERIAL_OUT.print(" - ");SERIAL_OUT.println(VERSION);
-  SERIAL_OUT.print("Board Free Sketch Space: "); 
+  SERIAL_OUT.print(MENU_TEXT_ROOT); SERIAL_OUT.print(" - "); SERIAL_OUT.println(VERSION);
+  SERIAL_OUT.print("Board Free Sketch Space: ");
   SERIAL_OUT.println(ESP.getFreeSketchSpace());
 
   //DISPLAY INIT
@@ -252,9 +253,9 @@ void setup()
 float fVal;
 void loop()
 {
-    // Look for a new sketch to update over the air
+  // Look for a new sketch to update over the air
   OTA_WebUpdater_Process();
-  
+
   EXECUTEFAST() {
     UPDATEFAST();
 
@@ -350,7 +351,7 @@ void loop()
             }
           }
         }
-         SERIAL_OUT.println("print Menu");
+        SERIAL_OUT.println("print Menu");
         printMenu(ucg);
       }
 
@@ -445,6 +446,18 @@ void loop()
         }
       }
     }
+    FAST_2110ms() {
+      // Receiver
+      uint8_t mypayload_len;
+      uint8_t mypayload[10];
+      if (subscribedata(ENERGY_TOPIC, mypayload, &mypayload_len))
+        SERIAL_OUT.print("payload: ");
+      for (int i = 0; i < mypayload_len;i++) {
+        SERIAL_OUT.print(mypayload[i]); SERIAL_OUT.print(" ");
+      }
+      SERIAL_OUT.println("");
+    }
+
 
 #if(DYNAMIC_CONNECTION)
     DYNAMIC_CONNECTION_fast();
