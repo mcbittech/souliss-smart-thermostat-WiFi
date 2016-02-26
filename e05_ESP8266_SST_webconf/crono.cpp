@@ -57,7 +57,7 @@ byte line=0;
 byte dHourSel[8][48]={0};   //Array Matrix
 float setP[5] = { 18.0,20.0,21.5,23.0 };                  //Setpoint Eco,Normal,Comfort,Comfort+
 char* descP[5] = {"Eco","Normal","Comfort","Comfort+"};   //Setpoint Eco,Normal,Comfort,Comfort+
-int rosso[4][3]={ { 102, 255, 0 }, { 255, 255, 153 }, { 255, 204, 0 }, { 255, 0, 0 } };   //da sx +chiaro a -chiaro
+int colour[4][3]={ { 102, 255, 0 }, { 255, 255, 153 }, { 255, 204, 0 }, { 255, 0, 0 } };   //da sx +chiaro a -chiaro
 
   
 
@@ -107,7 +107,7 @@ void drawSetpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     ucg.setFont(ucg_font_helvB10_hf);
     ucg.setPrintPos((start_x*2)+(72*s),20);
     ucg.print(descP[s]);
-    ucg.setColor(rosso[s][0], rosso[s][1], rosso[s][2]);        //Colore Variabile
+    ucg.setColor(colour[s][0], colour[s][1], colour[s][2]);        //Colore Variabile
     ucg.setFont(ucg_font_helvB18_hf);
     ucg.setPrintPos((start_x*2)+(72*s),45);
     ucg.print(setP[s],1);  
@@ -125,10 +125,10 @@ void setSetpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   while(pushed==0){  
       ucg.setColor(255, 255, 255);                                //Bianco
       ucg.drawBox((start_x*2)+(72*setSelected) , 50 , dim_x*5 , dim_y);    
-      ucg.setColor(rosso[setSelected][0], rosso[setSelected][1], rosso[setSelected][2]);        //Colore Variabile
+      ucg.setColor(colour[setSelected][0], colour[setSelected][1], colour[setSelected][2]);        //Colore Variabile
       ucg.setFont(ucg_font_helvB18_hf);
       ucg.setPrintPos((start_x*2)+(72*setSelected),45);
-      setEncoderValue(setP[setSelected]);
+      //setEncoderValue(setP[setSelected]);
       setP[setSelected]=getEncoderValue();
       ucg.print(setP[setSelected],1);  
       delay(1);
@@ -158,7 +158,7 @@ void setSetpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg){
 delay(1);
   }//endwhile
   for(int f=0;f<4;f++){
-    ucg.setColor(rosso[f][0], rosso[f][1], rosso[f][2]);        //Colore Variabile 
+    ucg.setColor(colour[f][0], colour[f][1], colour[f][2]);        //Colore Variabile 
     ucg.drawBox((start_x*2)+(72*f) , 50 , dim_x*5 , dim_y);
   }
 pushed=0;
@@ -351,7 +351,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
         case 1:
           dHourSel[daySelected][boxPointer]=1;                 
           //ucg.setColor(102, 255, 0);           // Verde Chiaro
-          ucg.setColor(rosso[boxSelected-1][0], rosso[boxSelected-1][1], rosso[boxSelected-1][2]);        //Colore Variabile
+          ucg.setColor(colour[boxSelected-1][0], colour[boxSelected-1][1], colour[boxSelected-1][2]);        //Colore Variabile
           //P1
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2))+(offset_y*line), dim_x_set , dim_y_set);        
           ucg.setColor(0, 0, 0);            //Nero
@@ -366,7 +366,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
         case 2:
           dHourSel[daySelected][boxPointer]=2;
           //ucg.setColor(102, 255, 0);           // Verde Chiaro
-          ucg.setColor(rosso[boxSelected-1][0], rosso[boxSelected-1][1], rosso[boxSelected-1][2]);        //Colore Variabile
+          ucg.setColor(colour[boxSelected-1][0], colour[boxSelected-1][1], colour[boxSelected-1][2]);        //Colore Variabile
           //P1
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2))+(offset_y*line), dim_x_set , dim_y_set);
           //P2
@@ -381,7 +381,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
         case 3:
           dHourSel[daySelected][boxPointer]=3;          
           //ucg.setColor(102, 255, 0);           // Verde Chiaro
-          ucg.setColor(rosso[boxSelected-1][0], rosso[boxSelected-1][1], rosso[boxSelected-1][2]);        //Colore Variabile
+          ucg.setColor(colour[boxSelected-1][0], colour[boxSelected-1][1], colour[boxSelected-1][2]);        //Colore Variabile
           //P1
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2))+(offset_y*line), dim_x_set , dim_y_set);
           //P2
@@ -396,7 +396,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
         case 4:
           dHourSel[daySelected][boxPointer]=4;          
           //ucg.setColor(102, 255, 0);           // Verde Chiaro
-          ucg.setColor(rosso[boxSelected-1][0], rosso[boxSelected-1][1], rosso[boxSelected-1][2]);        //Colore Variabile
+          ucg.setColor(colour[boxSelected-1][0], colour[boxSelected-1][1], colour[boxSelected-1][2]);        //Colore Variabile
           //P1
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2))+(offset_y*line), dim_x_set , dim_y_set);
           //P2
@@ -577,35 +577,36 @@ void checkNTPcrono(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   }
   Serial.print("dayweek: ");Serial.print(deyweek);Serial.print("  hourday*2: ");Serial.print(hourday*2);Serial.print("  minuteday: ");Serial.println(minute_30_59);
   Serial.print("pointernow ");Serial.println(pointernow);
-  if(pointernow > 0){
+  if(pointernow >= 0 && pointernow <= 4){
       ucg.setFontMode(UCG_FONT_MODE_SOLID);
       ucg.setFont(ucg_font_helvB14_hf);
-      ucg.setColor(255, 0, 0);       // Rosso
+      ucg.setColor(255, 0, 0);       // colour
       ucg.setPrintPos(143, 90);
+      ucg.setColor(colour[pointernow][0], colour[pointernow][1], colour[pointernow][2]);        //Colore Variabile
     switch(pointernow){
     case 0:
           ucg.print("off");
           break;
     case 1:
-          //setEncoderValue(setP[0]);
+          setEncoderValue(setP[0]);
           display_layout2_Setpoint(ucg,setP[0]);
           ucg.print("Sp0");
           Serial.println("CRONO: Attivo P0"); 
           break;
     case 2:
-          //setEncoderValue(setP[1]);       
+          setEncoderValue(setP[1]);       
           display_layout2_Setpoint(ucg,setP[1]);   
           ucg.print("Sp1");
           Serial.println("CRONO: Attivo P1"); 
           break;
     case 3:
-          //setEncoderValue(setP[2]);
+          setEncoderValue(setP[2]);
           display_layout2_Setpoint(ucg,setP[2]);
           ucg.print("Sp2");
           Serial.println("CRONO: Attivo P2"); 
           break;
     case 4:
-          //setEncoderValue(setP[3]); 
+          setEncoderValue(setP[3]); 
           display_layout2_Setpoint(ucg,setP[3]);
           ucg.print("Sp3");
           Serial.println("CRONO: Attivo P3"); 
