@@ -608,7 +608,7 @@ float checkNTPcrono(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
       ucg.setColor(colour[pointernow][0], colour[pointernow][1], colour[pointernow][2]);        //Colore Variabile
     switch(pointernow){
     case 0:
-          //ucg.print("CRONO OFF");
+          getsetpoint=(setP[0]-2.0);             //da sistemare con taglio uscita T31
           ucg.setColor(0, 0, 0);       // black
           ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
           ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
@@ -623,7 +623,6 @@ float checkNTPcrono(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
           ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
           ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
           ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
-          //ucg.print("Eco");
           Serial.println("CRONO: Attivo Eco"); 
           break;
     case 2:
@@ -633,7 +632,6 @@ float checkNTPcrono(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
           ucg.setColor(0, 0, 0);       // black
           ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
           ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
-          //ucg.print("Nor");
           Serial.println("CRONO: Attivo Normal"); 
           break;
     case 3:
@@ -643,7 +641,6 @@ float checkNTPcrono(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
           ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
           ucg.setColor(0, 0, 0);       // black
           ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
-          //ucg.print("Com");
           Serial.println("CRONO: Attivo Comfort"); 
           break;
     case 4:
@@ -652,7 +649,6 @@ float checkNTPcrono(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
           ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
           ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
           ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
-          //ucg.print("Com+");
           Serial.println("CRONO: Attivo Comfort+"); 
           break;
     default: 
