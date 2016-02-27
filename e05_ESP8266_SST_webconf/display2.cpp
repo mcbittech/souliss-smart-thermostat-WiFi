@@ -190,7 +190,7 @@ void display_layout2_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float tempe
     ucg.setFontMode(UCG_FONT_MODE_SOLID);
     ucg.setPrintPos(24, 209);
     ucg.setFont(ucg_font_inb21_mr);
-    ucg.print("Hr"); ucg.print(humidity, 1);
+    ucg.print("uR"); ucg.print(humidity, 1);
     ucg.setFont(ucg_font_9x18_mf);
     ucg.setPrintPos(135, 209);
     ucg.print("%");

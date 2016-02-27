@@ -1,7 +1,7 @@
 #include <Arduino.h>
-
 #include <ESP8266WiFi.h>
-#define VERSION "v0.9beta"
+
+#define VERSION "v0.10 beta"
 
 //DHT22
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -69,7 +69,6 @@ const int timeZone = 2;     // Central European Time
 #define TEMP_MINUS 1
 
 //EEPROM
-#define STORE__2k 
 const int offset=200;       //start address for eeprom data save
 
 #define SERIAL_OUT Serial

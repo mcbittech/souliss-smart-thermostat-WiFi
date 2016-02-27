@@ -76,7 +76,6 @@ void setup()
 {
   SERIAL_OUT.begin(115200);
 
-
   //DISPLAY INIT
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   ucg.begin(UCG_FONT_MODE_SOLID);
@@ -188,7 +187,6 @@ void setup()
  
 }
 
-float fVal;
 void loop()
 {
   EXECUTEFAST() {
@@ -395,18 +393,28 @@ void loop()
           getTemp();
           if (getCrono()) {
             Serial.println("CRONO: aggiornamento");
-            setpoint=checkNTPcrono(ucg);            
+            setSetpoint(checkNTPcrono(ucg));   
+            setEncoderValue(checkNTPcrono(ucg));             
+            Serial.print("CRONO: setpoint: ");Serial.println(setpoint);         
           }
         } else if (getLayout2()) {
           display_layout2_print_circle_white(ucg);
           getTemp();
+          display_layout2_print_circle_black(ucg);
           display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
           display_layout2_print_datetime(ucg);
-          display_layout2_print_circle_black(ucg);
           if (getCrono()) {
             Serial.println("CRONO: aggiornamento");
-            setpoint=checkNTPcrono(ucg);          
-          }
+            setSetpoint(checkNTPcrono(ucg));
+            setEncoderValue(checkNTPcrono(ucg));
+            Serial.print("CRONO: setpoint: ");Serial.println(setpoint);           
+          }else{         
+            ucg.setColor(0, 0, 0);       // black
+            ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
+            ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
+            ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
+            ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
+            }
           yield();
           display_layout2_print_circle_green(ucg);
         }
@@ -470,7 +478,7 @@ void getTemp() {
 
 boolean getSystemState(){
     SERIAL_OUT.print("System State: "); SERIAL_OUT.println(memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] & Souliss_T3n_SystemOn);
-  return memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] & Souliss_T3n_SystemOn;
+    return memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] & Souliss_T3n_SystemOn;
 }
 
 void bright(int lum) {
