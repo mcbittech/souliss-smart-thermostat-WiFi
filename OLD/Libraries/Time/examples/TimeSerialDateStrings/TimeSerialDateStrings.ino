@@ -15,7 +15,7 @@
  * send: Fl\n for long date format 
  */ 
  
-#include <TimeLib.h>
+#include <Time.h>  
 
 // single character message tags
 #define TIME_HEADER   'T'   // Header tag for serial time sync message

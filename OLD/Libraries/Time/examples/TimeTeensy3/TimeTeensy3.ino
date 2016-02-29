@@ -1,41 +1,38 @@
 /*
- * TimeRTCSet.pde
+ * TimeRTC.pde
  * example code illustrating Time library with Real Time Clock.
- *
- * RTC clock is set in response to serial port time message 
- * A Processing example sketch to set the time is included in the download
- * On Linux, you can use "date +T%s > /dev/ttyACM0" (UTC time zone)
+ * 
  */
 
-#include <TimeLib.h>
-#include <Wire.h>
-#include <DS1307RTC.h>  // a basic DS1307 library that returns time as a time_t
-
+#include <Time.h>  
 
 void setup()  {
-  Serial.begin(9600);
-  while (!Serial) ; // Needed for Leonardo only
-  setSyncProvider(RTC.get);   // the function to get the time from the RTC
-  if (timeStatus() != timeSet) 
-     Serial.println("Unable to sync with the RTC");
-  else
-     Serial.println("RTC has set the system time");      
+  // set the Time library to use Teensy 3.0's RTC to keep time
+  setSyncProvider(getTeensy3Time);
+
+  Serial.begin(115200);
+  while (!Serial);  // Wait for Arduino Serial Monitor to open
+  delay(100);
+  if (timeStatus()!= timeSet) {
+    Serial.println("Unable to sync with the RTC");
+  } else {
+    Serial.println("RTC has set the system time");
+  }
 }
 
-void loop()
-{
+void loop() {
   if (Serial.available()) {
     time_t t = processSyncMessage();
     if (t != 0) {
-      RTC.set(t);   // set the RTC and the system time to the received value
-      setTime(t);          
+      Teensy3Clock.set(t); // set the RTC
+      setTime(t);
     }
   }
   digitalClockDisplay();  
   delay(1000);
 }
 
-void digitalClockDisplay(){
+void digitalClockDisplay() {
   // digital clock display of the time
   Serial.print(hour());
   printDigits(minute());
@@ -49,12 +46,9 @@ void digitalClockDisplay(){
   Serial.println(); 
 }
 
-void printDigits(int digits){
-  // utility function for digital clock display: prints preceding colon and leading 0
-  Serial.print(":");
-  if(digits < 10)
-    Serial.print('0');
-  Serial.print(digits);
+time_t getTeensy3Time()
+{
+  return Teensy3Clock.get();
 }
 
 /*  code to process time sync messages from the serial port   */
@@ -74,7 +68,11 @@ unsigned long processSyncMessage() {
   return pctime;
 }
 
-
-
-
+void printDigits(int digits){
+  // utility function for digital clock display: prints preceding colon and leading 0
+  Serial.print(":");
+  if(digits < 10)
+    Serial.print('0');
+  Serial.print(digits);
+}
 
