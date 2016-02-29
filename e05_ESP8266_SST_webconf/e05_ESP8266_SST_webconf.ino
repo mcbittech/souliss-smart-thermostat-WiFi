@@ -277,7 +277,7 @@ void loop()
                     drawBoxes(ucg);
                     setBoxes(ucg);
                     //delay(2000);
-                    if(digitalRead(ENCODER_SWITCH)==LOW)
+                    if(exitmainmenu())
                     {menu=0; }
                   }
           }
