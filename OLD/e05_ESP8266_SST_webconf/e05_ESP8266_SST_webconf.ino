@@ -1,10 +1,3 @@
-//#include <SoulissBase.h> // load patch to the library for IDE 1.6.7
-//#define MaCaco_DEBUG_INSKETCH
-//  #define MaCaco_DEBUG   1
-//
-//#define VNET_DEBUG_INSKETCH
-//  #define VNET_DEBUG    1
-
 /**************************************************************************
    Souliss - Web Configuration
 
@@ -14,39 +7,34 @@
 
 	This example is only supported on ESP8266.
 ***************************************************************************/
+#define HOST_NAME_INSKETCH
+#define HOST_NAME "Souliss-Termostato-Piano-Terra"
+
+
 #include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
+#include <ESP8266mDNS.h>
 #include <EEPROM.h>
 #include <WiFiUdp.h>
 #include <DHT.h>
-#include <ESP8266WebServer.h>
-#include <ESP8266mDNS.h>
-#include <ESP8266HTTPUpdateServer.h>
-                  
-// Configure the Souliss framework
-#include "bconf/MCU_ESP8266.h"              /** Load the code directly on the ESP8266 */
-#include "preferences.h"
-#include "OTAWebUpdater.h"
 
-#if(DYNAMIC_CONNECTION)
+
+
+// Configure the Souliss framework
+#include "bconf/MCU_ESP8266.h"              // Load the code directly on the ESP8266
 #include "conf/RuntimeGateway.h"            // This node is a Peer and can became a Gateway at runtime
 #include "conf/DynamicAddressing.h"         // Use dynamically assigned addresses
 #include "conf/WEBCONFinterface.h"          // Enable the WebConfig interface
-#include "connection_dynamic.h"
-#else
-#include "conf/IPBroadcast.h"
-#include "connection_static.h"
-#define USEEEPROM_INSKETCH
-#define USEEEPROM             1
-#endif
 
 #include "Souliss.h"
+
 #include "encoder.h"
 #include "constants.h"
 #include "display.h"
 #include "display2.h"
 #include "language.h"
 #include "ntp.h"
-#include <TimeLib.h>
+#include <Time.h>
 #include <MenuSystem.h>
 #include "menu.h"
 #include "crono.h"
@@ -81,108 +69,21 @@ MenuSystem* myMenu;
 Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ 2 , /*cs=*/ 15);
 
 // Setup the libraries for Over The Air Update
-OTA_WebUpdater_Setup()  ;
+OTA_Setup();
 
-void setSoulissDataChanged() {
-  SERIAL_OUT.println("setSoulissDataChanged");
-  data_changed = Souliss_TRIGGED;
-}
-
-void set_ThermostatModeOn(U8 slot) {
-  SERIAL_OUT.println("set_ThermostatModeOn");
-  memory_map[MaCaco_OUT_s + slot] |= Souliss_T3n_HeatingMode | Souliss_T3n_SystemOn;
-
-  // Trig the next change of the state
-
-  setSoulissDataChanged();
-}
-void set_ThermostatOff(U8 slot) {
-  SERIAL_OUT.println("set_ThermostatOff");
-  //memory_map[MaCaco_IN_s + slot] = Souliss_T3n_ShutDown;
-  memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] &= ~ (Souliss_T3n_SystemOn | Souliss_T3n_FanOn1 | Souliss_T3n_FanOn2 | Souliss_T3n_FanOn3 | Souliss_T3n_CoolingOn | Souliss_T3n_HeatingOn);
-  setSoulissDataChanged();
-}
-void set_DisplayMinBright(U8 slot, U8 val) {
-  memory_map[MaCaco_OUT_s + slot + 1] = val;
-  // Trig the next change of the state
-
-  setSoulissDataChanged();
-}
-
-void encoderFunction() {
-  encoder();
-}
-
-boolean getSoulissSystemState() {
-  return memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] & Souliss_T3n_SystemOn;
-}
-void getTemp() {
-  // Read temperature value from DHT sensor and convert from single-precision to half-precision
-  temperature = dht.readTemperature();
-  //Import temperature into T31 Thermostat
-  ImportAnalog(SLOT_THERMOSTAT + 1, &temperature);
-  ImportAnalog(SLOT_TEMPERATURE, &temperature);
-
-  // Read humidity value from DHT sensor and convert from single-precision to half-precision
-  humidity = dht.readHumidity();
-  ImportAnalog(SLOT_HUMIDITY, &humidity);
-
-  SERIAL_OUT.print("aquisizione Temperature: "); SERIAL_OUT.println(temperature);
-  SERIAL_OUT.print("aquisizione Humidity: "); SERIAL_OUT.println(humidity);
-}
-void initScreen() {
-  ucg.clearScreen();
-  SERIAL_OUT.println("clearScreen ok");
-  if (getLayout1()) {
-    SERIAL_OUT.println("HomeScreen Layout 1");
-
-    display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSoulissSystemState());
-    getTemp();
-  }
-  else if (getLayout2()) {
-    SERIAL_OUT.println("HomeScreen Layout 2");
-    getTemp();
-    display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
-    display_layout2_print_circle_white(ucg);
-    display_layout2_print_datetime(ucg);
-    display_layout2_print_circle_black(ucg);
-    yield();
-    display_layout2_print_circle_green(ucg);
-  }
-}
-void setSetpoint(float setpoint) {
-  //SERIAL_OUT.print("Away: ");SERIAL_OUT.println(memory_map[MaCaco_OUT_s + SLOT_AWAY]);
-  if (memory_map[MaCaco_OUT_s + SLOT_AWAY]) {
-    //is Away
-
-  } else {
-    //is not Away
-  }
-  Souliss_HalfPrecisionFloating((memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3), &setpoint);
-}
-void bright(int lum) {
-  int val = ((float)lum / 100) * 1023;
-  if (val > 1023) val = 1023;
-  if (val < 0) val = 0;
-  analogWrite(BACKLED, val);
-}
-
-void OTA_Progress(){
-   SERIAL_OUT.println(".");
-}
 void setup()
 {
   SERIAL_OUT.begin(115200);
-  SERIAL_OUT.println("Start");
-  SERIAL_OUT.print(MENU_TEXT_ROOT);SERIAL_OUT.print(" - ");SERIAL_OUT.println(VERSION);
-  SERIAL_OUT.print("Board Free Sketch Space: "); 
-  SERIAL_OUT.println(ESP.getFreeSketchSpace());
 
   //DISPLAY INIT
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   ucg.begin(UCG_FONT_MODE_SOLID);
   ucg.setColor(0, 0, 0);
   ucg.setRotate90();
+
+  //SPI Frequency
+  SPI.setFrequency(100000000);
+  
   //BACK LED
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   digitalWrite(BACKLED, HIGH);
@@ -191,11 +92,45 @@ void setup()
   display_print_splash_screen(ucg);
   Initialize();
 
-#if(DYNAMIC_CONNECTION)
-  DYNAMIC_CONNECTION_Init();
-#else
-  STATIC_CONNECTION_Init();
-#endif
+  // Read the IP configuration from the EEPROM, if not available start
+  // the node as access point
+  if (!ReadIPConfiguration())
+  {
+    // Start the node as access point with a configuration WebServer
+    SetAccessPoint();
+    startWebServer();
+    SERIAL_OUT.println("display_print_splash_waiting_need_configuration");
+    display_print_splash_waiting_need_configuration(ucg);
+    // We have nothing more than the WebServer for the configuration
+    // to run, once configured the node will quit this.
+    while (1)
+    {
+      yield();
+      runWebServer();
+    }
+
+  }
+
+  if (IsRuntimeGateway())
+  {
+    SERIAL_OUT.println("display_print_splash_waiting_connection_gateway");
+    display_print_splash_waiting_connection_gateway(ucg);
+    // Connect to the WiFi network and get an address from DHCP
+    SetAsGateway(myvNet_dhcp);       // Set this node as gateway for SoulissApp
+    SetAddressingServer();
+  }
+  else
+  {
+    SERIAL_OUT.println("display_print_splash_waiting_connection_peer");
+    display_print_splash_waiting_connection_peer(ucg);
+    // This board request an address to the gateway at runtime, no need
+    // to configure any parameter here.
+    //SetDynamicAddressing();
+    //GetAddress();
+    
+    SERIAL_OUT.println("Address received");
+  }
+
   //*************************************************************************
   //*************************************************************************
   Set_T52(SLOT_TEMPERATURE);
@@ -205,7 +140,7 @@ void setup()
 
   //set default mode
   Set_Thermostat(SLOT_THERMOSTAT);
-  set_ThermostatModeOn(SLOT_THERMOSTAT);
+  set_ThermostatMode(SLOT_THERMOSTAT);
   set_DisplayMinBright(SLOT_BRIGHT_DISPLAY, BRIGHT_MIN_DEFAULT);
 
   // Define output pins
@@ -242,20 +177,17 @@ void setup()
   myMenu = getMenu();
 
   // Init the OTA
-  OTA_WebUpdater_Init();
-
-  //SPI Frequency
-  SPI.setFrequency(80000000);
+  OTA_Init();
 
   // Init HomeScreen
   initScreen();
+
+
+ 
 }
 
 void loop()
 {
-    // Look for a new sketch to update over the air
-  OTA_WebUpdater_Process();
-  
   EXECUTEFAST() {
     UPDATEFAST();
 
@@ -263,7 +195,7 @@ void loop()
       //set point attuale
       setpoint = Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3);
       //Stampa il setpoint solo se il valore dell'encoder è diverso da quello impostato nel T31
-      if (!getMenuEnabled()) {
+      if (!getEnabled()) {
         if (arrotonda(getEncoderValue()) != arrotonda(encoderValue_prec)) {
           FADE = 1;
           //TICK TIMER
@@ -273,11 +205,12 @@ void loop()
           if (getLayout1()) {
             SERIAL_OUT.println("display_setpointPage - layout 1");
             display_layout1_background(ucg, arrotonda(getEncoderValue()) - arrotonda(setpoint));
-            display_layout1_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity, getSoulissSystemState() );
+            display_layout1_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity, getSystemState() );
           }
           else if (getLayout2()) {
             SERIAL_OUT.println("display_setpointPage - layout 2");
             display_layout2_Setpoint(ucg, getEncoderValue());
+            
           }
         }
 
@@ -305,7 +238,7 @@ void loop()
     }
 
     FAST_110ms() {
-      if (!getMenuEnabled()) {
+      if (!getEnabled()) {
         if (timerDisplay_setpoint()) {
           //timeout scaduto
           display_layout1_background_black(ucg);
@@ -315,27 +248,27 @@ void loop()
           setpoint = getEncoderValue();
           //memorizza il setpoint nel T31
           setSetpoint(setpoint);
-
+          
           // Trig the next change of the state
-          setSoulissDataChanged();
+          data_changed = Souliss_TRIGGED;
         }
       }
 
       //SWITCH ENCODER
       if (!digitalRead(ENCODER_SWITCH)) {
-        if (!getMenuEnabled()) {
+        if (!getEnabled()) {
           //IF MENU NOT ENABLED
           setEnabled(true);
-          //il flag viene impostato a true (indica che il menu è attivo). Quando si esce dal menu la homescreen viene aggiornata ed il flag riportato a false
-          setChanged();
+          //il flag viene impostato a true, così quando si esce dal menu la homescreen viene aggiornata ed il flag riportato a false
+          setFlag_initScreen(true);
           ucg.clearScreen();
         } else {
           //IF MENU ENABLED
           myMenu->select(true);
-
-          /// CRONO
-          if (getProgCrono()) {
-            byte menu;
+          yield();
+          /// CRONO 
+          if (getProgCrono()) { 
+          byte menu;
             ucg.clearScreen();
             drawCrono(ucg); 
             menu=1;
@@ -347,10 +280,10 @@ void loop()
                     if(exitmainmenu())
                     {menu=0; }
                   }
-
           }
         }
-         SERIAL_OUT.println("print Menu");
+        ucg.clearScreen();
+        on_item_ProgCrono_deselected();
         printMenu(ucg);
       }
 
@@ -369,6 +302,10 @@ void loop()
         backLEDvalue +=  BRIGHT_STEP_FADE_IN;
         bright(backLEDvalue);
       }
+
+    //CRONO
+     
+      
     }
 
     FAST_210ms() {   // We process the logic and relevant input and output
@@ -377,12 +314,6 @@ void loop()
       Logic_Thermostat(SLOT_THERMOSTAT);
       // Start the heater and the fans
       nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
-
-      //if menu disabled and nothing changed
-      if (!getMenuEnabled() && !getSystemChanged()) {
-        if (getLocalSystem() != getSoulissSystemState())
-          setSystem(getSoulissSystemState());
-      }
 
       //*************************************************************************
       //*************************************************************************
@@ -393,41 +324,38 @@ void loop()
       // user interface if the difference is greater than the deadband
       Logic_T52(SLOT_TEMPERATURE);
       Logic_T53(SLOT_HUMIDITY);
-
+      
     }
 
 
     FAST_710ms() {
       //HOMESCREEN ////////////////////////////////////////////////////////////////
       ///update homescreen only if menu exit
-      if (!getMenuEnabled() && getSystemChanged()) {
+      if (!getEnabled() && getFlag_initScreen()) {
+        SERIAL_OUT.println("Init Screen");
+        initScreen();
+        setFlag_initScreen(false);
+        
         //EXIT MENU - Actions
         //write min bright on T19
         memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1] = getDisplayBright();
         SERIAL_OUT.print("Set Display Bright: "); SERIAL_OUT.println(memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1]);
 
         //write system ON/OFF
-        if (getLocalSystem()) {
+        if (getSystem()) {
           //ON
           SERIAL_OUT.println("Set system ON ");
-          set_ThermostatModeOn(SLOT_THERMOSTAT);        // Set System On
+          set_ThermostatMode(SLOT_THERMOSTAT);        // Set System On
         } else {
           //OFF
           SERIAL_OUT.println("Set system OFF ");
-          set_ThermostatOff(SLOT_THERMOSTAT);
+          memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] &= ~ (Souliss_T3n_SystemOn | Souliss_T3n_FanOn1 | Souliss_T3n_FanOn2 | Souliss_T3n_FanOn3 | Souliss_T3n_CoolingOn | Souliss_T3n_HeatingOn);
         }
 
         memory_map[MaCaco_IN_s + SLOT_THERMOSTAT] = Souliss_T3n_RstCmd;          // Reset
         // Trig the next change of the state
-
-        setSoulissDataChanged();
-
-        SERIAL_OUT.println("Init Screen");
-        initScreen();
-
-        resetSystemChanged();
+        data_changed = Souliss_TRIGGED;
       }
-
     }
 
     FAST_910ms() {
@@ -436,9 +364,9 @@ void loop()
         backLEDvalueLOW =  memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1];
         FADE = 0;
         //HOMESCREEN ////////////////////////////////////////////////////////////////
-        if (!getMenuEnabled()) {
+        if (!getEnabled()) {
           if (getLayout1()) {
-            display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSoulissSystemState());
+            display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSystemState());
           } else if (getLayout2()) {
             //
           }
@@ -446,18 +374,20 @@ void loop()
       }
     }
 
-#if(DYNAMIC_CONNECTION)
-    DYNAMIC_CONNECTION_fast();
-#else
-    STATIC_CONNECTION_fast();
-#endif
+    // Run communication as Gateway or Peer
+    if (IsRuntimeGateway())
+      FAST_GatewayComms();
+    else
+      FAST_PeerComms();
   }
 
   EXECUTESLOW() {
     UPDATESLOW();
 
     SLOW_50s() {
-      if (!getMenuEnabled()) {
+      //*************************************************************************
+      //*************************************************************************
+      if (!getEnabled()) {
         if (getLayout1()) {
           getTemp();
           if (getCrono()) {
@@ -491,7 +421,7 @@ void loop()
     }
 
     SLOW_70s() {
-      if (!getMenuEnabled()) {
+      if (!getEnabled()) {
         if (getLayout1()) {
           //
         } else if (getLayout2()) {
@@ -501,7 +431,7 @@ void loop()
         }
       }
     }
-
+    
     SLOW_15m() {
       //NTP
       /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -510,9 +440,85 @@ void loop()
       yield();
     }
 
+    // If running as Peer
+    if (!IsRuntimeGateway())
+      SLOW_PeerJoin();
+  }
+  // Look for a new sketch to update over the air
+  OTA_Process();
+}
 
-#if(DYNAMIC_CONNECTION==1)
-    DYNAMIC_CONNECTION_slow();
-#endif
+void set_ThermostatMode(U8 slot) {
+  memory_map[MaCaco_OUT_s + slot] |= Souliss_T3n_HeatingMode | Souliss_T3n_SystemOn;
+  // Trig the next change of the state
+  data_changed = Souliss_TRIGGED;
+}
+
+void set_DisplayMinBright(U8 slot, U8 val) {
+  memory_map[MaCaco_OUT_s + slot + 1] = val;
+  // Trig the next change of the state
+  data_changed = Souliss_TRIGGED;
+}
+
+void getTemp() {
+  // Read temperature value from DHT sensor and convert from single-precision to half-precision
+  temperature = dht.readTemperature();
+  //Import temperature into T31 Thermostat
+  ImportAnalog(SLOT_THERMOSTAT + 1, &temperature);
+  ImportAnalog(SLOT_TEMPERATURE, &temperature);
+
+  // Read humidity value from DHT sensor and convert from single-precision to half-precision
+  humidity = dht.readHumidity();
+  ImportAnalog(SLOT_HUMIDITY, &humidity);
+
+  SERIAL_OUT.print("aquisizione Temperature: "); SERIAL_OUT.println(temperature);
+  SERIAL_OUT.print("aquisizione Humidity: "); SERIAL_OUT.println(humidity);
+}
+
+boolean getSystemState(){
+    SERIAL_OUT.print("System State: "); SERIAL_OUT.println(memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] & Souliss_T3n_SystemOn);
+    return memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] & Souliss_T3n_SystemOn;
+}
+
+void bright(int lum) {
+  int val = ((float)lum / 100) * 1023;
+  if (val > 1023) val = 1023;
+  if (val < 0) val = 0;
+  analogWrite(BACKLED, val);
+}
+
+
+void initScreen() {
+  ucg.clearScreen();
+  if (getLayout1()) {
+    SERIAL_OUT.println("HomeScreen Layout 1");
+    display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSystemState());
+    getTemp();
+  }
+  else if (getLayout2()) {
+    SERIAL_OUT.println("HomeScreen Layout 2");
+    getTemp();
+    display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
+    display_layout2_print_circle_white(ucg);
+    display_layout2_print_datetime(ucg);
+    display_layout2_print_circle_black(ucg);
+    yield();
+    display_layout2_print_circle_green(ucg);
   }
 }
+
+void encoderFunction() {
+  encoder();
+}
+
+void setSetpoint(float setpoint){
+  //SERIAL_OUT.print("Away: ");SERIAL_OUT.println(memory_map[MaCaco_OUT_s + SLOT_AWAY]);
+  if(memory_map[MaCaco_OUT_s + SLOT_AWAY]) {
+    //is Away 
+    
+  } else {
+    //is not Away
+  }
+  Souliss_HalfPrecisionFloating((memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3), &setpoint);
+}
+

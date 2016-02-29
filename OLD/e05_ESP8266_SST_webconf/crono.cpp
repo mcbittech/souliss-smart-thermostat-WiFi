@@ -346,7 +346,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
           //P4
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*3))+(offset_y*line) , dim_x_set , dim_y_set);   
           //OverP4
-          //ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*4))+(offset_y*line) , dim_x_set , dim_y_set);
+          ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*4))+(offset_y*line) , dim_x_set , dim_y_set);
           Serial.print("daySelected+boxPointer=");Serial.print(daySelected);Serial.print("  ");Serial.print(boxPointer);Serial.print(" = ");Serial.print("boxSelected ");Serial.println(boxSelected);
           break;
         case 1:
@@ -549,10 +549,11 @@ boxPointer=0;
 boxPointerView=0;
 pushed=0;
 }
-
-//ESCAPE FROM CRONO BIT
+ 
 boolean exitmainmenu() {
 return exitmain;       }
+
+
 
 void SaveCronoMatrix(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   dS=0;
