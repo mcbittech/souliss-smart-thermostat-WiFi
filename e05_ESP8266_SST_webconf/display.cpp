@@ -4,6 +4,7 @@
 #include "ntp.h"
 #include "Ucglib.h"
 #include "menu.h"
+#include "preferences.h"
 
 float arrotonda(const float v)
 {
@@ -39,6 +40,21 @@ boolean timerDisplay_setpoint() {
 
 void timerDisplay_setpoint_Tick() {
   lastClickTime = millis();
+}
+
+
+void setBianco(Ucglib_ILI9341_18x240x320_HWSPI *ucg) {
+  ucg->setColor(0, 255, 255, 255);    // Bianco
+}
+void setVerde(Ucglib_ILI9341_18x240x320_HWSPI *ucg) {
+  ucg->setColor(102, 255, 0);    // Verde Chiaro
+}
+void setBlu(Ucglib_ILI9341_18x240x320_HWSPI *ucg) {
+  ucg->setColor(111, 0, 255);    // Blu Elettrico
+}
+
+void setRosso(Ucglib_ILI9341_18x240x320_HWSPI *ucg) {
+  ucg->setColor(233, 4, 4);    // Rosso
 }
 
 int startW = 0;
@@ -144,28 +160,25 @@ void display_layout1_print_B3(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text, 
 }
 
 void display_layout1_print_B4_Hum(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text, float temp) {
-  SERIAL_OUT.println("display_print_B4");
+  SERIAL_OUT.println("display_print_B4 [Humidity]");
+  SERIAL_OUT.println("display_print_B4 [Humidity]");
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SMALL);
   ucg.setFontPosBaseline();
-
-  ucg.setColor(0, 255, 255, 255);    // Bianco
   ucg.setPrintPos(5, ucg.getHeight() - 5);
-  ucg.setColor(111, 0, 255);    // Blu Elettrico
+  setBlu(&ucg);
   ucg.print(text);
   ucg.print(temp, 1);
   ucg.print("%");
 }
 
 void display_layout1_print_B4_SystemOff(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text) {
-  SERIAL_OUT.println("display_print_B4");
+  SERIAL_OUT.println("display_print_B4 [SystemOff]");
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SMALL);
   ucg.setFontPosBaseline();
-
-  ucg.setColor(0, 255, 255, 255);    // Bianco
+  setRosso(&ucg);
   ucg.setPrintPos(5, ucg.getHeight() - 5);
-  ucg.setColor(111, 0, 255);    // Blu Elettrico
   ucg.print(text);
 }
 
@@ -254,6 +267,22 @@ void display_print_splash_waiting_connection_peer(Ucglib_ILI9341_18x240x320_HWSP
   ucg.print(WiFi.localIP());
 }
 
+void display_print_splash_connection_to_home_wifi(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
+  SERIAL_OUT.println("display_print_splash_connection_to_home_wifi");
+  setBianco(&ucg);    // Bianco
+  ucg.setFontMode(UCG_FONT_MODE_SOLID);
+  ucg.setFont(FONT_SPLASH_SCREEN);
+  ucg.setPrintPos(4, 28);
+  ucg.println(SPLASH_SSID_LINE1);
+  ucg.setPrintPos(4, 58);
+  ucg.print("WiFi SSID: ");
+  ucg.setPrintPos(4, 88);
+  ucg.print(WiFi_SSID);
+  ucg.setPrintPos(4, 118);
+  ucg.print("IP ");
+  ucg.print(WiFi.localIP());
+}
+
 void display_layout1_print_DateTime(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text) {
   if (getClock())
     ucg.print(text);
@@ -288,12 +317,11 @@ void display_layout1_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp,
   //uso flag_onetime per visualizzare almeno una volta la schermata, anche in assenza di variazione di temperatura
   //flag_onetime_HomeScreen è rimessa a false display_layout1_setpointPage
   //flag_initScreen è impostato true all'uscita dal menu
-  if ( getFlag_initScreen() || arrotonda(temp) != arrotonda(temp_prec) || (arrotonda(setpoint) != arrotonda(setpoint_prec))) {
+  if ( getUIChanged() || arrotonda(temp) != arrotonda(temp_prec) || (arrotonda(setpoint) != arrotonda(setpoint_prec))) {
     if (!flag_onetime_HomeScreen) {
       ucg.clearScreen();
     }
 
-    ucg.setColor(0, 255, 255, 255);    // Bianco
 
     ucg.setFontMode(UCG_FONT_MODE_SOLID);
 
@@ -311,6 +339,8 @@ void display_layout1_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp,
     {
       display_layout1_print_B4_SystemOff(ucg, SYSTEM_OFF_TEXT);
     }
+
+    resetUIChanged();
   }
 
   //la funzione display_layout1_print_B1 aggiorna soltanto se l'orario è cambiato
@@ -333,7 +363,6 @@ void display_layout1_background(Ucglib_ILI9341_18x240x320_HWSPI ucg, float diff)
 void display_layout1_background_black(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   ucg.setColor(1, 0, 0, 0); // BLACK for the background
 }
-
 
 
 
