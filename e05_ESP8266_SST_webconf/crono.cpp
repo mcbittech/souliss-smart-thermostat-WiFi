@@ -464,7 +464,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   //////////////////////////////////////////////////////////////  
   
   //ESCAPE TO DAYS SELECTION
-  if((longpress >= 1000 & longpress < 4000) & np==HIGH){
+  if((longpress >= 1000 & longpress < 1250) & np==HIGH){
     longpress=0;
     setDay(ucg);
     Serial.println("longpress 1");
@@ -475,7 +475,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     pushed=0;}
 
   //ESCAPE TO SAVE CRONO
-  if(longpress >= 4000 & np==HIGH){
+  if(longpress >= 1250 & np==HIGH){
     longpress=0;
     Serial.println("Saving Crono Program... ");
     //EEPROM SAVE
@@ -495,17 +495,17 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     ucg.setFont(ucg_font_helvB10_hf);
     ucg.setColor(102, 255, 0);              // Verde Chiaro
     ucg.setPrintPos(280, 233);
-    ucg.print("   ");
+    ucg.print("          ");
     }    
 
   //ESCAPE VISUALISATION
-  if(longpress >= 1000 & longpress <= 4000){
+  if(longpress > 1000 & longpress < 1250){
     ucg.setFontMode(UCG_FONT_MODE_SOLID);
     ucg.setFont(ucg_font_helvB10_hf);
     ucg.setColor(102, 255, 0);              // Verde Chiaro
     ucg.setPrintPos(280, 233);
     ucg.print("DAYS");
-  }else if(longpress > 4000){
+  }else if(longpress > 1250 & longpress < 1500){
     ucg.setFontMode(UCG_FONT_MODE_SOLID);
     ucg.setFont(ucg_font_helvB10_hf);
     ucg.setColor(102, 255, 0);              // Verde Chiaro
@@ -605,7 +605,7 @@ float checkNTPcrono(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
       //ucg.setFontMode(UCG_FONT_MODE_SOLID);
       //ucg.setFont(ucg_font_helvB10_hf);
       //ucg.setPrintPos(80, 73);
-      ucg.setColor(colour[pointernow][0], colour[pointernow][1], colour[pointernow][2]);        //Colore Variabile
+      ucg.setColor(colour[pointernow-1][0], colour[pointernow-1][1], colour[pointernow-1][2]);        //Colore Variabile
     switch(pointernow){
     case 0:
           getsetpoint=(setP[0]-2.0);             //da sistemare con taglio uscita T31
