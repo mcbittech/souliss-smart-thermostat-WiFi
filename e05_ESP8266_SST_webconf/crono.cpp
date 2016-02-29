@@ -466,6 +466,8 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   
   //ESCAPE TO DAYS SELECTION
   if((longpress >= 1000 & longpress < 1250) & np==HIGH){
+    ucg.setColor(0, 0, 0);                 //Nero
+    ucg.drawBox(278, 217, 60, 21);         //Rettangolo basso dx 
     longpress=0;
     setDay(ucg);
     Serial.println("longpress 1");
@@ -477,6 +479,8 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
 
   //ESCAPE TO SAVE CRONO
   if((longpress >= 1250 & longpress < 1500) & np==HIGH){
+    ucg.setColor(0, 0, 0);                 //Nero
+    ucg.drawBox(278, 217, 60, 21);         //Rettangolo basso dx 
     longpress=0;
     Serial.println("Saving Crono Program... ");
     //EEPROM SAVE
@@ -502,8 +506,8 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     Serial.print("longpress ");Serial.println(longpress);
     }else{ 
     longpress=0;
-    //ucg.setColor(0, 0, 0);                 //Nero
-    //ucg.drawBox(278, 217, 60, 21);         //Rettangolo basso dx  
+    ucg.setColor(0, 0, 0);                 //Nero
+    ucg.drawBox(278, 217, 60, 21);         //Rettangolo basso dx  
     }    
 
 
