@@ -491,11 +491,8 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     Serial.print("longpress ");Serial.println(longpress);
     }else{ 
     longpress=0;
-    ucg.setFontMode(UCG_FONT_MODE_SOLID);
-    ucg.setFont(ucg_font_helvB10_hf);
-    ucg.setColor(102, 255, 0);              // Verde Chiaro
-    ucg.setPrintPos(280, 233);
-    ucg.print("          ");
+    ucg.setColor(0, 0, 0);                 //Nero
+    ucg.drawBox(278, 217, 60, 21);         //Rettangolo basso dx  
     }    
 
   //ESCAPE VISUALISATION
