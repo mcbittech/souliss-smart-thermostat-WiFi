@@ -552,7 +552,8 @@ pushed=0;
 
 //ESCAPE FROM CRONO BIT
 boolean exitmainmenu() {
-return exitmain;       }
+  on_item_ProgCrono_deselected();
+  return exitmain;       }
 
 void SaveCronoMatrix(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   dS=0;

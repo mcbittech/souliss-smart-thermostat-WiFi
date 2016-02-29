@@ -7,7 +7,7 @@
 
 //LOCAL CRONO FUNCTION
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define CRONO 0
+#define CRONO 1
 #define CRONOLEARN 0
 
 //CLOCK
@@ -30,6 +30,11 @@
 //0 Static Connection
 //1 Dynamic Connection
 #define DYNAMIC_CONNECTION 0 
+
+//DHCP
+//0 Use DHCP
+//1 Use Static Address
+#define DHCPOPTION 0
 
 
 // **** Define the WiFi name and password ****
