@@ -3,7 +3,6 @@
 #include <Arduino.h>
 #include "constants.h"
 
-
 int encoder0Pos = 220;
 int encoder_PinALast = LOW;
 float encoderValue = 20.0;

@@ -505,7 +505,7 @@ void initScreen() {
 }
 
 void encoderFunction() {
-  encoder();
+    encoder(); 
 }
 
 void setSetpoint(float setpoint) {

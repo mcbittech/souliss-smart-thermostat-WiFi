@@ -19,6 +19,7 @@ boolean bLayout1 = LAYOUT_LINEAR;
 boolean bLayout2 = LAYOUT_CIRCULAR;
 boolean bUIChanged = true;
 boolean bSystemChanged = true;
+int tZone;
 
 // Menu variables
 MenuSystem ms;
@@ -41,13 +42,19 @@ Menu muMenu_Clock(MENU_TEXT_CLOCK);
 MenuItem muMenu_mi_Clock_ON(MENU_TEXT_ON);
 MenuItem muMenu_mi_Clock_OFF(MENU_TEXT_OFF);
 
+Menu muMenu_SetTimezone(MENU_TEXT_TIMEZONE_SET);
+MenuItem muMenu_mi_Timezone_0(MENU_TIMEZONE_0);
+MenuItem muMenu_mi_Timezone_1(MENU_TIMEZONE_1);
+MenuItem muMenu_mi_Timezone_2(MENU_TIMEZONE_2);
+MenuItem muMenu_mi_Timezone_3(MENU_TIMEZONE_3);
+MenuItem muMenu_mi_Timezone_4(MENU_TIMEZONE_4);
+
 Menu muMenu_Crono(MENU_TEXT_CRONO_ENABLE);
 MenuItem muMenu_mi_Crono_OFF(MENU_TEXT_OFF);
 MenuItem muMenu_mi_Crono_ON(MENU_TEXT_ON);
 MenuItem muMenu_mi_Crono_LEARN(MENU_TEXT_LEARN);
 
 Menu muMenu_SetCrono(MENU_TEXT_CRONO_SET);
-
 MenuItem muMenu_mi_ProgCrono(MENU_TEXT_CRONO_PROGRAM);
 
 Menu muMenu_System(MENU_TEXT_SYSTEM);
@@ -159,6 +166,39 @@ void on_item_clockOFF_selected(MenuItem* p_menu_item)
   bClock = false;
   save_eeprom_byte(3, bClock);
 }
+
+void on_item_Timezone0_selected(MenuItem* p_menu_item)
+{
+  SERIAL_OUT.println("on_item_Timezone0_selected");
+  tZone = 0;
+  save_eeprom_byte(9, tZone);
+}
+
+void on_item_Timezone1_selected(MenuItem* p_menu_item)
+{
+  SERIAL_OUT.println("on_item_Timezone1_selected");
+  tZone = 1;
+  save_eeprom_byte(9, tZone);
+}
+void on_item_Timezone2_selected(MenuItem* p_menu_item)
+{
+  SERIAL_OUT.println("on_item_Timezone2_selected");
+  tZone = 2;
+  save_eeprom_byte(9, tZone);
+}
+void on_item_Timezone3_selected(MenuItem* p_menu_item)
+{
+  SERIAL_OUT.println("on_item_Timezone3_selected");
+  tZone = 3;
+  save_eeprom_byte(9, tZone);
+}
+void on_item_Timezone4_selected(MenuItem* p_menu_item)
+{
+  SERIAL_OUT.println("on_item_Timezone4_selected");
+  tZone = 4;
+  save_eeprom_byte(9, tZone);
+}
+
 void on_item_cronoON_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_cronoON_selected");
@@ -249,8 +289,14 @@ void initMenu() {
   muMenu_Clock.add_item(&mm_miBack, &on_itemBack_selected);
   muMenu_Clock.add_item(&muMenu_mi_Clock_ON, &on_item_clockON_selected);
   muMenu_Clock.add_item(&muMenu_mi_Clock_OFF, &on_item_clockOFF_selected);
-
-
+  muMenu_Clock.add_menu(&muMenu_SetTimezone);
+  muMenu_SetTimezone.add_item(&mm_miBack, &on_itemBack_selected);
+  muMenu_SetTimezone.add_item(&muMenu_mi_Timezone_0, &on_item_Timezone0_selected);
+  muMenu_SetTimezone.add_item(&muMenu_mi_Timezone_1, &on_item_Timezone1_selected); 
+  muMenu_SetTimezone.add_item(&muMenu_mi_Timezone_2, &on_item_Timezone2_selected); 
+  muMenu_SetTimezone.add_item(&muMenu_mi_Timezone_3, &on_item_Timezone3_selected); 
+  muMenu_SetTimezone.add_item(&muMenu_mi_Timezone_4, &on_item_Timezone4_selected); 
+  
   muMenu.add_menu(&muMenu_Crono);
   muMenu_Crono.add_item(&mm_miBack, &on_itemBack_selected);
   muMenu_Crono.add_item(&muMenu_mi_Crono_ON, &on_item_cronoON_selected);
@@ -366,7 +412,9 @@ boolean getClock() {
 boolean getCronoLearn() {
   return bCronoLearn;
 }
-
+int getTimeZone() {
+  return tZone;
+}
 
 void ReadAllSettingsFromEEPROM() {
   //EEPROM
@@ -378,5 +426,6 @@ void ReadAllSettingsFromEEPROM() {
   bSystem=read_eeprom_byte(6);
   bLayout1=read_eeprom_byte(7);
   bLayout2=read_eeprom_byte(8);
+  tZone=read_eeprom_byte(9);
 }
 
