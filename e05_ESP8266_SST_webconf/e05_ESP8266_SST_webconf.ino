@@ -1,9 +1,11 @@
 //#include <SoulissBase.h> // load patch to the library for IDE 1.6.7
-//#define MaCaco_DEBUG_INSKETCH
-//  #define MaCaco_DEBUG   1
-//
-//#define VNET_DEBUG_INSKETCH
-//  #define VNET_DEBUG    1
+#define  SOULISS_DEBUG_INSKETCH
+#define SOULISS_DEBUG      1
+#define  MaCaco_DEBUG_INSKETCH
+#define MaCaco_DEBUG      1
+
+#define VNET_DEBUG_INSKETCH
+#define VNET_DEBUG    1
 
 /**************************************************************************
    Souliss - Web Configuration
@@ -14,6 +16,7 @@
 
 	This example is only supported on ESP8266.
 ***************************************************************************/
+
 #include <ESP8266WiFi.h>
 #include <EEPROM.h>
 #include <WiFiUdp.h>
@@ -22,6 +25,8 @@
 #include <ESP8266mDNS.h>
 #include <ESP8266HTTPUpdateServer.h>
 
+#include "SoulissFramework.h"
+#include "topics.h"
 // Configure the Souliss framework
 #include "bconf/MCU_ESP8266.h"              /** Load the code directly on the ESP8266 */
 #include "preferences.h"
@@ -42,7 +47,6 @@
 #include "Souliss.h"
 #include "encoder.h"
 #include "constants.h"
-#include "topics.h"
 #include "display.h"
 #include "display2.h"
 #include "language.h"
@@ -52,7 +56,6 @@
 #include "menu.h"
 #include "crono.h"
 #include "read_save.h"
-
 //*************************************************************************
 //*************************************************************************
 
@@ -85,16 +88,16 @@ Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ 2 , /*cs=*/ 15);
 OTA_WebUpdater_Setup()  ;
 
 void setSoulissDataChanged() {
-  SERIAL_OUT.println("setSoulissDataChanged");
-  data_changed = Souliss_TRIGGED;
+  if (data_changed != Souliss_TRIGGED) {
+    SERIAL_OUT.println("setSoulissDataChanged");
+    data_changed = Souliss_TRIGGED;
+  }
 }
 
 void set_ThermostatModeOn(U8 slot) {
   SERIAL_OUT.println("set_ThermostatModeOn");
   memory_map[MaCaco_OUT_s + slot] |= Souliss_T3n_HeatingMode | Souliss_T3n_SystemOn;
-
   // Trig the next change of the state
-
   setSoulissDataChanged();
 }
 void set_ThermostatOff(U8 slot) {
@@ -128,8 +131,8 @@ void getTemp() {
   humidity = dht.readHumidity();
   ImportAnalog(SLOT_HUMIDITY, &humidity);
 
-  SERIAL_OUT.print("aquisizione Temperature: "); SERIAL_OUT.println(temperature);
-  SERIAL_OUT.print("aquisizione Humidity: "); SERIAL_OUT.println(humidity);
+  SERIAL_OUT.print("acquisizione Temperature: "); SERIAL_OUT.println(temperature);
+  SERIAL_OUT.print("acquisizione Humidity: "); SERIAL_OUT.println(humidity);
 }
 void initScreen() {
   ucg.clearScreen();
@@ -173,6 +176,7 @@ void OTA_Progress() {
 }
 void setup()
 {
+  Serial.begin(115200);
   SERIAL_OUT.begin(115200);
   SERIAL_OUT.println("Start");
   SERIAL_OUT.print(MENU_TEXT_ROOT); SERIAL_OUT.print(" - "); SERIAL_OUT.println(VERSION);
@@ -251,6 +255,8 @@ void setup()
 }
 
 float fVal;
+uint8_t mypayload_len = 0;
+uint8_t mypayload[10];
 void loop()
 {
   // Look for a new sketch to update over the air
@@ -448,14 +454,30 @@ void loop()
     }
     FAST_2110ms() {
       // Receiver
-      uint8_t mypayload_len;
-      uint8_t mypayload[10];
-      if (subscribedata(ENERGY_TOPIC, mypayload, &mypayload_len))
-        SERIAL_OUT.print("payload: ");
-      for (int i = 0; i < mypayload_len;i++) {
-        SERIAL_OUT.print(mypayload[i]); SERIAL_OUT.print(" ");
-      }
-      SERIAL_OUT.println("");
+      //      SERIAL_OUT.print("Memory_map: ");
+      //      for (int i=0;i<50;i++){
+      //        U8  _val=memory_map+MaCaco_QUEUE_s+i;
+      //         SERIAL_OUT.print(_val);SERIAL_OUT.print(" ");
+      //      }
+      //       SERIAL_OUT.println(" ");
+
+
+//      if (subscribedata(Alarm, mypayload, &mypayload_len)) {
+//        SERIAL_OUT.print("payload: "); SERIAL_OUT.println(mypayload_len);
+//        for (int i = 0; i < mypayload_len; i++) {
+//          SERIAL_OUT.print(mypayload[i]); SERIAL_OUT.print(" ");
+//        }
+//        SERIAL_OUT.println("");
+//        float output;
+//        float32((uint16_t*) mypayload,  &output);
+//        SERIAL_OUT.print("Float: "); SERIAL_OUT.println(output);
+//      }
+//
+//    }
+//    FAST_510ms() {
+//      if (subscribe(Cloudy)) {
+//        SERIAL_OUT.println("Cloudy detected");
+//      }
     }
 
 
