@@ -78,7 +78,7 @@ MenuSystem* myMenu;
 Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ 2 , /*cs=*/ 15);
 
 // Setup the libraries for Over The Air Update
-OTA_Setup();
+OTA_WebUpdater_Setup()  ;
 
 void setup()
 {
@@ -164,14 +164,17 @@ if(read_eeprom_byte(1)==1){
   myMenu = getMenu();
 
   // Init the OTA
-  OTA_Init();
+  OTA_WebUpdater_Init();
 
   // Init HomeScreen
   initScreen();
 }
 
+
 void loop()
 {
+    // Look for a new sketch to update over the air
+  OTA_WebUpdater_Process();
   EXECUTEFAST() {
     UPDATEFAST();
 
