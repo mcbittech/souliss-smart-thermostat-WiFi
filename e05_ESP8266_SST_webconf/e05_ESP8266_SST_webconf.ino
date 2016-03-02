@@ -25,9 +25,8 @@
 #include <ESP8266HTTPUpdateServer.h>
 
 // Configure the Souliss framework
-
+#include "bconf/MCU_ESP8266.h"              /** Load the code directly on the ESP8266 */
 #include "preferences.h"
-
 #include "OTAWebUpdater.h"
 
 #if(DYNAMIC_CONNECTION)
@@ -54,6 +53,7 @@
 #include "menu.h"
 #include "crono.h"
 #include "read_save.h"
+#include "topics.h"
 //*************************************************************************
 //*************************************************************************
 
@@ -169,27 +169,24 @@ void bright(int lum) {
   analogWrite(BACKLED, val);
 }
 
-void OTA_Progress() {
-  SERIAL_OUT.println(".");
-}
 void setup()
 {
-  
+
   SERIAL_OUT.begin(115200);
 
-  // EEPROM 
+  // EEPROM
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   Store_Init();
-  
-if(read_eeprom_byte(1)==1){
-  ReadAllSettingsFromEEPROM();
-  ReadCronoMatrix();  
-  backLEDvalueLOW = getDisplayBright();
-  }else{
-  ReadAllSettingsFromPreferences();
-  ReadCronoMatrix();   
+
+  if (read_eeprom_byte(1) == 1) {
+    ReadAllSettingsFromEEPROM();
+    ReadCronoMatrix();
+    backLEDvalueLOW = getDisplayBright();
+  } else {
+    ReadAllSettingsFromPreferences();
+    ReadCronoMatrix();
   }
-   
+
   //DISPLAY INIT
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   ucg.begin(UCG_FONT_MODE_SOLID);
@@ -208,14 +205,14 @@ if(read_eeprom_byte(1)==1){
   Initialize();
 
 #if(DYNAMIC_CONNECTION)
- DYNAMIC_CONNECTION_Init();
+  DYNAMIC_CONNECTION_Init();
 #else
- #if(DHCP_OPTION)
- STATIC_CONNECTION_Init_DHCP();
- #else
- STATIC_CONNECTION_Init_STATICIP();
- #endif
-#endif  
+#if(DHCP_OPTION)
+  STATIC_CONNECTION_Init_DHCP();
+#else
+  STATIC_CONNECTION_Init_STATICIP();
+#endif
+#endif
 
 
   //*************************************************************************
@@ -351,17 +348,19 @@ void loop()
           if (getProgCrono()) {
             byte menu;
             ucg.clearScreen();
-            drawCrono(ucg); 
-            menu=1;
-                  while(menu==1){
-                    setDay(ucg);
-                    drawBoxes(ucg);
-                    setBoxes(ucg);
-                    //delay(2000);
-                    if(exitmainmenu())
-                    ucg.clearScreen();
-                    {menu=0; }
-                  }
+            drawCrono(ucg);
+            menu = 1;
+            while (menu == 1) {
+              setDay(ucg);
+              drawBoxes(ucg);
+              setBoxes(ucg);
+              //delay(2000);
+              if (exitmainmenu())
+                ucg.clearScreen();
+              {
+                menu = 0;
+              }
+            }
 
           }
         }
@@ -481,11 +480,11 @@ void loop()
         SERIAL_OUT.print("Float: "); SERIAL_OUT.println(output);
       }
 
-//    }
-//    FAST_510ms() {
-//      if (subscribe(Cloudy)) {
-//        SERIAL_OUT.println("Cloudy detected");
-//      }
+      //    }
+      //    FAST_510ms() {
+      //      if (subscribe(Cloudy)) {
+      //        SERIAL_OUT.println("Cloudy detected");
+      //      }
     }
 
 
@@ -505,9 +504,9 @@ void loop()
           getTemp();
           if (getCrono()) {
             Serial.println("CRONO: aggiornamento");
-            setSetpoint(checkNTPcrono(ucg));   
-            setEncoderValue(checkNTPcrono(ucg));             
-            Serial.print("CRONO: setpoint: ");Serial.println(setpoint);         
+            setSetpoint(checkNTPcrono(ucg));
+            setEncoderValue(checkNTPcrono(ucg));
+            Serial.print("CRONO: setpoint: "); Serial.println(setpoint);
           }
         } else if (getLayout2()) {
           display_layout2_print_circle_white(ucg);
@@ -519,14 +518,14 @@ void loop()
             Serial.println("CRONO: aggiornamento");
             setSetpoint(checkNTPcrono(ucg));
             setEncoderValue(checkNTPcrono(ucg));
-            Serial.print("CRONO: setpoint: ");Serial.println(setpoint);           
-          }else{         
+            Serial.print("CRONO: setpoint: "); Serial.println(setpoint);
+          } else {
             ucg.setColor(0, 0, 0);       // black
             ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
             ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
             ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
             ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
-            }
+          }
           yield();
           display_layout2_print_circle_green(ucg);
         }
