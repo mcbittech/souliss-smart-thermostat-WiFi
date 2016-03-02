@@ -8,17 +8,17 @@
 #include "read_save.h"
 
 
-boolean bMenuEnabled = false;
-int iDisplayBright = BRIGHT_MIN_DEFAULT;
-boolean bClock = CLOCK;
-boolean bSystem = true;
-boolean bCrono = CRONO;
-boolean bProgCrono = false;
-boolean bCronoLearn = CRONOLEARN;
-boolean bLayout1 = LAYOUT_LINEAR;
-boolean bLayout2 = LAYOUT_CIRCULAR;
-boolean bUIChanged = true;
-boolean bSystemChanged = true;
+boolean bMenuEnabled;
+int iDisplayBright;
+boolean bClock;
+boolean bSystem;
+boolean bCrono;
+boolean bProgCrono;
+boolean bCronoLearn;
+boolean bLayout1;
+boolean bLayout2;
+boolean bUIChanged;
+boolean bSystemChanged;
 int tZone;
 
 // Menu variables
@@ -419,7 +419,7 @@ int getTimeZone() {
 void ReadAllSettingsFromEEPROM() {
   //EEPROM
   SERIAL_OUT.println("Read ALL EEPROM value....");
-  iDisplayBright=read_eeprom_int(1);
+  iDisplayBright=read_eeprom_byte(2);
   bClock=read_eeprom_byte(3);
   bCrono=read_eeprom_byte(4);
   bCronoLearn=read_eeprom_byte(5);
@@ -427,5 +427,27 @@ void ReadAllSettingsFromEEPROM() {
   bLayout1=read_eeprom_byte(7);
   bLayout2=read_eeprom_byte(8);
   tZone=read_eeprom_byte(9);
+}
+
+void ReadAllSettingsFromPreferences(){
+  SERIAL_OUT.println("Read ALL Preferences value....");
+  iDisplayBright=BRIGHT_MIN_DEFAULT;
+  bClock=CLOCK;
+  bCrono=CRONO;
+  bCronoLearn=CRONOLEARN;
+  bSystem=true;
+  bLayout1=LAYOUT_LINEAR;
+  bLayout2=LAYOUT_CIRCULAR;
+  tZone=TIME_ZONE;
+
+  save_eeprom_byte(2, iDisplayBright);
+  save_eeprom_byte(3, bClock);
+  save_eeprom_byte(4, bCrono);
+  save_eeprom_byte(5, bCronoLearn);
+  save_eeprom_byte(6, bSystem);
+  save_eeprom_byte(7, bLayout1);
+  save_eeprom_byte(8, bLayout2);  
+  save_eeprom_byte(9, tZone);
+  save_eeprom_byte(1, 1);
 }
 

@@ -84,6 +84,20 @@ void setup()
 {
   SERIAL_OUT.begin(115200);
 
+  // EEPROM 
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Store_Init();
+  
+if(read_eeprom_byte(1)){
+  ReadAllSettingsFromEEPROM();
+  ReadCronoMatrix();  
+  }else{
+  ReadAllSettingsFromPreferences();
+  ReadCronoMatrix();   
+  }
+   
+
+  
   //DISPLAY INIT
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   ucg.begin(UCG_FONT_MODE_SOLID);
@@ -105,7 +119,7 @@ void setup()
   DYNAMIC_CONNECTION_Init();
 #endif
 
-#if(DHCPOPTION)
+#if(DHCP_OPTION)
   STATIC_CONNECTION_Init_DHCP();
 #else
   STATIC_CONNECTION_Init_STATICIP();
@@ -137,13 +151,6 @@ void setup()
   // SWITCH ENCODER
   digitalWrite(BACKLED, HIGH);
   pinMode(ENCODER_SWITCH, INPUT);
-
-
-  // EEPROM 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////
-  Store_Init();
-  ReadAllSettingsFromEEPROM();
-  ReadCronoMatrix();
 
   //NTP
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
