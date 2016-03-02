@@ -91,6 +91,7 @@ void setup()
 if(read_eeprom_byte(1)==1){
   ReadAllSettingsFromEEPROM();
   ReadCronoMatrix();  
+  backLEDvalueLOW = getDisplayBright();
   }else{
   ReadAllSettingsFromPreferences();
   ReadCronoMatrix();   
