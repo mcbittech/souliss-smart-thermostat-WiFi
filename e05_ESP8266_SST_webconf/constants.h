@@ -58,7 +58,7 @@
 #define TIMER_DISPLAY_SETPOINT 3000
 
 //TIMER NTP
-const int timeZone = 1;     // Central European Time
+//const int timeZone = 1;     // Central European Time
 #define MEMSET_NTP_START 300
 
 //AWAY
