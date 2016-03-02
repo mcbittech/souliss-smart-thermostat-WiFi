@@ -462,17 +462,17 @@ void loop()
       //       SERIAL_OUT.println(" ");
 
 
-//      if (subscribedata(Alarm, mypayload, &mypayload_len)) {
-//        SERIAL_OUT.print("payload: "); SERIAL_OUT.println(mypayload_len);
-//        for (int i = 0; i < mypayload_len; i++) {
-//          SERIAL_OUT.print(mypayload[i]); SERIAL_OUT.print(" ");
-//        }
-//        SERIAL_OUT.println("");
-//        float output;
-//        float32((uint16_t*) mypayload,  &output);
-//        SERIAL_OUT.print("Float: "); SERIAL_OUT.println(output);
-//      }
-//
+      if (subscribedata(ENERGY_TOPIC, mypayload, &mypayload_len)) {
+        SERIAL_OUT.print("payload: "); SERIAL_OUT.println(mypayload_len);
+        for (int i = 0; i < mypayload_len; i++) {
+          SERIAL_OUT.print(mypayload[i]); SERIAL_OUT.print(" ");
+        }
+        SERIAL_OUT.println("");
+        float output;
+        float32((uint16_t*) mypayload,  &output);
+        SERIAL_OUT.print("Float: "); SERIAL_OUT.println(output);
+      }
+
 //    }
 //    FAST_510ms() {
 //      if (subscribe(Cloudy)) {

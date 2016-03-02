@@ -81,8 +81,3 @@ const int timeZone = 2;     // Central European Time
 #define FONT_SPLASH_SCREEN ucg_font_inb21_mr
 
 #define FONT_SHIFT_POSITION_TO_SX_CENTIGRAD 5
-
-//PUBLISH&SUBSCRIBE TOPICS
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define ENERGY_TOPIC 0xF002,0x01
-
