@@ -23,6 +23,8 @@
 // Configure the Souliss framework
 #include "bconf/MCU_ESP8266.h"              // Load the code directly on the ESP8266
 #include "preferences.h"
+#include <ESP8266HTTPUpdateServer.h>
+#include "OTAWebUpdater.h"
 
 #if(DYNAMIC_CONNECTION)
 #include "conf/RuntimeGateway.h"            // This node is a Peer and can became a Gateway at runtime
@@ -435,8 +437,6 @@ void loop()
     DYNAMIC_CONNECTION_slow();
 #endif
   }
-  // Look for a new sketch to update over the air
-  OTA_Process();
 }
 
 
