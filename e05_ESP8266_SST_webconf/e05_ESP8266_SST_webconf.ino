@@ -96,8 +96,6 @@ if(read_eeprom_byte(1)){
   ReadCronoMatrix();   
   }
    
-
-  
   //DISPLAY INIT
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   ucg.begin(UCG_FONT_MODE_SOLID);
@@ -116,14 +114,14 @@ if(read_eeprom_byte(1)){
   Initialize();
 
 #if(DYNAMIC_CONNECTION)
-  DYNAMIC_CONNECTION_Init();
-#endif
-
-#if(DHCP_OPTION)
-  STATIC_CONNECTION_Init_DHCP();
+ DYNAMIC_CONNECTION_Init();
 #else
-  STATIC_CONNECTION_Init_STATICIP();
-#endif
+ #if(DHCP_OPTION)
+ STATIC_CONNECTION_Init_DHCP();
+ #else
+ STATIC_CONNECTION_Init_STATICIP();
+ #endif
+#endif  
 
 
   //*************************************************************************
@@ -167,8 +165,6 @@ if(read_eeprom_byte(1)){
   // Init the OTA
   OTA_Init();
 
-
-  
   // Init HomeScreen
   initScreen();
 }

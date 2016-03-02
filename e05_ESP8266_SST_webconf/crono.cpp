@@ -48,7 +48,6 @@ byte texthour = 0;        //Text to be write (hour index)
 byte spacing = 1;         //Spacing between columns (pixel)
 byte spacing1 = 0;
 
-
 //SELECTION
 ///////////////////////////////////////////////////////////
 byte dDaysel = 1;         //Day Selected
@@ -469,9 +468,9 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     ucg.setColor(0, 0, 0);                 //Nero
     ucg.drawBox(278, 217, 60, 21);         //Rettangolo basso dx 
     longpress=0;
-    setDay(ucg);
     Serial.println("longpress 1");
-    pushed=1;   
+    pushed=1; 
+    setDay(ucg);  
     break;
     }
     else{
@@ -483,10 +482,10 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     ucg.drawBox(278, 217, 60, 21);         //Rettangolo basso dx 
     longpress=0;
     Serial.println("Saving Crono Program... ");
-    //EEPROM SAVE
-    SaveCronoMatrix(ucg);
     Serial.println("longpress 2");
     pushed=1; 
+    //EEPROM SAVE
+    SaveCronoMatrix(ucg);
     break;  
     }
 
