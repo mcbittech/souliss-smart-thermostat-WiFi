@@ -88,7 +88,7 @@ void setup()
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   Store_Init();
   
-if(read_eeprom_byte(1)){
+if(read_eeprom_byte(1)==1){
   ReadAllSettingsFromEEPROM();
   ReadCronoMatrix();  
   }else{

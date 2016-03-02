@@ -114,44 +114,44 @@ void on_itemBack_selected(MenuItem* p_menu_item)
 void on_item_perc100_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 100;
-  save_eeprom_int(1, iDisplayBright);
+  save_eeprom_byte(2, iDisplayBright);
 }
 
 void on_item_perc80_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 80;
-  save_eeprom_int(1, iDisplayBright);
+  save_eeprom_byte(2, iDisplayBright);
 }
 
 void on_item_perc60_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 60;
-  save_eeprom_int(1, iDisplayBright);
+  save_eeprom_byte(2, iDisplayBright);
 
 }
 
 void on_item_perc50_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 50;
-  save_eeprom_int(1, iDisplayBright);
+  save_eeprom_byte(2, iDisplayBright);
 }
 
 void on_item_perc30_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 30;
-  save_eeprom_int(1, iDisplayBright);
+  save_eeprom_byte(2, iDisplayBright);
 }
 
 void on_item_perc5_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 5;
-  save_eeprom_int(1, iDisplayBright);
+  save_eeprom_byte(2, iDisplayBright);
 }
 
 void on_item_perc2_selected(MenuItem* p_menu_item)
 {
   iDisplayBright = 2;
-  save_eeprom_int(1, iDisplayBright);
+  save_eeprom_byte(2, iDisplayBright);
 }
 
 void on_item_clockON_selected(MenuItem* p_menu_item)
