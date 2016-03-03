@@ -288,7 +288,7 @@ void loop()
           }
           else if (getLayout2()) {
             SERIAL_OUT.println("display_setpointPage - layout 2");
-            display_layout2_Setpoint(ucg, getEncoderValue());
+            display_layout2_Setpoint(ucg, getEncoderValue(),getSoulissSystemState());
           }
         }
 

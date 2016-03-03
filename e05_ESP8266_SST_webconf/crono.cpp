@@ -681,7 +681,6 @@ float checkNTPcrono(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
     break;
     }
   }
-  display_layout2_Setpoint(ucg,getsetpoint);
   return getsetpoint;
 }    
   
