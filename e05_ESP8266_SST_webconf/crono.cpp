@@ -54,7 +54,8 @@ byte dDaysel = 1;         //Day Selected
 byte lastDaysel=0;
 byte lastBoxsel=0;
 byte line=0;
-byte dHourSel[8][48]={0};   //Array Matrix
+byte dHourSel[8][48]={0};     //Array Matrix
+byte dHourSelCP[1][48]={0};   //Array Matrix 
 float setP[5] = { 18.0,20.0,21.5,23.0 };                  //Setpoint Eco,Normal,Comfort,Comfort+
 char* descP[5] = {"Eco","Normal","Comfort","Comfort+"};   //Setpoint Eco,Normal,Comfort,Comfort+
 int colour[4][3]={ { 102, 255, 0 }, { 255, 255, 153 }, { 255, 204, 0 }, { 255, 0, 0 } };   //da sx +chiaro a -chiaro
@@ -457,7 +458,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   //ESCAPE TO DAYS SELECTION
   if((longpress >= 600 & longpress < 700) & np==HIGH){
     ucg.setColor(0, 0, 0);                 //Nero
-    ucg.drawBox(278, 217, 60, 21);         //Rettangolo basso dx 
+    ucg.drawBox(3, 217, 60, 21);           //Rettangolo basso sx
     longpress=0;
     Serial.println("longpress 1"); 
     exitmain=0; 
@@ -466,10 +467,36 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     else{
     pushed=0;}
 
-  //ESCAPE TO SAVE CRONO
+  //ESCAPE TO COPY DAY
   if((longpress >= 700 & longpress < 800) & np==HIGH){
     ucg.setColor(0, 0, 0);                 //Nero
-    ucg.drawBox(278, 217, 60, 21);         //Rettangolo basso dx 
+    ucg.drawBox(3, 217, 60, 21);           //Rettangolo basso sx
+    longpress=0;
+    Serial.println("longpress 3"); 
+    copyDay(daySelected);
+    exitmain=0; 
+    break;
+    }
+    else{
+    pushed=0;}  
+  
+  //ESCAPE TO PASTE DAY
+  if((longpress >= 800 & longpress < 900) & np==HIGH){
+    ucg.setColor(0, 0, 0);                 //Nero
+    ucg.drawBox(3, 217, 60, 21);           //Rettangolo basso sx
+    longpress=0;
+    Serial.println("longpress 4"); 
+    pasteDay(daySelected);
+    exitmain=0; 
+    break;
+    }
+    else{
+    pushed=0;}    
+
+  //ESCAPE TO SAVE CRONO
+  if((longpress >= 900 & longpress < 1000) & np==HIGH){
+    ucg.setColor(0, 0, 0);                 //Nero
+    ucg.drawBox(3, 217, 60, 21);           //Rettangolo basso sx
     longpress=0;
     Serial.println("Saving Crono Program... ");
     Serial.println("longpress 2");
@@ -496,7 +523,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     }else{ 
     longpress=0;
     ucg.setColor(0, 0, 0);                 //Nero
-    ucg.drawBox(278, 217, 60, 21);         //Rettangolo basso dx  
+    ucg.drawBox(3, 217, 60, 21);           //Rettangolo basso sx
     }    
 
 
@@ -506,22 +533,33 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     ucg.setFontMode(UCG_FONT_MODE_SOLID);
     ucg.setFont(ucg_font_helvB10_hf);
     ucg.setColor(102, 255, 0);              // Verde Chiaro
-    ucg.setPrintPos(280, 233);
+    ucg.setPrintPos(5, 233);
     ucg.print("EXIT");
   }else if(longpress > 600 & longpress < 700){
     ucg.setFontMode(UCG_FONT_MODE_SOLID);
     ucg.setFont(ucg_font_helvB10_hf);
     ucg.setColor(102, 255, 0);              // Verde Chiaro
-    ucg.setPrintPos(280, 233);
+    ucg.setPrintPos(5, 233);
     ucg.print("DAYS");
   }else if(longpress > 700 & longpress < 800){
     ucg.setFontMode(UCG_FONT_MODE_SOLID);
     ucg.setFont(ucg_font_helvB10_hf);
     ucg.setColor(102, 255, 0);              // Verde Chiaro
-    ucg.setPrintPos(280, 233);
-    ucg.print("SAVE");
+    ucg.setPrintPos(5, 233);
+    ucg.print("COPY");
+  }else if(longpress > 800 & longpress < 900){
+    ucg.setFontMode(UCG_FONT_MODE_SOLID);
+    ucg.setFont(ucg_font_helvB10_hf);
+    ucg.setColor(102, 255, 0);              // Verde Chiaro
+    ucg.setPrintPos(5, 233);
+    ucg.print("PASTE");
+  }else if(longpress > 900 & longpress < 1000){
+    ucg.setFontMode(UCG_FONT_MODE_SOLID);
+    ucg.setFont(ucg_font_helvB10_hf);
+    ucg.setColor(102, 255, 0);              // Verde Chiaro
+    ucg.setPrintPos(5, 233);
+    ucg.print("SAVE  ");
   }
-
   //EXIT TO MENU'  
 
   //OnChange
@@ -550,7 +588,7 @@ void SaveCronoMatrix(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   i=0;
   for (byte dS=1;dS<8;dS++){ 
     for (byte gS=0;gS<48;gS++){
-      ucg.setColor(102, 255, 0);              // Verde Chiaro
+      ucg.setColor(102, 255, 0);              //Verde Chiaro
       ucg.drawBox(3, 217, 60, 21);            //Rettangolo basso sx
       ucg.setColor(255, 255, 255);            //Bianco
       ucg.setFont(ucg_font_helvB10_hf);
@@ -594,6 +632,19 @@ void ReadCronoMatrix() {
   setP[1]=read_eeprom_int(402)*0.01;
   setP[2]=read_eeprom_int(404)*0.01;
   setP[3]=read_eeprom_int(406)*0.01;
+}
+
+void copyDay(int dayCopy){
+  for (int i=0;i<48;i++){
+    dHourSelCP[0][i]=dHourSel[dayCopy][i];
+  }
+}
+
+
+void pasteDay(int dayPaste){
+  for (int i=0;i<48;i++){
+    dHourSel[dayPaste][i]=dHourSelCP[0][i];
+  }  
 }
 
 //Hook crono data from NTP Time
