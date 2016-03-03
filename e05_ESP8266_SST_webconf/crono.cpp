@@ -471,9 +471,9 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     ucg.setColor(0, 0, 0);                 //Nero
     ucg.drawBox(278, 217, 60, 21);         //Rettangolo basso dx 
     longpress=0;
-    Serial.println("longpress 1");
-    pushed=1; 
+    Serial.println("longpress 1"); 
     setDay(ucg);  
+    pushed=1;
     break;
     }
     else{
