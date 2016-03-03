@@ -7,13 +7,14 @@
 #define VNET_DEBUG          0
 
 /**************************************************************************
-   Souliss - Web Configuration
-
-    This example demonstrate a complete web configuration of ESP8266 based
-  nodes, the node starts as access point and allow though a web interface
-  the configuration of IP and Souliss parameters.
+  Wi-Fi Smart Thermostat based on Souliss IoT Framework
+    -Olimex ESP8266-EVB
+    -ILI9341 with SPI connection, via UEXT connector
+    -Rotary Encoder with pushbutton & status LED
+    -DHT22 Temperature & Humidity Sensor
 
   This example is only supported on ESP8266.
+  Developed by mcbittech & fazioa
 ***************************************************************************/
 
 #include <ESP8266WiFi.h>
