@@ -65,7 +65,7 @@ int colour[4][3]={ { 102, 255, 0 }, { 255, 255, 153 }, { 255, 204, 0 }, { 255, 0
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void drawCrono(Ucglib_ILI9341_18x240x320_HWSPI ucg){ 
   //CANCELLO SCHERMO
-  //Serial.println("          Cancello Schermo");
+  exitmain=0; 
   ucg.setColor(0, 0, 0);                                      //Nero
   ucg.drawBox(0, 0, ucg.getWidth(), ucg.getHeight());
   //PREPARO LAYOUT
