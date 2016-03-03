@@ -130,8 +130,8 @@ void setSetpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg){
       ucg.setColor(colour[setSelected][0], colour[setSelected][1], colour[setSelected][2]);        //Colore Variabile
       ucg.setFont(ucg_font_helvB18_hf);
       ucg.setPrintPos((start_x*2)+(72*setSelected),45);
-      setP[setSelected]=getEncoderValue();
       ucg.print(setP[setSelected],1);  
+      setP[setSelected]=getEncoderValue();
       delay(1);
       
   //ENCODER
@@ -473,7 +473,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     longpress=0;
     Serial.println("longpress 1"); 
     setDay(ucg);  
-    pushed=1;
+    //pushed=1;
     break;
     }
     else{
@@ -486,7 +486,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     longpress=0;
     Serial.println("Saving Crono Program... ");
     Serial.println("longpress 2");
-    pushed=1; 
+    //pushed=1; 
     //EEPROM SAVE
     SaveCronoMatrix(ucg);
     break;  
