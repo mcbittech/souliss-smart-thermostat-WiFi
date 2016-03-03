@@ -124,7 +124,7 @@ void setSetpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   setSelected=0;
   setEncoderValue(setP[setSelected]);
   Serial.print("setSetpoint setEncoderValue");Serial.println(setP[setSelected]);
-  while(pushed==0){  
+  while(pushed==0 && setSelected < 4){  
       ucg.setColor(255, 255, 255);                                //Bianco
       ucg.drawBox((start_x*2)+(72*setSelected) , 50 , dim_x*5 , dim_y);    
       ucg.setColor(colour[setSelected][0], colour[setSelected][1], colour[setSelected][2]);        //Colore Variabile
@@ -137,7 +137,7 @@ void setSetpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   //ENCODER
   //////////////////////////////////////////////////////////////  
 
-  if(digitalRead(ENCODER_SWITCH)==LOW && (ns == HIGH)) { 
+  if((digitalRead(ENCODER_SWITCH)==LOW && (ns == HIGH)) && setSelected < 4) { 
     setSelected++;
     setEncoderValue(setP[setSelected]);
     Serial.print("setSetpoint setEncoderValue");Serial.println(setP[setSelected]);
@@ -145,18 +145,17 @@ void setSetpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     }   
   ns = digitalRead(ENCODER_SWITCH);     
 
-  //MAX setSelected
-  //////////////////////////////////////////////////////////////  
-  if(setSelected>3){
-    setSelected=3;
-  }   
-    
   //ESCAPE FROM WHILE
   //////////////////////////////////////////////////////////////  
   if(digitalRead(ENCODER_SWITCH)==LOW & setSelected>=3){
     pushed=1;}
   else{
     pushed=0;}
+
+  //MAX setSelected
+  //////////////////////////////////////////////////////////////  
+  if(setSelected>3){
+    setSelected=3;}   
     
 delay(1);
   }//endwhile
