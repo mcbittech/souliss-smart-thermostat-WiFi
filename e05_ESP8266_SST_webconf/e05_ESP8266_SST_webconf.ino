@@ -350,18 +350,13 @@ void loop()
             ucg.clearScreen();
             drawCrono(ucg);
             menu = 1;
-            while (menu == 1) {
+            while (menu == 1 && exitmainmenu() == 0) {
               setDay(ucg);
               drawBoxes(ucg);
               setBoxes(ucg);
-              //delay(2000);
-              if (exitmainmenu() == 1)
-                ucg.clearScreen();
-              {
-                menu = 0;
-              }
             }
-
+          ucg.clearScreen();
+          menu = 0;
           }
         }
         SERIAL_OUT.println("print Menu");
