@@ -141,7 +141,7 @@ void setSetpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     setSelected++;
     setEncoderValue(setP[setSelected]);
     Serial.print("setSetpoint setEncoderValue");Serial.println(setP[setSelected]);
-    delay(250);   
+    delay(350);   
     }   
   ns = digitalRead(ENCODER_SWITCH);     
 
