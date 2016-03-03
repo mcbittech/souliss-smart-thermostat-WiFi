@@ -25,7 +25,7 @@ void encoder() {
 
 void setEncoderValue(float val) {
   encoder0Pos = val * 10;
-  encoderValue = encoder0Pos;
+  encoderValue = val;
 }
 
 float getEncoderValue() {
