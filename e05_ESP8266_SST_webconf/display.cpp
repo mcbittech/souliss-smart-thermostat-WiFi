@@ -198,7 +198,6 @@ void display_layout1_setpointPage(Ucglib_ILI9341_18x240x320_HWSPI ucg, float set
   flag_onetime_HomeScreen = false;
 
   display_layout1_print_setpoint(ucg, setpoint);
-
   display_layout1_print_B3(ucg, TEMP_TEXT, temp) ;
 
   if (bSystemOn)

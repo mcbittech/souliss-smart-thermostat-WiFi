@@ -25,6 +25,10 @@ void display_layout1_printBigChar();
 void display_layout1_background(Ucglib_ILI9341_18x240x320_HWSPI, float);
 void display_layout1_background_black(Ucglib_ILI9341_18x240x320_HWSPI);
 
+void setBlu(Ucglib_ILI9341_18x240x320_HWSPI *);
+void setBianco(Ucglib_ILI9341_18x240x320_HWSPI *);
+void setVerde(Ucglib_ILI9341_18x240x320_HWSPI *);
+void setRosso(Ucglib_ILI9341_18x240x320_HWSPI *);
 
 boolean timerDisplay_setpoint();//return 1 for timeout
 void timerDisplay_setpoint_Tick();

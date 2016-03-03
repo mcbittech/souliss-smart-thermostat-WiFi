@@ -83,4 +83,3 @@ const int offset=200;       //start address for eeprom data save
 #define FONT_SPLASH_SCREEN ucg_font_inb21_mr
 
 #define FONT_SHIFT_POSITION_TO_SX_CENTIGRAD 5
-
