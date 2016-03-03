@@ -135,7 +135,7 @@ if(read_eeprom_byte(1)==1){
   //set default mode
   Set_Thermostat(SLOT_THERMOSTAT);
   set_ThermostatModeOn(SLOT_THERMOSTAT);
-  set_DisplayMinBright(SLOT_BRIGHT_DISPLAY, BRIGHT_MIN_DEFAULT);
+  set_DisplayMinBright(SLOT_BRIGHT_DISPLAY, backLEDvalueLOW);
 
   // Define output pins
   pinMode(RELE, OUTPUT);    // Heater
@@ -525,7 +525,7 @@ void setSetpoint(float setpoint) {
 
 
 void setSoulissDataChanged() {
-  SERIAL_OUT.println("setSoulissDataChanged");
+  //SERIAL_OUT.println("setSoulissDataChanged");
   data_changed = Souliss_TRIGGED;
 }
 

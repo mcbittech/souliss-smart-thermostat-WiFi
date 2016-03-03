@@ -3,7 +3,7 @@
 // LOG EEPROM OCCUPATION
 /*
 DATE          AUTHOR       FILE        LINE              ALLOC        VARIABLE           SIZE  
-
+02/03/2016    mcbittech    menu.cpp    451               1            use_eeprom         byte
 02/03/2016    mcbittech    menu.cpp    81 e seguenti     2            iDisplayBright     byte
 17/02/2016    Dariocdj     menu.cpp    125,131           3            bClock             byte
 17/02/2016    Dariocdj     menu.cpp    137,145           4            bCrono             byte

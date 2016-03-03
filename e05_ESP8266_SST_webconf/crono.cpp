@@ -122,13 +122,14 @@ void setSetpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     //NEW SETPOINT
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   setSelected=0;
+  setEncoderValue(setP[setSelected]);
+  Serial.print("setSetpoint setEncoderValue");Serial.println(setP[setSelected]);
   while(pushed==0){  
       ucg.setColor(255, 255, 255);                                //Bianco
       ucg.drawBox((start_x*2)+(72*setSelected) , 50 , dim_x*5 , dim_y);    
       ucg.setColor(colour[setSelected][0], colour[setSelected][1], colour[setSelected][2]);        //Colore Variabile
       ucg.setFont(ucg_font_helvB18_hf);
       ucg.setPrintPos((start_x*2)+(72*setSelected),45);
-      //setEncoderValue(setP[setSelected]);
       setP[setSelected]=getEncoderValue();
       ucg.print(setP[setSelected],1);  
       delay(1);
@@ -137,9 +138,11 @@ void setSetpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   //////////////////////////////////////////////////////////////  
 
   if(digitalRead(ENCODER_SWITCH)==LOW && (ns == HIGH)) { 
-       setSelected++;
-       delay(250);   
-       }   
+    setSelected++;
+    setEncoderValue(setP[setSelected]);
+    Serial.print("setSetpoint setEncoderValue");Serial.println(setP[setSelected]);
+    delay(250);   
+    }   
   ns = digitalRead(ENCODER_SWITCH);     
 
   //MAX setSelected
