@@ -67,14 +67,7 @@ void drawCrono(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   //CANCELLO SCHERMO
   exitmain=0; 
   ucg.setColor(0, 0, 0);                                      //Nero
-  ucg.drawBox(0, 0, ucg.getWidth(), ucg.getHeight());
-  //PREPARO LAYOUT
-    //OLD
-    //ucg.setColor(255, 255, 255);                                //Bianco
-    //ucg.setFontMode(UCG_FONT_MODE_TRANSPARENT);
-    //ucg.setFont(ucg_font_helvB14_hf);
-    //ucg.setPrintPos(25,20);
-    //ucg.print("Programmazione Giornaliera");    
+  ucg.drawBox(0, 0, ucg.getWidth(), ucg.getHeight());  
   //Quadri BASE
   ucg.setColor(255, 255, 255);                                //Bianco
   ucg.setFont(ucg_font_helvB12_hf);
@@ -86,8 +79,6 @@ void drawCrono(Ucglib_ILI9341_18x240x320_HWSPI ucg){
       for(byte nc=0;nc<2;nc++){
         ucg.drawBox(start_x+(offset_x*nh)+(dim_x*nc)+(spacing*nc) , start_y+(offset_y*nv) , dim_x , dim_y);
       }            
-      //Serial.print("ORIZZONTALE1 ");Serial.print(nh);Serial.print("  X ");Serial.print(start_x+(offset_x*nh));Serial.print("  Y ");Serial.println(start_y+(offset_y*nv));
-      //Serial.print("ORIZZONTALE2 ");Serial.print(nh);Serial.print("  X ");Serial.print(start_x+(offset_x*nh)+dim_x+1);Serial.print("  Y ");Serial.println(start_y+(offset_y*nv));
       texthour++;
     }
   }
@@ -103,11 +94,11 @@ void drawSetpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     //NEW SETPOINT
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   for(int s=0;s<4;s++){
-    ucg.setColor(255, 255, 255);                                //Bianco
+    ucg.setColor(255, 255, 255);                                    //Bianco
     ucg.setFont(ucg_font_helvB10_hf);
     ucg.setPrintPos((start_x*2)+(72*s),20);
     ucg.print(descP[s]);
-    ucg.setColor(colour[s][0], colour[s][1], colour[s][2]);        //Colore Variabile
+    ucg.setColor(colour[s][0], colour[s][1], colour[s][2]);         //Colore Variabile
     ucg.setFont(ucg_font_helvB18_hf);
     ucg.setPrintPos((start_x*2)+(72*s),45);
     ucg.print(setP[s],1);  
@@ -141,6 +132,10 @@ void setSetpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     setSelected++;
     setEncoderValue(setP[setSelected]);
     Serial.print("setSetpoint setEncoderValue");Serial.println(setP[setSelected]);
+    //MAX setSelected
+    //////////////////////////////////////////////////////////////  
+    if(setSelected>3){
+      setSelected=3;}  
     delay(350);   
     }   
   ns = digitalRead(ENCODER_SWITCH);     
@@ -150,12 +145,7 @@ void setSetpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   if(digitalRead(ENCODER_SWITCH)==LOW & setSelected>=3){
     pushed=1;}
   else{
-    pushed=0;}
-
-  //MAX setSelected
-  //////////////////////////////////////////////////////////////  
-  if(setSelected>3){
-    setSelected=3;}   
+    pushed=0;} 
     
 delay(1);
   }//endwhile
@@ -276,7 +266,7 @@ void drawBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
         for(byte nc=0;nc<2;nc++){
           //Take data from array matrix
           hourSel_Box1=dHourSel[daySelected][boxPointer]; 
-          Serial.print("daySelected+boxPointer=");Serial.print(daySelected);Serial.print("  ");Serial.println(boxPointer);         
+          //Serial.print("daySelected+boxPointer=");Serial.print(daySelected);Serial.print("  ");Serial.println(boxPointer);         
           if(hourSel_Box1>0){
             //Box C1:nh:1             
             ucg.setColor(colour[hourSel_Box1-1][0], colour[hourSel_Box1-1][1], colour[hourSel_Box1-1][2]);        //Colore Variabile
@@ -332,8 +322,8 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     if(changebox==1){
       ucg.setColor(102, 255, 0);           // Verde Chiaro
       ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , start_y+(offset_y*line) , dim_x , dim_y);
-      Serial.print("boxSelected ");Serial.println(boxSelected);
-      Serial.print("boxPointer ");Serial.println(boxPointer); 
+      //Serial.print("boxSelected ");Serial.println(boxSelected);
+      //Serial.print("boxPointer ");Serial.println(boxPointer); 
       switch (boxSelected){ 
         case 0:
           dHourSel[daySelected][boxPointer]=0;
@@ -348,7 +338,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*3))+(offset_y*line) , dim_x_set , dim_y_set);   
           //OverP4
           //ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*4))+(offset_y*line) , dim_x_set , dim_y_set);
-          Serial.print("daySelected+boxPointer=");Serial.print(daySelected);Serial.print("  ");Serial.print(boxPointer);Serial.print(" = ");Serial.print("boxSelected ");Serial.println(boxSelected);
+          //Serial.print("daySelected+boxPointer=");Serial.print(daySelected);Serial.print("  ");Serial.print(boxPointer);Serial.print(" = ");Serial.print("boxSelected ");Serial.println(boxSelected);
           break;
         case 1:
           dHourSel[daySelected][boxPointer]=1;                 
@@ -363,7 +353,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set); 
           //P4
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*3))+(offset_y*line) , dim_x_set , dim_y_set);    
-          Serial.print("daySelected+boxPointer=");Serial.print(daySelected);Serial.print("  ");Serial.print(boxPointer);Serial.print(" = ");Serial.print("boxSelected ");Serial.println(boxSelected);
+          //Serial.print("daySelected+boxPointer=");Serial.print(daySelected);Serial.print("  ");Serial.print(boxPointer);Serial.print(" = ");Serial.print("boxSelected ");Serial.println(boxSelected);
           break;
         case 2:
           dHourSel[daySelected][boxPointer]=2;
@@ -378,7 +368,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);
           //P4
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*3))+(offset_y*line) , dim_x_set , dim_y_set);   
-          Serial.print("daySelected+boxPointer=");Serial.print(daySelected);Serial.print("  ");Serial.print(boxPointer);Serial.print(" = ");Serial.print("boxSelected ");Serial.println(boxSelected);
+          //Serial.print("daySelected+boxPointer=");Serial.print(daySelected);Serial.print("  ");Serial.print(boxPointer);Serial.print(" = ");Serial.print("boxSelected ");Serial.println(boxSelected);
           break;
         case 3:
           dHourSel[daySelected][boxPointer]=3;          
@@ -393,7 +383,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
           ucg.setColor(0, 0, 0);            //Nero  
           //P4
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*3))+(offset_y*line) , dim_x_set , dim_y_set);   
-          Serial.print("daySelected+boxPointer=");Serial.print(daySelected);Serial.print("  ");Serial.print(boxPointer);Serial.print(" = ");Serial.print("boxSelected ");Serial.println(boxSelected);
+          //Serial.print("daySelected+boxPointer=");Serial.print(daySelected);Serial.print("  ");Serial.print(boxPointer);Serial.print(" = ");Serial.print("boxSelected ");Serial.println(boxSelected);
           break;
         case 4:
           dHourSel[daySelected][boxPointer]=4;          
@@ -407,7 +397,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*2))+(offset_y*line) , dim_x_set , dim_y_set);
           //P4
           ucg.drawBox(start_x+(offset_x*(boxPointerView/2))+spacing1 , (start_y-dim_y-(dim_y*2)-(dim_y_set*3))+(offset_y*line) , dim_x_set , dim_y_set);   
-          Serial.print("daySelected+boxPointer=");Serial.print(daySelected);Serial.print("  ");Serial.print(boxPointer);Serial.print(" = ");Serial.print("boxSelected ");Serial.println(boxSelected);
+          //Serial.print("daySelected+boxPointer=");Serial.print(daySelected);Serial.print("  ");Serial.print(boxPointer);Serial.print(" = ");Serial.print("boxSelected ");Serial.println(boxSelected);
           break;
         default: 
         break;
@@ -453,10 +443,10 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     if(boxPointer>47){
       boxPointer=0;
       line=0; }
-    Serial.print("boxPointer= ");Serial.println(boxPointer);
-    Serial.print("boxPointerView= ");Serial.println(boxPointerView);
-    Serial.print("spacing1= ");Serial.println(spacing1); 
-    Serial.print("line= ");Serial.println(line);  
+    //Serial.print("boxPointer= ");Serial.println(boxPointer);
+    //Serial.print("boxPointerView= ");Serial.println(boxPointerView);
+    //Serial.print("spacing1= ");Serial.println(spacing1); 
+    //Serial.print("line= ");Serial.println(line);  
     changebox=1;}  
     
   np = digitalRead(ENCODER_SWITCH); 
@@ -573,7 +563,7 @@ void SaveCronoMatrix(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
       delay(1);
       i++;
       ucg.setColor(0, 0, 0);                  //Nero
-      ucg.drawBox(3, 217, 60, 21);           //Rettangolo basso sx    
+      ucg.drawBox(3, 217, 60, 21);            //Rettangolo basso sx    
     }
     gS=0;
   }
@@ -625,56 +615,63 @@ float checkNTPcrono(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   }else{
     minute_30_59=0;    
   }
-  Serial.print("dayweek: ");Serial.print(deyweek);Serial.print("  hourday*2: ");Serial.print(hourday*2);Serial.print("  minuteday: ");Serial.println(minute_30_59);
-  Serial.print("pointernow ");Serial.println(pointernow);
+  //Serial.print("dayweek: ");Serial.print(deyweek);Serial.print("  hourday*2: ");Serial.print(hourday*2);Serial.print("  minuteday: ");Serial.println(minute_30_59);
+  //Serial.print("pointernow ");Serial.println(pointernow);
   if(pointernow >= 0 && pointernow <= 4){
-      //ucg.setFontMode(UCG_FONT_MODE_SOLID);
-      //ucg.setFont(ucg_font_helvB10_hf);
-      //ucg.setPrintPos(80, 73);
       ucg.setColor(colour[pointernow-1][0], colour[pointernow-1][1], colour[pointernow-1][2]);        //Colore Variabile
     switch(pointernow){
     case 0:
           getsetpoint=(setP[0]-2.0);             //da sistemare con taglio uscita T31
-          ucg.setColor(0, 0, 0);       // black
-          ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
-          ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
-          ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
-          ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
+          if (getLayout2()){
+            ucg.setColor(0, 0, 0);       // black
+            ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
+            ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
+            ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
+            ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
+          }
           Serial.println("CRONO: Off"); 
           break;
     case 1:
           getsetpoint=setP[0];
-          ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
-          ucg.setColor(0, 0, 0);       // black
-          ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
-          ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
-          ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
+          if (getLayout2()){
+            ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
+            ucg.setColor(0, 0, 0);       // black
+            ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
+            ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
+            ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL); 
+          }
           Serial.println("CRONO: Attivo Eco"); 
           break;
     case 2:
           getsetpoint=setP[1];      
-          ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
-          ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
-          ucg.setColor(0, 0, 0);       // black
-          ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
-          ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
+          if (getLayout2()){
+            ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
+            ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
+            ucg.setColor(0, 0, 0);       // black
+            ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
+            ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
+          }
           Serial.println("CRONO: Attivo Normal"); 
           break;
     case 3:
           getsetpoint=setP[2];
-          ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
-          ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
-          ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
-          ucg.setColor(0, 0, 0);       // black
-          ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
+          if (getLayout2()){
+            ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
+            ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
+            ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
+            ucg.setColor(0, 0, 0);       // black
+            ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
+          }
           Serial.println("CRONO: Attivo Comfort"); 
           break;
     case 4:
-          getsetpoint=setP[3];   
-          ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
-          ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
-          ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
-          ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
+          getsetpoint=setP[3];
+          if (getLayout2()){ 
+            ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
+            ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
+            ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
+            ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
+          }
           Serial.println("CRONO: Attivo Comfort+"); 
           break;
     default: 

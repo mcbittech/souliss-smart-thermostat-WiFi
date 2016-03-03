@@ -1,10 +1,10 @@
 #define  SOULISS_DEBUG_INSKETCH
-#define SOULISS_DEBUG      1
+#define SOULISS_DEBUG       0
 #define  MaCaco_DEBUG_INSKETCH
-#define MaCaco_DEBUG      1
+#define MaCaco_DEBUG        0
 
 #define VNET_DEBUG_INSKETCH
-#define VNET_DEBUG    1
+#define VNET_DEBUG          0
 
 /**************************************************************************
    Souliss - Web Configuration
@@ -449,7 +449,8 @@ void loop()
           if (getLayout1()) {
             display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSoulissSystemState());
           } else if (getLayout2()) {
-            //
+            initScreen();
+            display_layout2_Setpoint(ucg, getEncoderValue(),getSoulissSystemState());
           }
         }
       }

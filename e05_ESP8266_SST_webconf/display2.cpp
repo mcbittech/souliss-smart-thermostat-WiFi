@@ -20,12 +20,9 @@ float arrotonda2(const float v)
 int dopovirgola2(const float v)
 {
   float vX10 = v * 1;
-  //Serial.print("vX10: "); Serial.println(vX10);
   int vInt = (int) vX10;
-  //Serial.print("vInt: "); Serial.println(vInt);
   int result;
   float diff = abs(vX10 - vInt);
-  //Serial.print("diff: "); Serial.println(diff);
   return result = diff * 10;
 }
 
