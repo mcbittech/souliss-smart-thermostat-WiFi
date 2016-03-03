@@ -472,8 +472,9 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     ucg.drawBox(278, 217, 60, 21);         //Rettangolo basso dx 
     longpress=0;
     Serial.println("longpress 1"); 
-    setDay(ucg);  
-    //pushed=1;
+    //setDay(ucg);  
+    //pushed=1; 
+    exitmain=0; 
     break;
     }
     else{
@@ -486,9 +487,10 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     longpress=0;
     Serial.println("Saving Crono Program... ");
     Serial.println("longpress 2");
-    //pushed=1; 
     //EEPROM SAVE
     SaveCronoMatrix(ucg);
+    //pushed=1; 
+    exitmain=0; 
     break;  
     }
 

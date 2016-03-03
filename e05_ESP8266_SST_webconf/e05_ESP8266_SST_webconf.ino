@@ -355,7 +355,7 @@ void loop()
               drawBoxes(ucg);
               setBoxes(ucg);
               //delay(2000);
-              if (exitmainmenu())
+              if (exitmainmenu() == 1)
                 ucg.clearScreen();
               {
                 menu = 0;
