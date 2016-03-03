@@ -278,8 +278,8 @@ void drawBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
           hourSel_Box1=dHourSel[daySelected][boxPointer]; 
           Serial.print("daySelected+boxPointer=");Serial.print(daySelected);Serial.print("  ");Serial.println(boxPointer);         
           if(hourSel_Box1>0){
-            //Box C1:nh:1 
-            ucg.setColor(102, 255, 0);           // Verde Chiaro
+            //Box C1:nh:1             
+            ucg.setColor(colour[hourSel_Box1-1][0], colour[hourSel_Box1-1][1], colour[hourSel_Box1-1][2]);        //Colore Variabile
             ucg.drawBox(start_x+(offset_x*nh)+(dim_x*nc)+(spacing*nc) , (start_y-dim_y-(dim_y*2))+(offset_y*nv) , dim_x_set , dim_y_set);
             if(hourSel_Box1>1){
               //Box C1:nh:2 
