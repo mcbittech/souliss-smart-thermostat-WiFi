@@ -91,7 +91,7 @@ void drawCrono(Ucglib_ILI9341_18x240x320_HWSPI ucg){
 //drawSetpoint
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void drawSetpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg){
-    //NEW SETPOINT
+  //NEW SETPOINT
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   for(int s=0;s<4;s++){
     ucg.setColor(255, 255, 255);                                    //Bianco
@@ -110,7 +110,7 @@ void drawSetpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg){
 //setSetpoint
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void setSetpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg){
-    //NEW SETPOINT
+  //NEW SETPOINT
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   setSelected=0;
   setEncoderValue(setP[setSelected]);
@@ -127,7 +127,6 @@ void setSetpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg){
       
   //ENCODER
   //////////////////////////////////////////////////////////////  
-
   if((digitalRead(ENCODER_SWITCH)==LOW && (ns == HIGH)) && setSelected < 4) { 
     setSelected++;
     setEncoderValue(setP[setSelected]);
@@ -241,7 +240,7 @@ void setDay(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   if(dDaysel!=lastDaysel){
     changeday=1;      }
   lastDaysel=dDaysel;  
-//////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////
   
   }//endwhile
   ucg.setColor(255, 255, 255);                                //Bianco

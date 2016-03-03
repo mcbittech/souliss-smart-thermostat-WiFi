@@ -449,7 +449,6 @@ void loop()
           if (getLayout1()) {
             display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSoulissSystemState());
           } else if (getLayout2()) {
-            initScreen();
             display_layout2_Setpoint(ucg, getEncoderValue(),getSoulissSystemState());
           }
         }
