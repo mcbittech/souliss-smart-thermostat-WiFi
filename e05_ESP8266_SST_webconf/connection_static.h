@@ -16,6 +16,9 @@
        https://github.com/esp8266/Arduino
 
 ***************************************************************************/
+uint8_t static_ip_address[4]  = {STATIC_IP}; 
+uint8_t static_subnet_mask[4] = {STATIC_SUBNET};
+uint8_t static_ip_gateway[4]  = {STATIC_IP_GW}; 
 
 #define STATIC_CONNECTION_Init_DHCP()              \
   SERIAL_OUT.println("start STATIC_CONNECTION_Init_DHCP"); \
@@ -29,12 +32,11 @@
   
 #define STATIC_CONNECTION_Init_STATICIP()              \
   SERIAL_OUT.println("start STATIC_CONNECTION_Init_STATICIP"); \
-  /** Connect to the WiFi network and set static IP Address written in Webconfig*/ \
-  ReadIPConfiguration(); \
-  SERIAL_OUT.println("Address set to static IP"); \
+  SetIPAddress(static_ip_address, static_subnet_mask, static_ip_gateway); \
+  SetAddress(peer_address, myvNet_subnet, wifi_bridge_address);  \        
+  SERIAL_OUT.println("Address set from preferences"); \
   display_print_splash_connection_to_home_wifi(ucg); \
-  SetAddress(peer_address, myvNet_subnet, wifi_bridge_address);          /* Address on the wireless interface*/ \
-
+  
 #define STATIC_CONNECTION_fast()       \
 FAST_PeerComms();\
 
