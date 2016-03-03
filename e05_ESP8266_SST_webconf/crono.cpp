@@ -467,13 +467,11 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   //////////////////////////////////////////////////////////////  
   
   //ESCAPE TO DAYS SELECTION
-  if((longpress >= 1000 & longpress < 1250) & np==HIGH){
+  if((longpress >= 600 & longpress < 700) & np==HIGH){
     ucg.setColor(0, 0, 0);                 //Nero
     ucg.drawBox(278, 217, 60, 21);         //Rettangolo basso dx 
     longpress=0;
     Serial.println("longpress 1"); 
-    //setDay(ucg);  
-    //pushed=1; 
     exitmain=0; 
     break;
     }
@@ -481,21 +479,20 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     pushed=0;}
 
   //ESCAPE TO SAVE CRONO
-  if((longpress >= 1250 & longpress < 1500) & np==HIGH){
+  if((longpress >= 700 & longpress < 800) & np==HIGH){
     ucg.setColor(0, 0, 0);                 //Nero
     ucg.drawBox(278, 217, 60, 21);         //Rettangolo basso dx 
     longpress=0;
     Serial.println("Saving Crono Program... ");
     Serial.println("longpress 2");
     //EEPROM SAVE
-    SaveCronoMatrix(ucg);
-    //pushed=1; 
+    SaveCronoMatrix(ucg); 
     exitmain=0; 
     break;  
     }
 
   //ESCAPE TO MAIN 
-  if((longpress >= 750 & longpress < 1000) & np==HIGH){
+  if((longpress >= 500 & longpress < 600) & np==HIGH){
     longpress=0;
     Serial.println("Exit to main... ");
     Serial.println("longpress 0");
@@ -517,19 +514,19 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
 
 
   //ESCAPE VISUALIZATION
-  if(longpress > 750 & longpress < 1000){
+  if(longpress > 500 & longpress < 600){
     ucg.setFontMode(UCG_FONT_MODE_SOLID);
     ucg.setFont(ucg_font_helvB10_hf);
     ucg.setColor(102, 255, 0);              // Verde Chiaro
     ucg.setPrintPos(280, 233);
     ucg.print("EXIT");
-  }else if(longpress > 1000 & longpress < 1250){
+  }else if(longpress > 600 & longpress < 700){
     ucg.setFontMode(UCG_FONT_MODE_SOLID);
     ucg.setFont(ucg_font_helvB10_hf);
     ucg.setColor(102, 255, 0);              // Verde Chiaro
     ucg.setPrintPos(280, 233);
     ucg.print("DAYS");
-  }else if(longpress > 1250 & longpress < 1500){
+  }else if(longpress > 700 & longpress < 800){
     ucg.setFontMode(UCG_FONT_MODE_SOLID);
     ucg.setFont(ucg_font_helvB10_hf);
     ucg.setColor(102, 255, 0);              // Verde Chiaro
