@@ -88,7 +88,7 @@ OTA_WebUpdater_Setup()  ;
 
 void setSoulissDataChanged() {
   if (data_changed != Souliss_TRIGGED) {
-    SERIAL_OUT.println("setSoulissDataChanged");
+    //SERIAL_OUT.println("setSoulissDataChanged");
     data_changed = Souliss_TRIGGED;
   }
 }
