@@ -519,7 +519,7 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
   //ESCAPE COUNTER  
   if(np==LOW){
     longpress++;
-    Serial.print("longpress ");Serial.println(longpress);
+    //Serial.print("longpress ");Serial.println(longpress);
     }else{ 
     longpress=0;
     ucg.setColor(0, 0, 0);                 //Nero
