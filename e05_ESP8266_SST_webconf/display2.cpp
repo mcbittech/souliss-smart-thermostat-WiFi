@@ -5,6 +5,9 @@
 #include "Ucglib.h"
 #include "menu.h"
 
+//Var Globali
+float oldsetpoint;
+
 float arrotonda2(const float v)
 {
   float vX10 = v * 10;
@@ -28,7 +31,6 @@ int dopovirgola2(const float v)
 
 void display_layout2_Setpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint, boolean bSystemOn) {
   if (bSystemOn){
-    float oldsetpoint;
     if(setpoint!=oldsetpoint){
       SERIAL_OUT.print("Refresh Setpoint ");
       ucg.setColor(0, 255, 255, 255);     // Bianco
