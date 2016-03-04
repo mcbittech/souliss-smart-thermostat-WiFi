@@ -2,17 +2,18 @@
 
 //LAYOUT
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define LAYOUT_LINEAR 1
-#define LAYOUT_CIRCULAR 0
+#define LAYOUT_LINEAR 0
+#define LAYOUT_CIRCULAR 1
 
 //LOCAL CRONO FUNCTION
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define CRONO 0
+#define CRONO 1
 #define CRONOLEARN 0
 
 //CLOCK
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define CLOCK 1
+#define TIME_ZONE 1  // Central European Time
 
 //DISPLAY BRIGHT
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -31,12 +32,17 @@
 //1 Dynamic Connection
 #define DYNAMIC_CONNECTION 0 
 
+//DHCP
+//0 Use DHCP IP
+//1 Use Static IP Address
+#define DHCP_OPTION 0
+
 
 // **** Define the WiFi name and password ****
 //Only for DYNAMIC_CONNECTION = 0
 #define WIFICONF_INSKETCH
-#define WiFi_SSID               "asterix"
-#define WiFi_Password           "ttony2013"  
+#define WiFi_SSID               ""
+#define WiFi_Password           ""  
 
 // Define the network configuration according to your router settingsuration according to your router settings
 // and the other on the wireless oneless one

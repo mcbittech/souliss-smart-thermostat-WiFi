@@ -1,32 +1,29 @@
-//#include <SoulissBase.h> // load patch to the library for IDE 1.6.7
-#define  SOULISS_DEBUG_INSKETCH
-#define SOULISS_DEBUG      1
-#define  MaCaco_DEBUG_INSKETCH
-#define MaCaco_DEBUG      1
-
-#define VNET_DEBUG_INSKETCH
-#define VNET_DEBUG    1
+//#define  SOULISS_DEBUG_INSKETCH
+//#define SOULISS_DEBUG      1
+//#define  MaCaco_DEBUG_INSKETCH
+//#define MaCaco_DEBUG      1
+//
+//#define VNET_DEBUG_INSKETCH
+//#define VNET_DEBUG    1
 
 /**************************************************************************
    Souliss - Web Configuration
 
     This example demonstrate a complete web configuration of ESP8266 based
-	nodes, the node starts as access point and allow though a web interface
-	the configuration of IP and Souliss parameters.
+  nodes, the node starts as access point and allow though a web interface
+  the configuration of IP and Souliss parameters.
 
-	This example is only supported on ESP8266.
+  This example is only supported on ESP8266.
 ***************************************************************************/
 
 #include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
+#include <ESP8266mDNS.h>
 #include <EEPROM.h>
 #include <WiFiUdp.h>
 #include <DHT.h>
-#include <ESP8266WebServer.h>
-#include <ESP8266mDNS.h>
 #include <ESP8266HTTPUpdateServer.h>
 
-#include "SoulissFramework.h"
-#include "topics.h"
 // Configure the Souliss framework
 #include "bconf/MCU_ESP8266.h"              /** Load the code directly on the ESP8266 */
 #include "preferences.h"
@@ -49,13 +46,15 @@
 #include "constants.h"
 #include "display.h"
 #include "display2.h"
+#include "displayTopics.h"
 #include "language.h"
 #include "ntp.h"
-#include <TimeLib.h>
+#include <Time.h>
 #include <MenuSystem.h>
 #include "menu.h"
 #include "crono.h"
 #include "read_save.h"
+#include "topics.h"
 //*************************************************************************
 //*************************************************************************
 
@@ -76,8 +75,9 @@ int backLEDvalue = 0;
 int backLEDvalueHIGH = BRIGHT_MAX;
 int backLEDvalueLOW = BRIGHT_MIN_DEFAULT;
 bool FADE = 1;
-
-
+uint8_t mypayload_len = 0;
+uint8_t mypayload[2];
+float fTopicEnergyOutput;
 // Menu
 MenuSystem* myMenu;
 
@@ -86,6 +86,19 @@ Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ 2 , /*cs=*/ 15);
 
 // Setup the libraries for Over The Air Update
 OTA_WebUpdater_Setup()  ;
+
+void subscribeTopics() {
+  if (subscribedata(ENERGY_TOPIC, mypayload, &mypayload_len)) {
+    SERIAL_OUT.print("payload: "); SERIAL_OUT.println(mypayload_len);
+    for (int i = 0; i < mypayload_len; i++) {
+      SERIAL_OUT.print(mypayload[i]); SERIAL_OUT.print(" ");
+    }
+    SERIAL_OUT.println("");
+
+    float32((uint16_t*) mypayload,  &fTopicEnergyOutput);
+    SERIAL_OUT.print("Float: "); SERIAL_OUT.println(fTopicEnergyOutput);
+  }
+}
 
 void setSoulissDataChanged() {
   if (data_changed != Souliss_TRIGGED) {
@@ -171,21 +184,31 @@ void bright(int lum) {
   analogWrite(BACKLED, val);
 }
 
-void OTA_Progress() {
-  SERIAL_OUT.println(".");
-}
 void setup()
 {
-  Serial.begin(115200);
+
   SERIAL_OUT.begin(115200);
-  SERIAL_OUT.println("Start");
-  SERIAL_OUT.print(MENU_TEXT_ROOT); SERIAL_OUT.print(" - "); SERIAL_OUT.println(VERSION);
-  SERIAL_OUT.print("Board Free Sketch Space: ");
-  SERIAL_OUT.println(ESP.getFreeSketchSpace());
+
+  // EEPROM
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Store_Init();
+
+  if (read_eeprom_byte(1) == 1) {
+    ReadAllSettingsFromEEPROM();
+    ReadCronoMatrix();
+    backLEDvalueLOW = getDisplayBright();
+  } else {
+    ReadAllSettingsFromPreferences();
+    ReadCronoMatrix();
+  }
 
   //DISPLAY INIT
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   ucg.begin(UCG_FONT_MODE_SOLID);
+
+  //SPI Frequency
+  SPI.setFrequency(80000000);
+
   ucg.setColor(0, 0, 0);
   ucg.setRotate90();
   //BACK LED
@@ -199,8 +222,14 @@ void setup()
 #if(DYNAMIC_CONNECTION)
   DYNAMIC_CONNECTION_Init();
 #else
-  STATIC_CONNECTION_Init();
+#if(DHCP_OPTION)
+  STATIC_CONNECTION_Init_DHCP();
+#else
+  STATIC_CONNECTION_Init_STATICIP();
 #endif
+#endif
+
+
   //*************************************************************************
   //*************************************************************************
   Set_T52(SLOT_TEMPERATURE);
@@ -234,11 +263,6 @@ void setup()
   //*************************************************************************
   //*************************************************************************
 
-  // EEPROM
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////
-  Store_Init();
-  // ReadAllSettingsFromEEPROM();
-
   //MENU
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   initMenu();
@@ -247,21 +271,14 @@ void setup()
   // Init the OTA
   OTA_WebUpdater_Init();
 
-  //SPI Frequency
-  SPI.setFrequency(80000000);
-
   // Init HomeScreen
   initScreen();
 }
 
-float fVal;
-uint8_t mypayload_len = 0;
-uint8_t mypayload[10];
 void loop()
 {
   // Look for a new sketch to update over the air
   OTA_WebUpdater_Process();
-
   EXECUTEFAST() {
     UPDATEFAST();
 
@@ -304,6 +321,7 @@ void loop()
           printMenu(ucg);
           encoderValue_prec = getEncoderValue();
         }
+
       }
 
       Logic_T19(SLOT_BRIGHT_DISPLAY);
@@ -330,11 +348,23 @@ void loop()
       //SWITCH ENCODER
       if (!digitalRead(ENCODER_SWITCH)) {
         if (!getMenuEnabled()) {
-          //IF MENU NOT ENABLED
-          setEnabled(true);
-          //il flag viene impostato a true (indica che il menu è attivo). Quando si esce dal menu la homescreen viene aggiornata ed il flag riportato a false
-          setChanged();
-          ucg.clearScreen();
+          SERIAL_OUT.println("Menu page not enabled");
+          if (!getTopicsPageEnabled()) {
+            SERIAL_OUT.println("Topics page not enabled");
+            setTopicsPageEnabled();
+          } else {
+            //IF MENU NOT ENABLED
+            SERIAL_OUT.println("Reset Topics page");
+            resetTopicsPageEnabled();
+            SERIAL_OUT.println("Set Menu Enabled");
+            setMenuEnabled();
+            //il flag viene impostato a true (indica che il menu è attivo). Quando si esce dal menu la homescreen viene aggiornata ed il flag riportato a false
+            setChanged();
+            SERIAL_OUT.println("Set Clear Screen");
+            ucg.clearScreen();
+            SERIAL_OUT.println("print Menu");
+            printMenu(ucg);
+          }
         } else {
           //IF MENU ENABLED
           myMenu->select(true);
@@ -350,15 +380,15 @@ void loop()
               drawBoxes(ucg);
               setBoxes(ucg);
               //delay(2000);
-              if (digitalRead(ENCODER_SWITCH) == LOW)
+              if (exitmainmenu())
+                ucg.clearScreen();
               {
                 menu = 0;
               }
             }
           }
         }
-        SERIAL_OUT.println("print Menu");
-        printMenu(ucg);
+
       }
 
       //FADE
@@ -400,9 +430,7 @@ void loop()
       // user interface if the difference is greater than the deadband
       Logic_T52(SLOT_TEMPERATURE);
       Logic_T53(SLOT_HUMIDITY);
-
     }
-
 
     FAST_710ms() {
       //HOMESCREEN ////////////////////////////////////////////////////////////////
@@ -423,61 +451,40 @@ void loop()
           SERIAL_OUT.println("Set system OFF ");
           set_ThermostatOff(SLOT_THERMOSTAT);
         }
-
         memory_map[MaCaco_IN_s + SLOT_THERMOSTAT] = Souliss_T3n_RstCmd;          // Reset
         // Trig the next change of the state
-
         setSoulissDataChanged();
-
         SERIAL_OUT.println("Init Screen");
         initScreen();
-
         resetSystemChanged();
       }
-
     }
 
-    FAST_910ms() {
+    SHIFT_910ms(0) {
       if (timerDisplay_setpoint()) {
         //if timeout read value of T19
         backLEDvalueLOW =  memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1];
         FADE = 0;
         //HOMESCREEN ////////////////////////////////////////////////////////////////
         if (!getMenuEnabled()) {
-          if (getLayout1()) {
-            display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSoulissSystemState());
-          } else if (getLayout2()) {
-            //
+          if (!getTopicsPageEnabled()) {
+            if (getLayout1()) {
+              display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSoulissSystemState());
+            } else if (getLayout2()) {
+              //
+            }
+          } else {
+            //************************************************
+            //TOPICS PAGE
+            //************************************************
+            display_print_C1(ucg, fTopicEnergyOutput);
           }
         }
       }
     }
-    FAST_2110ms() {
-      // Receiver
-      //      SERIAL_OUT.print("Memory_map: ");
-      //      for (int i=0;i<50;i++){
-      //        U8  _val=memory_map+MaCaco_QUEUE_s+i;
-      //         SERIAL_OUT.print(_val);SERIAL_OUT.print(" ");
-      //      }
-      //       SERIAL_OUT.println(" ");
 
-
-      if (subscribedata(ENERGY_TOPIC, mypayload, &mypayload_len)) {
-        SERIAL_OUT.print("payload: "); SERIAL_OUT.println(mypayload_len);
-        for (int i = 0; i < mypayload_len; i++) {
-          SERIAL_OUT.print(mypayload[i]); SERIAL_OUT.print(" ");
-        }
-        SERIAL_OUT.println("");
-        float output;
-        float32((uint16_t*) mypayload,  &output);
-        SERIAL_OUT.print("Float: "); SERIAL_OUT.println(output);
-      }
-
-//    }
-//    FAST_510ms() {
-//      if (subscribe(Cloudy)) {
-//        SERIAL_OUT.println("Cloudy detected");
-//      }
+    SHIFT_910ms(1) {
+      subscribeTopics();
     }
 
 
@@ -495,12 +502,30 @@ void loop()
       if (!getMenuEnabled()) {
         if (getLayout1()) {
           getTemp();
+          if (getCrono()) {
+            Serial.println("CRONO: aggiornamento");
+            setSetpoint(checkNTPcrono(ucg));
+            setEncoderValue(checkNTPcrono(ucg));
+            Serial.print("CRONO: setpoint: "); Serial.println(setpoint);
+          }
         } else if (getLayout2()) {
           display_layout2_print_circle_white(ucg);
           getTemp();
+          display_layout2_print_circle_black(ucg);
           display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
           display_layout2_print_datetime(ucg);
-          display_layout2_print_circle_black(ucg);
+          if (getCrono()) {
+            Serial.println("CRONO: aggiornamento");
+            setSetpoint(checkNTPcrono(ucg));
+            setEncoderValue(checkNTPcrono(ucg));
+            Serial.print("CRONO: setpoint: "); Serial.println(setpoint);
+          } else {
+            ucg.setColor(0, 0, 0);       // black
+            ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
+            ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
+            ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
+            ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
+          }
           yield();
           display_layout2_print_circle_green(ucg);
         }
@@ -533,3 +558,4 @@ void loop()
 #endif
   }
 }
+

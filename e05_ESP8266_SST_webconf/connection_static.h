@@ -17,8 +17,8 @@
 
 ***************************************************************************/
 
-#define STATIC_CONNECTION_Init()              \
-  SERIAL_OUT.println("start STATIC_CONNECTION_Init"); \
+#define STATIC_CONNECTION_Init_DHCP()              \
+  SERIAL_OUT.println("start STATIC_CONNECTION_Init_DHCP"); \
   display_print_splash_connection_to_home_wifi(ucg); \
   /** Connect to the WiFi network and get an address from DHCP*/ \
   GetIPAddress(); \
@@ -26,7 +26,15 @@
   /** This is the vNet address for this node, used to communicate with other */ \
   /** nodes in your Souliss network*/ \
   SetAddress(peer_address, myvNet_subnet, wifi_bridge_address);          /* Address on the wireless interface*/ \
-
+  
+#define STATIC_CONNECTION_Init_STATICIP()              \
+  SERIAL_OUT.println("start STATIC_CONNECTION_Init_STATICIP"); \
+  /** Connect to the WiFi network and set static IP Address written in Webconfig*/ \
+  ReadIPConfiguration(); \
+  SERIAL_OUT.println("Address set to static IP"); \
+  display_print_splash_connection_to_home_wifi(ucg); \
+  SetAddress(peer_address, myvNet_subnet, wifi_bridge_address);          /* Address on the wireless interface*/ \
 
 #define STATIC_CONNECTION_fast()       \
 FAST_PeerComms();\
+

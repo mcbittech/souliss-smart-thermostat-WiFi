@@ -10,5 +10,8 @@ String digitalClockDisplay();
 String digitalClockDisplay_simple();
 String digitalDataDisplay();
 String printDigits(int);
+int getNTPday();
+int getNTPhour();
+int getNTPminute();
 
 void initNTP();

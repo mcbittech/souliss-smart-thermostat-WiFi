@@ -20,6 +20,10 @@
 #define HUM_TEXT "H: "
 #define SYSTEM_OFF_TEXT "SPENTO"
 
+//TOPICS
+#define C1_AREA_UNITY "W"
+
+
 //MENU
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define MENU_TEXT_ROOT "Smart Souliss Thermostat"
@@ -37,6 +41,11 @@
 #define MENU_TEXT_LAYOUTS "Layouts"
 #define MENU_TEXT_LAYOUT_1 "Lineare"
 #define MENU_TEXT_LAYOUT_2 "Circolare"
-
+#define MENU_TEXT_TIMEZONE_SET "Timezone"
+#define MENU_TIMEZONE_0 "UTC+0 Eu West,Greenw."
+#define MENU_TIMEZONE_1 "UTC+1 Eu Cent,Italia"
+#define MENU_TIMEZONE_2 "UTC+2 Eu Est,Romania"
+#define MENU_TIMEZONE_3 "UTC+3 Eu Est,Bel,Russia"
+#define MENU_TIMEZONE_4 "UTC+4 Turchia,Azerb."
 
 
