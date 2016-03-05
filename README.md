@@ -6,6 +6,9 @@ Wi-Fi Smart Thermostat based on Souliss IoT Framework
 # Example of layout 2:
 ![layout2](https://github.com/mcbittech/souliss-smart-thermostat-WiFi/blob/master/Libraries-Core-Docs/layout2_assembled.png?raw=true "layout2")
 
+# Example of layout 1:
+![layout2](https://github.com/mcbittech/souliss-smart-thermostat-WiFi/blob/master/Libraries-Core-Docs/layout1_assembled.png?raw=true "layout1")
+
 # Example of chrono:
 ![chrono](https://github.com/mcbittech/souliss-smart-thermostat-WiFi/blob/master/Libraries-Core-Docs/chrono.png?raw=true "chrono")
 
