@@ -321,7 +321,6 @@ void display_layout1_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp,
       ucg.clearScreen();
     }
 
-
     ucg.setFontMode(UCG_FONT_MODE_SOLID);
 
     display_layout1_printBigChar(ucg, temp);
@@ -341,7 +340,6 @@ void display_layout1_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp,
 
     resetUIChanged();
   }
-
   //la funzione display_layout1_print_B1 aggiorna soltanto se l'orario è cambiato
   display_layout1_print_B1_datetime(ucg);
 }
