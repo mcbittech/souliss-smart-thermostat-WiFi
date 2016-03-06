@@ -105,7 +105,7 @@ void display_print_C3(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVal) {
     ucg.print(C3_AREA_UNITY);
     ucg.print(C3_AREA_TEXT);
 
-    SERIAL_OUT.println("C3_AREA: "); SERIAL_OUT.print((int) fVal); SERIAL_OUT.print(C3_AREA_UNITY); SERIAL_OUT.println(C3_AREA_TEXT);
+    SERIAL_OUT.print("C3_AREA: "); SERIAL_OUT.print((int) fVal); SERIAL_OUT.print(C3_AREA_UNITY); SERIAL_OUT.println(C3_AREA_TEXT);
 
 //  }
 //  fPrecC3 = fVal;

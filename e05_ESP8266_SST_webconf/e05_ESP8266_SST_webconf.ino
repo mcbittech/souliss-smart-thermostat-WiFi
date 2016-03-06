@@ -120,7 +120,9 @@ void setSoulissDataChanged() {
 
 void set_ThermostatModeOn(U8 slot) {
   SERIAL_OUT.println("set_ThermostatModeOn");
-  memory_map[MaCaco_OUT_s + slot] |= Souliss_T3n_HeatingMode | Souliss_T3n_SystemOn;
+  memory_map[MaCaco_OUT_s + slot] |= Souliss_T3n_SystemOn;
+  memory_map[MaCaco_OUT_s + slot] &= ~Souliss_T3n_HeatingMode;
+  
   // Trig the next change of the state
   setSoulissDataChanged();
 }
@@ -299,7 +301,7 @@ void loop()
       //Stampa il setpoint solo se il valore dell'encoder è diverso da quello impostato nel T31
       switch (SSTPage.actualPage) {
         case !PAGE_MENU:
-
+          SERIAL_OUT.println("case !PAGE_MENU");
           if (arrotonda(getEncoderValue()) != arrotonda(encoderValue_prec)) {
             FADE = 1;
             //TICK TIMER
@@ -320,23 +322,22 @@ void loop()
           encoderValue_prec = getEncoderValue();
           break;
         case PAGE_MENU :
+          //Bright high if menu enabled
+          FADE = 1;
+          //Menu Command Section
+          if (getEncoderValue() != encoderValue_prec)
           {
-            //Bright high if menu enabled
-            FADE = 1;
-            //Menu Command Section
-            if (getEncoderValue() != encoderValue_prec)
-            {
-              if (getEncoderValue() > encoderValue_prec) {
-                //Menu DOWN
-                myMenu->next();
-              } else {
-                //Menu UP
-                myMenu->prev();
-              }
-              printMenu(ucg);
-              encoderValue_prec = getEncoderValue();
+            if (getEncoderValue() > encoderValue_prec) {
+              //Menu DOWN
+              myMenu->next();
+            } else {
+              //Menu UP
+              myMenu->prev();
             }
+            printMenu(ucg);
+            encoderValue_prec = getEncoderValue();
           }
+          break;
       }
     }
     SHIFT_50ms(3) {
@@ -396,7 +397,7 @@ void loop()
             }
             //IF MENU ENABLED
             myMenu->select(true);
-
+            printMenu(ucg);
             break;
           case PAGE_CRONO:
             byte menu;

@@ -10,5 +10,5 @@
 
 
 void resetNeedRefresh(Page P){
-	P.actualPage=false;
+	P.bNeedRefresh=false;
 }
