@@ -3,6 +3,9 @@
 [![Join the chat at https://gitter.im/mcbittech/souliss-smart-thermostat-WiFi](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mcbittech/souliss-smart-thermostat-WiFi?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 Wi-Fi Smart Thermostat based on Souliss IoT Framework
 
+Youtube video:
+https://youtu.be/Pk9kK5DvYXE
+
 # Example of layout 2:
 ![layout2](https://github.com/mcbittech/souliss-smart-thermostat-WiFi/blob/master/Libraries-Core-Docs/layout2_assembled.png?raw=true "layout2")
 
