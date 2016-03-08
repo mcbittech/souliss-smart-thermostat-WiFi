@@ -19,7 +19,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define BRIGHT_MAX 100         
 #define BRIGHT_MIN_DEFAULT 15  
-#define BRIGHT_STEP_FADE_IN 20 
+#define BRIGHT_STEP_FADE_IN 10 
 #define BRIGHT_STEP_FADE_OUT 1
 
 //OTA Name

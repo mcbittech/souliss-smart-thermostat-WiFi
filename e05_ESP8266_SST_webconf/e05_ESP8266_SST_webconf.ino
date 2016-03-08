@@ -122,7 +122,7 @@ void set_ThermostatModeOn(U8 slot) {
   SERIAL_OUT.println("set_ThermostatModeOn");
   memory_map[MaCaco_OUT_s + slot] |= Souliss_T3n_SystemOn;
   memory_map[MaCaco_OUT_s + slot] &= ~Souliss_T3n_HeatingMode;
-  
+
   // Trig the next change of the state
   setSoulissDataChanged();
 }
@@ -301,7 +301,6 @@ void loop()
       //Stampa il setpoint solo se il valore dell'encoder è diverso da quello impostato nel T31
       switch (SSTPage.actualPage) {
         case !PAGE_MENU:
-          SERIAL_OUT.println("case !PAGE_MENU");
           if (arrotonda(getEncoderValue()) != arrotonda(encoderValue_prec)) {
             FADE = 1;
             //TICK TIMER
@@ -322,22 +321,35 @@ void loop()
           encoderValue_prec = getEncoderValue();
           break;
         case PAGE_MENU :
-          //Bright high if menu enabled
-          FADE = 1;
-          //Menu Command Section
-          if (getEncoderValue() != encoderValue_prec)
-          {
-            if (getEncoderValue() > encoderValue_prec) {
-              //Menu DOWN
-              myMenu->next();
-            } else {
-              //Menu UP
-              myMenu->prev();
+          if (getMenuEnabled()) {
+            //Bright high if menu enabled
+            FADE = 1;
+            //Menu Command Section
+            if (getEncoderValue() != encoderValue_prec)
+            {
+              if (getEncoderValue() > encoderValue_prec) {
+                //Menu DOWN
+                myMenu->next();
+              } else {
+                //Menu UP
+                myMenu->prev();
+              }
+              printMenu(ucg);
+              encoderValue_prec = getEncoderValue();
             }
-            printMenu(ucg);
-            encoderValue_prec = getEncoderValue();
+            if (!digitalRead(ENCODER_SWITCH)) {
+              //IF MENU ENABLED
+              myMenu->select(true);
+              ucg.clearScreen();
+              printMenu(ucg);
+            }
+          } else {
+            SERIAL_OUT.println("from PAGE_MENU to PAGE_HOME");
+            SSTPage.actualPage = PAGE_HOME;
+            SSTPage.bNeedRefresh = true;
           }
           break;
+
       }
     }
     SHIFT_50ms(3) {
@@ -388,16 +400,7 @@ void loop()
           case PAGE_TOPICS2:
             break;
           case PAGE_MENU:
-            //controllo lo stato del menu. La gestione è fatta dalla libreria del menu
-            if (!getMenuEnabled()) {
-              SERIAL_OUT.println("from PAGE_MENU to PAGE_HOME");
-              SSTPage.actualPage = PAGE_HOME;
-              SSTPage.bNeedRefresh = true;
-              ucg.clearScreen();
-            }
-            //IF MENU ENABLED
-            myMenu->select(true);
-            printMenu(ucg);
+
             break;
           case PAGE_CRONO:
             byte menu;
@@ -423,7 +426,8 @@ void loop()
         }
       }
     }
-    SHIFT_110ms(8) {
+
+    SHIFT_210ms(0) {
       //FADE
       if (FADE == 0) {
         //Raggiunge il livello di luminosità minima, che può essere variata anche da SoulissApp
@@ -441,7 +445,7 @@ void loop()
       }
     }
 
-    FAST_210ms() {   // We process the logic and relevant input and output
+    SHIFT_210ms(10) {   // We process the logic and relevant input and output
       //*************************************************************************
       //*************************************************************************
       Logic_Thermostat(SLOT_THERMOSTAT);
@@ -544,17 +548,8 @@ void loop()
       SLOW_50s() {
         switch (SSTPage.actualPage) {
           case  !PAGE_MENU:
-            if (getLayout1()) {
-              getTemp();
-              if (getCrono()) {
-                Serial.println("CRONO: aggiornamento");
-                setSetpoint(checkNTPcrono(ucg));
-                setEncoderValue(checkNTPcrono(ucg));
-                Serial.print("CRONO: setpoint: "); Serial.println(setpoint);
-              }
-            } else if (getLayout2()) {
+            if (getLayout2()) {
               display_layout2_print_circle_white(ucg);
-              getTemp();
               display_layout2_print_circle_black(ucg);
               display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
               display_layout2_print_datetime(ucg);
@@ -566,6 +561,7 @@ void loop()
               yield();
               display_layout2_print_circle_green(ucg);
             }
+            getTemp();
             if (getCrono()) {
               Serial.println("CRONO: aggiornamento");
               setSetpoint(checkNTPcrono(ucg));
@@ -605,4 +601,3 @@ void loop()
     }
   }
 }
-

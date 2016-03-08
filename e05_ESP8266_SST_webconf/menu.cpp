@@ -68,6 +68,17 @@ MenuItem muMenu_mi_Layouts_2(MENU_TEXT_LAYOUT_2);
 MenuSystem* getMenu() {
   return &ms;
 }
+boolean getMenuEnabled() {
+  return bMenuEnabled;
+}
+
+void setMenuEnabled() {
+  bMenuEnabled = true;
+}
+void resetMenuEnabled() {
+  bMenuEnabled = false;
+}
+
 boolean getUIChanged() {
   return bUIChanged;
 }
@@ -102,7 +113,7 @@ void setSystem(boolean bVal) {
 void on_item_MenuExit_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("Exit Selected");
-  bMenuEnabled = false;
+  resetMenuEnabled();
 }
 
 void on_itemBack_selected(MenuItem* p_menu_item)
@@ -378,16 +389,6 @@ void printMenu(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   }
 }
 
-boolean getMenuEnabled() {
-  return bMenuEnabled;
-}
-
-void setMenuEnabled() {
-  bMenuEnabled = true;
-}
-void resetMenuEnabled() {
-  bMenuEnabled = false;
-}
 
 boolean getLayout1() {
   return bLayout1;
