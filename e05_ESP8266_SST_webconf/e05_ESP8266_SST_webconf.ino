@@ -96,10 +96,6 @@ OTA_WebUpdater_Setup()  ;
 
 void subscribeTopics() {
   if (subscribedata(ENERGY_TOPIC, mypayload, &mypayload_len)) {
-    //    for (int i = 0; i < mypayload_len; i++) {
-    //      SERIAL_OUT.print(mypayload[i]); SERIAL_OUT.print(" ");
-    //    }
-    //    SERIAL_OUT.println("");
     float32((uint16_t*) mypayload,  &fTopic_C1_Output);
     SERIAL_OUT.print("ENERGY_TOPIC: "); SERIAL_OUT.println(fTopic_C1_Output);
   } else if (subscribedata(SOLAR_TOPIC, mypayload, &mypayload_len)) {
@@ -529,7 +525,8 @@ void loop()
             break;
         }
       }
-
+    }
+    
       SHIFT_910ms(1) {
         subscribeTopics();
       }
@@ -600,4 +597,3 @@ void loop()
 #endif
     }
   }
-}
