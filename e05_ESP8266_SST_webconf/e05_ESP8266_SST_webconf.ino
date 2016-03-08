@@ -95,7 +95,8 @@ void setSoulissDataChanged() {
 
 void set_ThermostatModeOn(U8 slot) {
   SERIAL_OUT.println("set_ThermostatModeOn");
-  memory_map[MaCaco_OUT_s + slot] |= Souliss_T3n_HeatingMode | Souliss_T3n_SystemOn;
+  memory_map[MaCaco_OUT_s + slot] |= Souliss_T3n_SystemOn;
+  memory_map[MaCaco_OUT_s + slot] &= ~Souliss_T3n_HeatingMode;
   // Trig the next change of the state
   setSoulissDataChanged();
 }
