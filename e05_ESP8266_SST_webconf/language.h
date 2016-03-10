@@ -20,6 +20,19 @@
 #define HUM_TEXT "H: "
 #define SYSTEM_OFF_TEXT "SPENTO"
 
+//TOPICS
+#define C1_COLOR()  ucg.setColor(13, 105, 226);    // Blu
+#define C1_AREA_UNITY "W"
+#define C1_AREA_TEXT " Home"
+
+#define C2_COLOR()  ucg.setColor(226, 183, 13);    // Giallo Chiaro
+#define C2_AREA_UNITY "W"
+#define C2_AREA_TEXT " Solar"
+
+#define C3_COLOR()  ucg.setColor(226, 105, 13);    // Giallo Chiaro
+#define C3_AREA_UNITY "C"
+#define C3_AREA_TEXT " Temp."
+
 //MENU
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define MENU_TEXT_ROOT "Smart Souliss Thermostat"

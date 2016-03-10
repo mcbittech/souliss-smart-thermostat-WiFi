@@ -6,7 +6,9 @@ void initMenu();
 MenuSystem* getMenu();
 
 boolean getMenuEnabled();
-void setEnabled(boolean);
+void setMenuEnabled();
+void resetMenuEnabled();
+
 boolean getLayout1();
 boolean getLayout2();
 int getDisplayBright();

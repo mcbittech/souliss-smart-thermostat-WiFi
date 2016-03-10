@@ -14,6 +14,7 @@ void display_layout1_print_B4_SystemOff(Ucglib_ILI9341_18x240x320_HWSPI, String)
 void display_layout1_print_B1_datetime(Ucglib_ILI9341_18x240x320_HWSPI);
 void display_layout1_print_DateTime(Ucglib_ILI9341_18x240x320_HWSPI, String);
 void display_layout1_setFont_Zone_B3_B4(Ucglib_ILI9341_18x240x320_HWSPI);
+void setOnetime_clear_SetpointPage();
 
 void display_print_splash_waiting_need_configuration(Ucglib_ILI9341_18x240x320_HWSPI);
 void display_print_splash_waiting_connection_gateway(Ucglib_ILI9341_18x240x320_HWSPI);
