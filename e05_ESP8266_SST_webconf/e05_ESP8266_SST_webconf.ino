@@ -296,26 +296,6 @@ void loop()
       setpoint = Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3);
       //Stampa il setpoint solo se il valore dell'encoder è diverso da quello impostato nel T31
       switch (SSTPage.actualPage) {
-        case !PAGE_MENU:
-          if (arrotonda(getEncoderValue()) != arrotonda(encoderValue_prec)) {
-            FADE = 1;
-            //TICK TIMER
-            timerDisplay_setpoint_Tick();
-            //SETPOINT PAGE ////////////////////////////////////////////////////////////////
-
-            if (getLayout1()) {
-              SERIAL_OUT.println("display_setpointPage - layout 1");
-              display_layout1_background(ucg, arrotonda(getEncoderValue()) - arrotonda(setpoint));
-              display_layout1_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity, getSoulissSystemState() );
-            }
-            else if (getLayout2()) {
-              SERIAL_OUT.println("display_setpointPage - layout 2");
-              display_layout2_Setpoint(ucg, getEncoderValue());
-            }
-          }
-
-          encoderValue_prec = getEncoderValue();
-          break;
         case PAGE_MENU :
           if (getMenuEnabled()) {
             //Bright high if menu enabled
@@ -345,7 +325,27 @@ void loop()
             SSTPage.bNeedRefresh = true;
           }
           break;
+        default:
+          SERIAL_OUT.println("NOT PAGE_MENU");
+          if (arrotonda(getEncoderValue()) != arrotonda(encoderValue_prec)) {
+            FADE = 1;
+            //TICK TIMER
+            timerDisplay_setpoint_Tick();
+            //SETPOINT PAGE ////////////////////////////////////////////////////////////////
 
+            if (getLayout1()) {
+              SERIAL_OUT.println("display_setpointPage - layout 1");
+              display_layout1_background(ucg, arrotonda(getEncoderValue()) - arrotonda(setpoint));
+              display_layout1_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity, getSoulissSystemState() );
+            }
+            else if (getLayout2()) {
+              SERIAL_OUT.println("display_setpointPage - layout 2");
+              display_layout2_Setpoint(ucg, getEncoderValue());
+            }
+          }
+
+          encoderValue_prec = getEncoderValue();
+          break;
       }
     }
     SHIFT_50ms(3) {
@@ -448,6 +448,12 @@ void loop()
       // Start the heater and the fans
       nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
 
+
+      // We are not handling the cooling mode, if enabled by the user, force it back
+      // to disable
+      if (mOutput(SLOT_THERMOSTAT) & Souliss_T3n_CoolingOn)
+        mOutput(SLOT_THERMOSTAT) &= ~Souliss_T3n_CoolingOn;
+
       //if menu disabled and nothing changed
       switch (SSTPage.actualPage) {
         case !PAGE_MENU:
@@ -519,81 +525,83 @@ void loop()
             //************************************************
             //TOPICS PAGE
             //************************************************
-            display_print_C1(ucg, fTopic_C1_Output);
-            display_print_C2(ucg, fTopic_C2_Output);
-            display_print_C3(ucg, fTopic_C3_Output);
+            displayTopics(ucg,fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output);
             break;
         }
+      } else {
+        //segnala che la pagina attuale al termine del timeut deve essere aggiornata
+       //resetNeedRefresh(SSTPage);
+       setChanged();
       }
     }
-    
-      SHIFT_910ms(1) {
-        subscribeTopics();
-      }
+
+    SHIFT_910ms(1) {
+      subscribeTopics();
+    }
 
 
 #if(DYNAMIC_CONNECTION)
-      DYNAMIC_CONNECTION_fast();
+    DYNAMIC_CONNECTION_fast();
 #else
-      STATIC_CONNECTION_fast();
+    STATIC_CONNECTION_fast();
 #endif
+  }
+
+  EXECUTESLOW() {
+    UPDATESLOW();
+
+    SLOW_50s() {
+      switch (SSTPage.actualPage) {
+        case  !PAGE_MENU:
+          if (getLayout2()) {
+            display_layout2_print_circle_white(ucg);
+            display_layout2_print_circle_black(ucg);
+            display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
+            display_layout2_print_datetime(ucg);
+            ucg.setColor(0, 0, 0);       // black
+            ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
+            ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
+            ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
+            ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
+            yield();
+            display_layout2_print_circle_green(ucg);
+          }
+          getTemp();
+          if (getCrono()) {
+            Serial.println("CRONO: aggiornamento");
+            setSetpoint(checkNTPcrono(ucg));
+            setEncoderValue(checkNTPcrono(ucg));
+            Serial.print("CRONO: setpoint: "); Serial.println(setpoint);
+          }
+      }
     }
 
-    EXECUTESLOW() {
-      UPDATESLOW();
 
-      SLOW_50s() {
-        switch (SSTPage.actualPage) {
-          case  !PAGE_MENU:
-            if (getLayout2()) {
-              display_layout2_print_circle_white(ucg);
-              display_layout2_print_circle_black(ucg);
-              display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
-              display_layout2_print_datetime(ucg);
-              ucg.setColor(0, 0, 0);       // black
-              ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
-              ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
-              ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
-              ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
-              yield();
-              display_layout2_print_circle_green(ucg);
-            }
-            getTemp();
-            if (getCrono()) {
-              Serial.println("CRONO: aggiornamento");
-              setSetpoint(checkNTPcrono(ucg));
-              setEncoderValue(checkNTPcrono(ucg));
-              Serial.print("CRONO: setpoint: "); Serial.println(setpoint);
-            }
-        }
+    SLOW_70s() {
+      switch (SSTPage.actualPage) {
+        case  !PAGE_MENU:
+          if (getLayout1()) {
+            //
+          } else if (getLayout2()) {
+            calcoloAndamento(ucg, temperature);
+            display_layout2_print_datetime(ucg);
+            display_layout2_print_circle_green(ucg);
+          }
+          break;
       }
+    }
 
-
-      SLOW_70s() {
-        switch (SSTPage.actualPage) {
-          case  !PAGE_MENU:
-            if (getLayout1()) {
-              //
-            } else if (getLayout2()) {
-              calcoloAndamento(ucg, temperature);
-              display_layout2_print_datetime(ucg);
-              display_layout2_print_circle_green(ucg);
-            }
-            break;
-        }
-      }
-
-      SLOW_15m() {
-        //NTP
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////
-        yield();
-        initNTP();
-        yield();
-      }
+    SLOW_15m() {
+      //NTP
+      /////////////////////////////////////////////////////////////////////////////////////////////////////////
+      yield();
+      initNTP();
+      yield();
+    }
 
 
 #if(DYNAMIC_CONNECTION==1)
-      DYNAMIC_CONNECTION_slow();
+    DYNAMIC_CONNECTION_slow();
 #endif
-    }
   }
+}

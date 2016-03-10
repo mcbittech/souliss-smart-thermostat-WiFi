@@ -185,6 +185,9 @@ void display_layout1_print_B4_SystemOff(Ucglib_ILI9341_18x240x320_HWSPI ucg, Str
 
 boolean flag_onetime_HomeScreen = false;
 boolean flag_onetime_clear_SetpointPage = false;
+void setOnetime_clear_SetpointPage() {
+  flag_onetime_clear_SetpointPage = false;
+}
 //compone la pagina dedicata al setpoint
 void display_layout1_setpointPage(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint, float temp, float hum, boolean bSystemOn) {
   SERIAL_OUT.println("display_setpointPage");
