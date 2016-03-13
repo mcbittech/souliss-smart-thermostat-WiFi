@@ -341,7 +341,7 @@ void loop()
             }
             else if (getLayout2()) {
               SERIAL_OUT.println("display_setpointPage - layout 2");
-              display_layout2_Setpoint(ucg, getEncoderValue());
+               display_layout2_Setpoint(ucg, getEncoderValue(),getSoulissSystemState());
             }
           }
 
@@ -518,7 +518,7 @@ void loop()
             if (getLayout1()) {
               display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSoulissSystemState());
             } else if (getLayout2()) {
-              //
+              display_layout2_Setpoint(ucg, getEncoderValue(),getSoulissSystemState());
             }
             break;
           case PAGE_TOPICS1:
