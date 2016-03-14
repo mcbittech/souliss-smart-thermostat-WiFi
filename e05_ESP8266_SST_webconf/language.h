@@ -41,7 +41,6 @@
 #define MENU_TEXT_BACK "Torna"
 #define MENU_TEXT_MENU "Menu"
 #define MENU_TEXT_CRONO_PROGRAM "Programmazione Crono"
-#define MENU_TEXT_CRONO_SET "Impostazioni Crono"
 #define MENU_TEXT_CRONO_ENABLE "Crono"
 #define MENU_TEXT_LEARN "Autoapprendimento"
 #define MENU_TEXT_CLOCK "Orologio"

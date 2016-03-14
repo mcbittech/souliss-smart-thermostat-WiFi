@@ -54,7 +54,6 @@ MenuItem muMenu_mi_Crono_OFF(MENU_TEXT_OFF);
 MenuItem muMenu_mi_Crono_ON(MENU_TEXT_ON);
 MenuItem muMenu_mi_Crono_LEARN(MENU_TEXT_LEARN);
 
-Menu muMenu_SetCrono(MENU_TEXT_CRONO_SET);
 MenuItem muMenu_mi_ProgCrono(MENU_TEXT_CRONO_PROGRAM);
 
 Menu muMenu_System(MENU_TEXT_SYSTEM);
@@ -85,15 +84,21 @@ boolean getUIChanged() {
 boolean getSystemChanged() {
   return bSystemChanged;
 }
-void setChanged() {
-  bUIChanged = true;
+void setSystemChanged() {
+  SERIAL_OUT.println("setSystemChanged()");
   bSystemChanged = true;
+}
+void setUIChanged() {
+  SERIAL_OUT.println("setUIChanged()");
+  bUIChanged = true;
 }
 
 void resetUIChanged() {
+   SERIAL_OUT.println("resetUIChanged()");
   bUIChanged = false;
 }
 void resetSystemChanged() {
+   SERIAL_OUT.println("resetSystemChanged()");
   bSystemChanged = false;
 }
 
@@ -106,7 +111,7 @@ void setSystem(boolean bVal) {
   if (getLocalSystem() != bVal) {
     bSystem = bVal;
     SERIAL_OUT.print("System setted to "); SERIAL_OUT.println(bVal);
-    setChanged();
+    setSystemChanged();
   }
 
 }
@@ -313,8 +318,6 @@ void initMenu() {
   muMenu_Crono.add_item(&muMenu_mi_Crono_ON, &on_item_cronoON_selected);
   muMenu_Crono.add_item(&muMenu_mi_Crono_OFF, &on_item_cronoOFF_selected);
   muMenu_Crono.add_item(&muMenu_mi_Crono_LEARN, &on_item_cronoLEARN_selected);
-  muMenu_Crono.add_menu(&muMenu_SetCrono);
-  muMenu_SetCrono.add_item(&mm_miBack, &on_itemBack_selected);
   if (bCrono) {
   muMenu.add_item(&muMenu_mi_ProgCrono, &on_item_ProgCrono_selected);
   SERIAL_OUT.println("Aggiungo la voce di menu ProgCrono");   

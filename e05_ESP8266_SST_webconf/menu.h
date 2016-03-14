@@ -23,7 +23,8 @@ boolean getCronoLearn();
 
 boolean getUIChanged();
 boolean getSystemChanged();
-void setChanged();
+void setSystemChanged();
+void setUIChanged();
 void setSystem(boolean bVal);
 void resetUIChanged();
 void resetSystemChanged();

@@ -188,6 +188,7 @@ boolean flag_onetime_clear_SetpointPage = false;
 void setOnetime_clear_SetpointPage() {
   flag_onetime_clear_SetpointPage = false;
 }
+
 //compone la pagina dedicata al setpoint
 void display_layout1_setpointPage(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint, float temp, float hum, boolean bSystemOn) {
   SERIAL_OUT.println("display_setpointPage");
@@ -197,7 +198,6 @@ void display_layout1_setpointPage(Ucglib_ILI9341_18x240x320_HWSPI ucg, float set
     flag_onetime_clear_SetpointPage = true;
     ucg.clearScreen();
   }
-
   flag_onetime_HomeScreen = false;
 
   display_layout1_print_setpoint(ucg, setpoint);
@@ -315,14 +315,17 @@ float setpoint_prec = 0;
 
 void display_layout1_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp, float hum, float setpoint, boolean bSystemOn) {
   //ripristina la variabile bool. Viene fatto il clear della pagina ogni volta soltato una volta
-  flag_onetime_clear_SetpointPage = false;
+    setOnetime_clear_SetpointPage();
   //uso flag_onetime per visualizzare almeno una volta la schermata, anche in assenza di variazione di temperatura
   //flag_onetime_HomeScreen è rimessa a false display_layout1_setpointPage
   //flag_initScreen è impostato true all'uscita dal menu
   if ( getUIChanged() || arrotonda(temp) != arrotonda(temp_prec) || (arrotonda(setpoint) != arrotonda(setpoint_prec))) {
     if (!flag_onetime_HomeScreen) {
       ucg.clearScreen();
+      resetUIChanged();
+      flag_onetime_HomeScreen = true;
     }
+    
 
     ucg.setFontMode(UCG_FONT_MODE_SOLID);
 
@@ -330,7 +333,7 @@ void display_layout1_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp,
 
     temp_prec = temp;
     setpoint_prec = setpoint;
-    flag_onetime_HomeScreen = true;
+   
     display_layout1_print_B3(ucg, SETPOINT_TEXT, setpoint);
 
     if (bSystemOn) {
@@ -340,7 +343,6 @@ void display_layout1_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp,
     {
       display_layout1_print_B4_SystemOff(ucg, SYSTEM_OFF_TEXT);
     }
-
     resetUIChanged();
   }
   //la funzione display_layout1_print_B1 aggiorna soltanto se l'orario è cambiato

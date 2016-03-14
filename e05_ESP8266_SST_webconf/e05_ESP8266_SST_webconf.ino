@@ -61,7 +61,6 @@
 //*************************************************************************
 Page SSTPage;
 
-
 DHT dht(DHTPIN, DHTTYPE);
 float temperature = 0;
 float humidity = 0;
@@ -124,7 +123,6 @@ void set_ThermostatModeOn(U8 slot) {
   setSoulissDataChanged();
 }
 void set_ThermostatOff(U8 slot) {
-  SERIAL_OUT.println("set_ThermostatOff");
   //memory_map[MaCaco_IN_s + slot] = Souliss_T3n_ShutDown;
   memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] &= ~ (Souliss_T3n_SystemOn | Souliss_T3n_FanOn1 | Souliss_T3n_FanOn2 | Souliss_T3n_FanOn3 | Souliss_T3n_CoolingOn | Souliss_T3n_HeatingOn);
   setSoulissDataChanged();
@@ -323,11 +321,13 @@ void loop()
           } else {
             SERIAL_OUT.println("from PAGE_MENU to PAGE_HOME");
             SSTPage.actualPage = PAGE_HOME;
-            SSTPage.bNeedRefresh = true;
+            ucg.clearScreen();
+            setUIChanged();
           }
           break;
+          case PAGE_CRONO :
+          break;
         default:
-          SERIAL_OUT.println("NOT PAGE_MENU");
           if (arrotonda(getEncoderValue()) != arrotonda(encoderValue_prec)) {
             FADE = 1;
             //TICK TIMER
@@ -337,11 +337,11 @@ void loop()
             if (getLayout1()) {
               SERIAL_OUT.println("display_setpointPage - layout 1");
               display_layout1_background(ucg, arrotonda(getEncoderValue()) - arrotonda(setpoint));
-              display_layout1_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity, getSoulissSystemState() );
+              display_layout1_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity, getSoulissSystemState());
             }
             else if (getLayout2()) {
               SERIAL_OUT.println("display_setpointPage - layout 2");
-               display_layout2_Setpoint(ucg, getEncoderValue(),getSoulissSystemState());
+              display_layout2_Setpoint(ucg, getEncoderValue(), getSoulissSystemState());
             }
           }
 
@@ -380,17 +380,17 @@ void loop()
           case PAGE_HOME:
             SERIAL_OUT.println("from PAGE_HOME to PAGE_TOPICS1");
             SSTPage.actualPage = PAGE_TOPICS1;
-            ucg.clearScreen();
-            SSTPage.bNeedRefresh = true;
+            setUIChanged();
             break;
           case PAGE_TOPICS1:
             SERIAL_OUT.println("from PAGE_TOPICS1 to PAGE_MENU");
             SSTPage.actualPage = PAGE_MENU;
+            setUIChanged();
             ucg.clearScreen();
-            SSTPage.bNeedRefresh = true;
+            
             setMenuEnabled();
             //se system and UI changed
-            setChanged();
+            setUIChanged();
             SERIAL_OUT.println("Print Menu");
             printMenu(ucg);
             break;
@@ -413,12 +413,16 @@ void loop()
               {
                 SERIAL_OUT.println("from PAGE_CRONO to PAGE_HOME");
                 SSTPage.actualPage = PAGE_HOME;
-                ucg.clearScreen();
-                SSTPage.bNeedRefresh = true;
+                setUIChanged();
                 menu = 0;
               }
             }
             break;
+        }
+      } else {
+        //se progCrono è attivo allora passo alla pagina CRONO
+        if (getProgCrono()) {
+          SSTPage.actualPage = PAGE_CRONO;
         }
       }
     }
@@ -455,13 +459,11 @@ void loop()
         mOutput(SLOT_THERMOSTAT) &= ~Souliss_T3n_CoolingOn;
 
       //if menu disabled and nothing changed
-      switch (SSTPage.actualPage) {
-        case !PAGE_MENU:
-          if (!getSystemChanged()) {
-            if (getLocalSystem() != getSoulissSystemState())
-              setSystem(getSoulissSystemState());
-          }
-          break;
+      if (SSTPage.actualPage != PAGE_MENU) {
+        if (!getSystemChanged()) {
+          if (getLocalSystem() != getSoulissSystemState())
+            setSystem(getSoulissSystemState());
+        }
       }
 
       //*************************************************************************
@@ -478,32 +480,30 @@ void loop()
     FAST_710ms() {
       //HOMESCREEN ////////////////////////////////////////////////////////////////
       ///update homescreen only if menu exit
-      switch (SSTPage.actualPage) {
-        case !PAGE_MENU:
-          if (getSystemChanged()) {
-            //EXIT MENU - Actions
-            //write min bright on T19
-            memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1] = getDisplayBright();
-            SERIAL_OUT.print("Set Display Bright: "); SERIAL_OUT.println(memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1]);
+      if (SSTPage.actualPage != PAGE_MENU) {
+        if (getSystemChanged()) {
+          //EXIT MENU - Actions
+          //write min bright on T19
+          memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1] = getDisplayBright();
+          SERIAL_OUT.print("Set Display Bright: "); SERIAL_OUT.println(memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1]);
 
-            //write system ON/OFF
-            if (getLocalSystem()) {
-              //ON
-              SERIAL_OUT.println("Set system ON ");
-              set_ThermostatModeOn(SLOT_THERMOSTAT);        // Set System On
-            } else {
-              //OFF
-              SERIAL_OUT.println("Set system OFF ");
-              set_ThermostatOff(SLOT_THERMOSTAT);
-            }
-            memory_map[MaCaco_IN_s + SLOT_THERMOSTAT] = Souliss_T3n_RstCmd;          // Reset
-            // Trig the next change of the state
-            setSoulissDataChanged();
-            SERIAL_OUT.println("Init Screen");
-            initScreen();
-            resetSystemChanged();
+          //write system ON/OFF
+          if (getLocalSystem()) {
+            //ON
+            SERIAL_OUT.println("Set system ON ");
+            set_ThermostatModeOn(SLOT_THERMOSTAT);        // Set System On
+          } else {
+            //OFF
+            SERIAL_OUT.println("Set system OFF ");
+            set_ThermostatOff(SLOT_THERMOSTAT);
           }
-          break;
+          memory_map[MaCaco_IN_s + SLOT_THERMOSTAT] = Souliss_T3n_RstCmd;          // Reset
+          // Trig the next change of the state
+          setSoulissDataChanged();
+          SERIAL_OUT.println("Init Screen");
+          initScreen();
+          resetSystemChanged();
+        }
       }
     }
 
@@ -518,20 +518,19 @@ void loop()
             if (getLayout1()) {
               display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSoulissSystemState());
             } else if (getLayout2()) {
-              display_layout2_Setpoint(ucg, getEncoderValue(),getSoulissSystemState());
+              display_layout2_Setpoint(ucg, getEncoderValue(), getSoulissSystemState());
             }
             break;
           case PAGE_TOPICS1:
             //************************************************
             //TOPICS PAGE
             //************************************************
-            displayTopics(ucg,fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output);
+            displayTopics(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output);
             break;
         }
       } else {
         //segnala che la pagina attuale al termine del timeut deve essere aggiornata
-       //resetNeedRefresh(SSTPage);
-       setChanged();
+        setUIChanged();
       }
     }
 
@@ -551,43 +550,40 @@ void loop()
     UPDATESLOW();
 
     SLOW_50s() {
-      switch (SSTPage.actualPage) {
-        case  !PAGE_MENU:
-          if (getLayout2()) {
-            display_layout2_print_circle_white(ucg);
-            display_layout2_print_circle_black(ucg);
-            display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
-            display_layout2_print_datetime(ucg);
-            ucg.setColor(0, 0, 0);       // black
-            ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
-            ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
-            ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
-            ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
-            yield();
-            display_layout2_print_circle_green(ucg);
-          }
-          getTemp();
-          if (getCrono()) {
-            Serial.println("CRONO: aggiornamento");
-            setSetpoint(checkNTPcrono(ucg));
-            setEncoderValue(checkNTPcrono(ucg));
-            Serial.print("CRONO: setpoint: "); Serial.println(setpoint);
-          }
+      if (SSTPage.actualPage != PAGE_MENU) {
+        if (getLayout2()) {
+          display_layout2_print_circle_white(ucg);
+          display_layout2_print_circle_black(ucg);
+          display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
+          display_layout2_print_datetime(ucg);
+          ucg.setColor(0, 0, 0);       // black
+          ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
+          ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
+          ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
+          ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
+          yield();
+          display_layout2_print_circle_green(ucg);
+        }
+        getTemp();
+        if (getCrono()) {
+          Serial.println("CRONO: aggiornamento");
+          setSetpoint(checkNTPcrono(ucg));
+          setEncoderValue(checkNTPcrono(ucg));
+          Serial.print("CRONO: setpoint: "); Serial.println(setpoint);
+        }
       }
     }
 
 
     SLOW_70s() {
-      switch (SSTPage.actualPage) {
-        case  !PAGE_MENU:
-          if (getLayout1()) {
-            //
-          } else if (getLayout2()) {
-            calcoloAndamento(ucg, temperature);
-            display_layout2_print_datetime(ucg);
-            display_layout2_print_circle_green(ucg);
-          }
-          break;
+      if (SSTPage.actualPage != PAGE_MENU) {
+        if (getLayout1()) {
+          //
+        } else if (getLayout2()) {
+          calcoloAndamento(ucg, temperature);
+          display_layout2_print_datetime(ucg);
+          display_layout2_print_circle_green(ucg);
+        }
       }
     }
 
