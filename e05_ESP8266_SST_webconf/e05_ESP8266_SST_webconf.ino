@@ -73,6 +73,11 @@ float encoderValue_prec = 0;
 #include <Arduino.h>
 #include "Ucglib.h"
 
+//BUTTON GPIO0
+boolean reading;
+boolean buttonState = LOW;
+long lastDebounceTime = 0;
+long debounceDelay = 100;
 
 int backLEDvalue = 0;
 int backLEDvalueHIGH = BRIGHT_MAX;
@@ -325,7 +330,7 @@ void loop()
             setUIChanged();
           }
           break;
-          case PAGE_CRONO :
+        case PAGE_CRONO :
           break;
         default:
           if (arrotonda(getEncoderValue()) != arrotonda(encoderValue_prec)) {
@@ -375,7 +380,21 @@ void loop()
     SHIFT_110ms(4) {
       //SWITCH ENCODER
       //Al click in base al valore attuale di SSTPage, si imposta la pagina successiva
-      if (!digitalRead(ENCODER_SWITCH)) {
+      //Debounce
+      reading = digitalRead(ENCODER_SWITCH);
+      if (reading == LOW) {
+        if ((millis() - lastDebounceTime) > debounceDelay) {
+          buttonState = HIGH;
+          lastDebounceTime = millis();
+        } else {
+          buttonState = LOW;
+        }
+      } else {
+        lastDebounceTime = millis();
+        buttonState = LOW;
+      }
+
+      if (buttonState) {
         switch (SSTPage.actualPage) {
           case PAGE_HOME:
             SERIAL_OUT.println("from PAGE_HOME to PAGE_TOPICS1");
@@ -387,7 +406,7 @@ void loop()
             SSTPage.actualPage = PAGE_MENU;
             setUIChanged();
             ucg.clearScreen();
-            
+
             setMenuEnabled();
             //se system and UI changed
             setUIChanged();
@@ -425,6 +444,9 @@ void loop()
           SSTPage.actualPage = PAGE_CRONO;
         }
       }
+
+      //dopo il click azzera lo stato del pulsante, poichè si verifica che lo stato rimanga HIGH ed un altro ciclo prima di questo utilizzi lo stato HIGH per fare scattare un'altra transizione
+      buttonState = LOW;
     }
 
     SHIFT_210ms(0) {
