@@ -10,15 +10,33 @@ int ibaseH = 0;
 boolean bTopicsPageEnabled = false;
 String strVoid = "    "; //4 cifre
 int iPortion = 0;
-
+int integerPartNumber;
 
 int getHeightPortion(Ucglib_ILI9341_18x240x320_HWSPI *ucg) {
   return ucg->getHeight() / 3 ;
 }
+void printNumber(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVal, String sUnity, String sText) {
+
+  if (fVal == 0) {
+    ucg.print("----");
+  } else {
+    integerPartNumber = (int) fVal;
+    if (fVal - integerPartNumber > 0) {
+      //se esiste la parte decimale, ne stampa una sola cifra
+      ucg.print(arrotonda(fVal), 1);
+    } else {
+      // omette la parte decimale se è uguale a zero
+      ucg.print(integerPartNumber);
+    }
+  }
+
+  ucg.setFont(FONT_BIG_MIN_50_PERCENT);
+  ucg.print(sUnity);
+  ucg.print(sText);
+}
 
 float fPrecC1;
 void display_print_C1(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVal) {
-  //if (fPrecC1 != fVal) {
   C1_COLOR();
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_BIG);
@@ -32,24 +50,12 @@ void display_print_C1(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVal) {
   ucg.setPrintPos(5 , ibaseH);
   //  ucg.clearScreen();
 
-  if (fVal == 0) {
-    ucg.print("----");
-  } else {
-    ucg.print(fVal);
-  }
-  ucg.setFont(FONT_BIG_MIN_50_PERCENT);
-  ucg.print(C1_AREA_UNITY);
-  ucg.print(C1_AREA_TEXT);
-
+  printNumber(ucg, fVal, C1_AREA_UNITY, C1_AREA_TEXT);
   SERIAL_OUT.print("C1_AREA: "); SERIAL_OUT.print(fVal); SERIAL_OUT.print(C1_AREA_UNITY); SERIAL_OUT.println(C1_AREA_TEXT);
-
-  //  }
-  //  fPrecC1 = fVal;
 }
 
 float fPrecC2;
 void display_print_C2(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVal) {
-  // if (fPrecC2 != fVal) {
   C2_COLOR();
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_BIG);
@@ -62,25 +68,14 @@ void display_print_C2(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVal) {
   ucg.setPrintPos(5 , ibaseH);
   //   ucg.clearScreen();
 
-  if (fVal == 0) {
-    ucg.print("----");
-  } else {
-    ucg.print(fVal);
-  }
-  ucg.setFont(FONT_BIG_MIN_50_PERCENT);
-  ucg.print(C2_AREA_UNITY);
-  ucg.print(C2_AREA_TEXT);
+  printNumber(ucg, fVal, C2_AREA_UNITY, C2_AREA_TEXT);
 
   SERIAL_OUT.print("C2_AREA: "); SERIAL_OUT.print(fVal); SERIAL_OUT.print(C2_AREA_UNITY); SERIAL_OUT.println(C2_AREA_TEXT);
-
-  // }
-  //  fPrecC2 = fVal;
 }
 
 
 float fPrecC3;
 void display_print_C3(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVal) {
-  //  if (fPrecC3 != fVal) {
   C3_COLOR();
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_BIG);
@@ -94,19 +89,9 @@ void display_print_C3(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVal) {
   ucg.setPrintPos(5 , ibaseH);
   //   ucg.clearScreen();
 
-  if (fVal == 0) {
-    ucg.print("----");
-  } else {
-    ucg.print(fVal);
-  }
-  ucg.setFont(FONT_BIG_MIN_50_PERCENT);
-  ucg.print(C3_AREA_UNITY);
-  ucg.print(C3_AREA_TEXT);
+  printNumber(ucg, fVal, C3_AREA_UNITY, C3_AREA_TEXT);
 
   SERIAL_OUT.print("C3_AREA: "); SERIAL_OUT.print(fVal); SERIAL_OUT.print(C3_AREA_UNITY); SERIAL_OUT.println(C3_AREA_TEXT);
-
-  //  }
-  //  fPrecC3 = fVal;
 }
 
 float fC1_Value, fC2_Value, fC3_Value;

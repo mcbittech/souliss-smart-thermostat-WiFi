@@ -395,6 +395,8 @@ void loop()
       }
 
       if (buttonState) {
+        //dopo il click azzera lo stato del pulsante, poichè si verifica che lo stato rimanga HIGH ed un altro ciclo prima di questo utilizzi lo stato HIGH per fare scattare un'altra transizione
+        buttonState = LOW;
         switch (SSTPage.actualPage) {
           case PAGE_HOME:
             SERIAL_OUT.println("from PAGE_HOME to PAGE_TOPICS1");
@@ -444,9 +446,6 @@ void loop()
           SSTPage.actualPage = PAGE_CRONO;
         }
       }
-
-      //dopo il click azzera lo stato del pulsante, poichè si verifica che lo stato rimanga HIGH ed un altro ciclo prima di questo utilizzi lo stato HIGH per fare scattare un'altra transizione
-      buttonState = LOW;
     }
 
     SHIFT_210ms(0) {
