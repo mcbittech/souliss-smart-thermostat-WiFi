@@ -79,7 +79,7 @@ boolean buttonState = LOW;
 long lastDebounceTime = 0;
 boolean lastReadingState = HIGH;
 
-long debounceDelay = 100;
+long debounceDelay = 50;
 
 
 int backLEDvalue = 0;
