@@ -77,7 +77,10 @@ float encoderValue_prec = 0;
 boolean reading;
 boolean buttonState = LOW;
 long lastDebounceTime = 0;
+boolean lastButtonState = LOW;
+
 long debounceDelay = 100;
+
 
 int backLEDvalue = 0;
 int backLEDvalueHIGH = BRIGHT_MAX;
@@ -382,21 +385,25 @@ void loop()
       //Al click in base al valore attuale di SSTPage, si imposta la pagina successiva
       //Debounce
       reading = digitalRead(ENCODER_SWITCH);
+     
       if (reading == LOW) {
+         SERIAL_OUT.print("(millis() - lastDebounceTime) > debounceDelay: ");SERIAL_OUT.println((millis() - lastDebounceTime) > debounceDelay);
         if ((millis() - lastDebounceTime) > debounceDelay) {
           buttonState = HIGH;
           lastDebounceTime = millis();
-        } else {
-          buttonState = LOW;
-        }
+        } 
       } else {
         lastDebounceTime = millis();
         buttonState = LOW;
       }
+       SERIAL_OUT.print("(millis() - lastDebounceTime): ");SERIAL_OUT.println(millis() - lastDebounceTime);
+SERIAL_OUT.print("buttonState: ");SERIAL_OUT.println(buttonState);
+
 
       if (buttonState) {
         //dopo il click azzera lo stato del pulsante, poichè si verifica che lo stato rimanga HIGH ed un altro ciclo prima di questo utilizzi lo stato HIGH per fare scattare un'altra transizione
         buttonState = LOW;
+        SERIAL_OUT.println("cICLO CAMBIO PAGINA");
         switch (SSTPage.actualPage) {
           case PAGE_HOME:
             SERIAL_OUT.println("from PAGE_HOME to PAGE_TOPICS1");
@@ -421,31 +428,33 @@ void loop()
 
             break;
           case PAGE_CRONO:
-            byte menu;
-            SERIAL_OUT.println("Crono");
-            ucg.clearScreen();
-            drawCrono(ucg);
-            menu = 1;
-            while (menu == 1 && exitmainmenu() == 0) {
-              setDay(ucg);
-              drawBoxes(ucg);
-              setBoxes(ucg);
-              if (exitmainmenu())
-              {
-                SERIAL_OUT.println("from PAGE_CRONO to PAGE_HOME");
-                SSTPage.actualPage = PAGE_HOME;
-                setUIChanged();
-                menu = 0;
-              }
-            }
+
             break;
         }
       } else {
         //se progCrono è attivo allora passo alla pagina CRONO
         if (getProgCrono()) {
           SSTPage.actualPage = PAGE_CRONO;
+          byte menu;
+          SERIAL_OUT.println("Crono");
+          ucg.clearScreen();
+          drawCrono(ucg);
+          menu = 1;
+          while (menu == 1 && exitmainmenu() == 0) {
+            setDay(ucg);
+            drawBoxes(ucg);
+            setBoxes(ucg);
+            if (exitmainmenu())
+            {
+              SERIAL_OUT.println("from PAGE_CRONO to PAGE_HOME");
+              SSTPage.actualPage = PAGE_HOME;
+              setUIChanged();
+              menu = 0;
+            }
+          }
         }
       }
+    lastButtonState=buttonState;
     }
 
     SHIFT_210ms(0) {

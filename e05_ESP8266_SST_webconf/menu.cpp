@@ -240,6 +240,7 @@ void on_item_ProgCrono_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_ProgCrono_selected");
   bProgCrono = true;
+  resetMenuEnabled();
 }
 
 void on_item_ProgCrono_deselected()
