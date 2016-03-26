@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 
-#define VERSION "v0.4"
+#define VERSION "v0.40"
 
 //DHT22
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -57,14 +57,11 @@
 //TIMER DISPLAY
 #define TIMER_DISPLAY_SETPOINT 3000
 
-//TIMER NTP
-#define MEMSET_NTP_START 300
-
 //AWAY
 #define TEMP_MINUS 1
 
 //EEPROM
-const int offset=200;       //start address for eeprom data save
+const int offset=500;       //start address for eeprom data save
 
 #define SERIAL_OUT Serial
 

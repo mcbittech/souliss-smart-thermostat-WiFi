@@ -38,9 +38,11 @@
 #else
 #include "conf/IPBroadcast.h"
 #include "connection_static.h"
+#endif
+
 #define USEEEPROM_INSKETCH
 #define USEEEPROM             1
-#endif
+
 
 #include "Souliss.h"
 #include "encoder.h"
