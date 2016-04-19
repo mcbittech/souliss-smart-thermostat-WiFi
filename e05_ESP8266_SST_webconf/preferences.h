@@ -40,7 +40,7 @@
 
 //STATIC IP 
 // use commas between number
-#define STATIC_IP 192,168,1,120
+#define STATIC_IP 192,168,1,119
 #define STATIC_SUBNET 255,255,255,0
 #define STATIC_IP_GW 192,168,1,1
 
@@ -53,7 +53,7 @@
 // Define the network configuration according to your router settingsuration according to your router settings
 // and the other on the wireless oneless one
 //Only for DYNAMIC_CONNECTION = 0
-#define peer_address  0xAB20
+#define peer_address  0xAB21
 #define myvNet_subnet 0xFF00
 #define wifi_bridge_address    0xAB10 //gateway
 
