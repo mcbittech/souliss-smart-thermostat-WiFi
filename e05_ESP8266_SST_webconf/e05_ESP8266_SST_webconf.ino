@@ -96,7 +96,6 @@ float fTopic_C1_Output;
 float fTopic_C2_Output;
 float fTopic_C3_Output;
 
-
 // Menu
 MenuSystem* myMenu;
 
