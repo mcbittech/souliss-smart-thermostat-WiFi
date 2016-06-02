@@ -289,7 +289,7 @@ void setup()
 
 
   // Init the OTA
-  ArduinoOTA.setHostname("souliss-nodename");
+  ArduinoOTA.setHostname("souliss-smart-souliss-thermostat");
   ArduinoOTA.begin();
 
   // Init HomeScreen
