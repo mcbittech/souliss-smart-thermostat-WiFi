@@ -22,15 +22,11 @@
 #define BRIGHT_STEP_FADE_IN 20 
 #define BRIGHT_STEP_FADE_OUT 1
 
-//OTA Name
-#define HOST_NAME_INSKETCH
-#define HOST_NAME "Souliss-Thermostat"
-
 //WIFI CONNECTION
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //0 Static Connection
 //1 Dynamic Connection
-#define DYNAMIC_CONNECTION 1
+#define DYNAMIC_CONNECTION 0
 
 //DHCP
 //1 Use DHCP IP
@@ -47,8 +43,8 @@
 // **** Define the WiFi name and password ****
 //Only for DYNAMIC_CONNECTION = 0
 #define WIFICONF_INSKETCH
-#define WiFi_SSID               ""
-#define WiFi_Password           ""  
+#define WiFi_SSID               "*** toConfigure ***"
+#define WiFi_Password           "*** toConfigure ***"  
 
 // Define the network configuration according to your router settingsuration according to your router settings
 // and the other on the wireless oneless one
