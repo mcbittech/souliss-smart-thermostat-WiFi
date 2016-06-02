@@ -16,19 +16,21 @@
   This example is only supported on ESP8266.
   Developed by mcbittech & fazioa
 ***************************************************************************/
+// Let the IDE point to the Souliss framework
+#include "SoulissFramework.h"
 
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <EEPROM.h>
 #include <WiFiUdp.h>
+#include <ArduinoOTA.h>
+
 #include <DHT.h>
-#include <ESP8266HTTPUpdateServer.h>
 
 // Configure the Souliss framework
 #include "bconf/MCU_ESP8266.h"              /** Load the code directly on the ESP8266 */
 #include "preferences.h"
-#include "OTAWebUpdater.h"
 
 #if(DYNAMIC_CONNECTION)
 #include "conf/RuntimeGateway.h"            // This node is a Peer and can became a Gateway at runtime
@@ -52,7 +54,7 @@
 #include "displayTopics.h"
 #include "language.h"
 #include "ntp.h"
-#include <Time.h>
+#include <TimeLib.h>
 #include <MenuSystem.h>
 #include "menu.h"
 #include "crono.h"
@@ -101,8 +103,7 @@ MenuSystem* myMenu;
 // Use hardware SPI
 Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ 2 , /*cs=*/ 15);
 
-// Setup the libraries for Over The Air Update
-OTA_WebUpdater_Setup()  ;
+
 
 void subscribeTopics() {
   if (subscribedata(ENERGY_TOPIC, mypayload, &mypayload_len)) {
@@ -286,8 +287,10 @@ void setup()
   initMenu();
   myMenu = getMenu();
 
+
   // Init the OTA
-  OTA_WebUpdater_Init();
+  ArduinoOTA.setHostname("souliss-nodename");
+  ArduinoOTA.begin();
 
   // Init HomeScreen
   initScreen();
@@ -295,8 +298,6 @@ void setup()
 
 void loop()
 {
-  // Look for a new sketch to update over the air
-  OTA_WebUpdater_Process();
   EXECUTEFAST() {
     UPDATEFAST();
 
@@ -633,6 +634,10 @@ void loop()
     DYNAMIC_CONNECTION_slow();
 #endif
   }
+
+  // Look for a new sketch to update over the air
+  ArduinoOTA.handle();
+
 }
 
 
