@@ -7,6 +7,8 @@
 #include "display2.h"
 #include "encoder.h"
 #include "read_save.h"
+#include "FS.h"
+#include <ArduinoJson.h>
 
 
 //GENERAL
@@ -501,7 +503,9 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     Serial.println("Saving Crono Program... ");
     Serial.println("longpress 2");
     //EEPROM SAVE
-    SaveCronoMatrix(ucg); 
+    //SaveCronoMatrix(ucg); 
+    //SPIFFS SAVE
+    SaveCronoMatrixSPIFFS(ucg);
     exitmain=0; 
     break;  
     }
@@ -610,6 +614,123 @@ void SaveCronoMatrix(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   save_eeprom_int(402,setP[1]*100);
   save_eeprom_int(404,setP[2]*100);
   save_eeprom_int(406,setP[3]*100);
+}
+
+void SaveCronoMatrixSPIFFS (Ucglib_ILI9341_18x240x320_HWSPI ucg){
+  SPIFFS.begin();
+  //const int BUFFER_SIZE = JSON_OBJECT_SIZE(4) + JSON_ARRAY_SIZE(384);
+  //Serial.print ("Imposto il buffer json a : ");Serial.println(BUFFER_SIZE);
+  //StaticJsonBuffer<BUFFER_SIZE> jsonBuffer;
+  //StaticJsonBuffer<1000> jsonBuffer;
+  DynamicJsonBuffer jsonBuffer;
+  
+  JsonObject& root = jsonBuffer.createObject();
+  root["Sp0"] = setP[0]; 
+  root["Sp1"] = setP[1]; 
+  root["Sp2"] = setP[2]; 
+  root["Sp3"] = setP[3]; 
+  
+  JsonArray& cronomatrix = root.createNestedArray("cronomatrix");
+  //JsonArray& cronomatrix = jsonBuffer.createArray();
+  dS=0;
+  gS=0;
+  i=0;
+  yield;
+  for (byte dS=1;dS<8;dS++){ 
+     for (byte gS=0;gS<48;gS++){
+      ucg.setColor(102, 255, 0);              //Verde Chiaro
+      ucg.drawBox(3, 217, 60, 21);            //Rettangolo basso sx
+      ucg.setColor(255, 255, 255);            //Bianco
+      ucg.setFont(ucg_font_helvB10_hf);
+      ucg.setPrintPos(5,233);
+      ucg.print("SAVING"); 
+     // vecchio codice faceva : save_eeprom_byte(i+10,dHourSel[dS][gS]);
+     //provato yield anche qui
+     cronomatrix.add(dHourSel[dS][gS]);
+     byte pS=dHourSel[dS][gS];
+     Serial.print("Saving in SPIFFS : ");Serial.print(i);Serial.print(" day ");Serial.print(dS);Serial.print(" hour/2 ");Serial.print(gS);Serial.print(" value ");Serial.println(pS);
+     //testati delay fino a 100 !
+     delay(1);
+     i++;
+     ucg.setColor(0, 0, 0);                  //Nero
+     ucg.drawBox(3, 217, 60, 21);            //Rettangolo basso sx   
+     }
+   gS=0;
+  }
+  dS=0;
+  i=0; 
+  
+  Serial.print("Ecco i dati in json: ");
+  //cronomatrix.printTo(Serial);
+  root.printTo(Serial);
+  //char buffer[BUFFER_SIZE];
+  char buffer[1000];
+  //cronomatrix.printTo(buffer, sizeof(buffer));
+  root.printTo(buffer, sizeof(buffer));
+  Serial.println();
+   
+  // open file for writing
+  File sst_spiffs = SPIFFS.open("/sst_crono_matrix.json", "w");
+  if (!sst_spiffs) { Serial.println("sst_crono_matrix.json open failed"); }
+  //qui salvo il buffer su file
+  sst_spiffs.println(buffer);
+  Serial.println("Salvo in SPIFFS il buffer con i settings :");Serial.println(buffer);
+  delay(1);
+  //chiudo il file
+  sst_spiffs.close();
+}
+
+void ReadCronoMatrixSPIFFS() {
+
+  Serial.println("Read Crono Settings from SPIFFS...");
+  File  cronomatrix_inlettura = SPIFFS.open("/sst_crono_matrix.json", "r");
+  if (!cronomatrix_inlettura) { Serial.println("/sst_crono_matrix.json open failed"); }
+  String risultatocronomatrix= cronomatrix_inlettura.readStringUntil('\n');
+  //Serial.print("Ho letto dal file : ");Serial.println(risultatocronomatrix);  
+  char jsoncronomatrix[1000];
+  risultatocronomatrix.toCharArray(jsoncronomatrix, 1000);
+  Serial.print("Imposto i setpoint del crono: ");Serial.println(jsoncronomatrix);  
+  //StaticJsonBuffer<200> jsonBuffer_cronomatrix_inlettura;
+  DynamicJsonBuffer jsonBuffer_cronomatrix_inlettura;
+  // sicuramente qui devo mettere DynamicJsonBuffer
+  
+  JsonObject& rootcronomatrix_inlettura = jsonBuffer_cronomatrix_inlettura.parseObject(jsoncronomatrix);
+  if (!rootcronomatrix_inlettura.success()) {    Serial.println("parseObject() failed");  }
+  setP[0] = rootcronomatrix_inlettura["Sp0"]; 
+  setP[1] = rootcronomatrix_inlettura["Sp1"]; 
+  setP[2] = rootcronomatrix_inlettura["Sp2"]; 
+  setP[3] = rootcronomatrix_inlettura["Sp3"]; 
+  
+  /*
+  //leggo il valore e lo parso:
+  
+  Serial.print("Spiffs Json parsed value of Sp0 : "); Serial.println(setP[0]);
+  setP[1] = atol (rootcronomatrix_inlettura["Sp1"])*0.01;
+  Serial.print("Spiffs Json parsed value of Sp1 : "); Serial.println(setP[1]);
+  setP[2] = atol (rootcronomatrix_inlettura["Sp2"])*0.01;
+  Serial.print("Spiffs Json parsed value of Sp2 : "); Serial.println(setP[2]);
+  setP[3] = atol (rootcronomatrix_inlettura["Sp3"])*0.01;
+  Serial.print("Spiffs Json parsed value of Sp3 : "); Serial.println(setP[3]);
+  cronomatrix_inlettura.close();
+  */
+
+  dS=0;
+  gS=0;
+  ii=0;
+  for (byte dS=1;dS<8;dS++){ 
+    for (byte gS=0;gS<48;gS++){
+      //vecchio metodo dHourSel[dS][gS]=read_eeprom_byte(ii+10);
+      dHourSel[dS][gS]=rootcronomatrix_inlettura["cronomatrix"][ii]; 
+      byte pS=dHourSel[dS][gS];
+        Serial.print("Reading from SPIFFS : ");Serial.print(" day ");Serial.print(dS);Serial.print(" hour/2 ");Serial.print(gS);Serial.print(" value ");Serial.println(pS);
+      delay(1);  
+      ii++;
+    }    
+    gS=0;
+  }
+  dS=0;
+  ii=0;  
+  cronomatrix_inlettura.close();
 }
 
 void ReadCronoMatrix() {

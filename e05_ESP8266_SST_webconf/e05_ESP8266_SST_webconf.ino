@@ -1,11 +1,3 @@
-//#define  SOULISS_DEBUG_INSKETCH
-//#define SOULISS_DEBUG      1
-//#define  MaCaco_DEBUG_INSKETCH
-//#define MaCaco_DEBUG      1
-//
-//#define VNET_DEBUG_INSKETCH
-//#define VNET_DEBUG    1
-
 /**************************************************************************
   Wi-Fi Smart Thermostat based on Souliss IoT Framework
     -Olimex ESP8266-EVB
@@ -23,6 +15,7 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <EEPROM.h>
+#include "FS.h" //SPIFFS
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 
@@ -95,6 +88,10 @@ uint8_t mypayload[2];
 float fTopic_C1_Output;
 float fTopic_C2_Output;
 float fTopic_C3_Output;
+float fTopic_C4_Output;
+float fTopic_C5_Output;
+float fTopic_C6_Output;
+
 
 // Menu
 MenuSystem* myMenu;
@@ -105,17 +102,27 @@ Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ 2 , /*cs=*/ 15);
 
 
 void subscribeTopics() {
-  if (subscribedata(ENERGY_TOPIC, mypayload, &mypayload_len)) {
+  if (subscribedata(TOPIC1, mypayload, &mypayload_len)) {
     float32((uint16_t*) mypayload,  &fTopic_C1_Output);
-    SERIAL_OUT.print("ENERGY_TOPIC: "); SERIAL_OUT.println(fTopic_C1_Output);
-  } else if (subscribedata(SOLAR_TOPIC, mypayload, &mypayload_len)) {
+    SERIAL_OUT.print("TOPIC1: "); SERIAL_OUT.println(fTopic_C1_Output);
+  } else if (subscribedata(TOPIC2, mypayload, &mypayload_len)) {
     float32((uint16_t*) mypayload,  &fTopic_C2_Output);
-    SERIAL_OUT.print("SOLAR_TOPIC: "); SERIAL_OUT.println(fTopic_C2_Output);
-  } else if (subscribedata(TEMPERATURE_TOPIC, mypayload, &mypayload_len)) {
+    SERIAL_OUT.print("TOPIC2: "); SERIAL_OUT.println(fTopic_C2_Output);
+  } else if (subscribedata(TOPIC3, mypayload, &mypayload_len)) {
     float32((uint16_t*) mypayload,  &fTopic_C3_Output);
-    SERIAL_OUT.print("TEMPERATURE_TOPIC: "); SERIAL_OUT.println(fTopic_C3_Output);
+    SERIAL_OUT.print("TOPIC3: "); SERIAL_OUT.println(fTopic_C3_Output);
+  } else if (subscribedata(TOPIC4, mypayload, &mypayload_len)) {
+    float32((uint16_t*) mypayload,  &fTopic_C4_Output);
+    SERIAL_OUT.print("TOPIC4: "); SERIAL_OUT.println(fTopic_C4_Output);
+  } else if (subscribedata(TOPIC5, mypayload, &mypayload_len)) {
+    float32((uint16_t*) mypayload,  &fTopic_C5_Output);
+    SERIAL_OUT.print("TOPIC5: "); SERIAL_OUT.println(fTopic_C5_Output);
+  } else if (subscribedata(TOPIC6, mypayload, &mypayload_len)) {
+    float32((uint16_t*) mypayload,  &fTopic_C6_Output);
+    SERIAL_OUT.print("TOPIC6: "); SERIAL_OUT.println(fTopic_C6_Output);
   }
 }
+
 
 void setSoulissDataChanged() {
   if (data_changed != Souliss_TRIGGED) {
@@ -180,6 +187,9 @@ void initScreen() {
     display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
     display_layout2_print_circle_white(ucg);
     display_layout2_print_datetime(ucg);
+    if (ACTIVATETOPICSPAGE ==1) {
+    displayTopicsHomePageLayout2(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
+    }
     display_layout2_print_circle_black(ucg);
     yield();
     display_layout2_print_circle_green(ucg);
@@ -209,6 +219,7 @@ void setup()
 
   // EEPROM
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /* momentaneamente tutto commentato per testare spiffs
   Store_Init();
 
   if (read_eeprom_byte(1) == 1) {
@@ -219,7 +230,28 @@ void setup()
     ReadAllSettingsFromPreferences();
     ReadCronoMatrix();
   }
+  */
 
+  //SPIFFS
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////
+  SPIFFS.begin();
+  File  sst_spiffs_verifica = SPIFFS.open("/sst_settings.json", "r");
+  if (!sst_spiffs_verifica) {
+    Serial.println(" ");
+    Serial.println("Non riesco a leggere sst_settings.json! formatto la SPIFFS...");
+    SPIFFS.format();
+    Serial.println("Spiffs formatted");
+    ReadAllSettingsFromPreferences();
+    //ReadCronoMatrix();
+  }
+  else
+  {
+    ReadAllSettingsFromSPIFFS();
+    ReadCronoMatrixSPIFFS();
+    //ReadCronoMatrix();
+    backLEDvalueLOW = getDisplayBright();
+  }
+  
   //DISPLAY INIT
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   ucg.begin(UCG_FONT_MODE_SOLID);
@@ -420,8 +452,8 @@ void loop()
             setUIChanged();
             break;
           case PAGE_TOPICS1:
-            SERIAL_OUT.println("from PAGE_TOPICS1 to PAGE_MENU");
-            SSTPage.actualPage = PAGE_MENU;
+            SERIAL_OUT.println("from PAGE_TOPICS1 to PAGE_TOPICS2");
+            SSTPage.actualPage = PAGE_TOPICS2;
             setUIChanged();
             ucg.clearScreen();
 
@@ -432,6 +464,15 @@ void loop()
             printMenu(ucg);
             break;
           case PAGE_TOPICS2:
+          SERIAL_OUT.println("from PAGE_TOPICS2 to PAGE_MENU");
+            SSTPage.actualPage = PAGE_MENU;
+            setUIChanged();
+            ucg.clearScreen();
+            setMenuEnabled();
+            //se system and UI changed
+            setUIChanged();
+            SERIAL_OUT.println("Print Menu");
+            printMenu(ucg);
             break;
           case PAGE_MENU:
 
@@ -562,9 +603,15 @@ void loop()
             break;
           case PAGE_TOPICS1:
             //************************************************
-            //TOPICS PAGE
+            //TOPICS PAGE n.1
             //************************************************
             displayTopics(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output);
+            break;
+         case PAGE_TOPICS2:
+            //************************************************
+            //TOPICS PAGE n.2
+            //************************************************
+             displayTopicsPage2(ucg, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
             break;
         }
       } else {
@@ -612,7 +659,6 @@ void loop()
         }
       }
     }
-
 
     SLOW_70s() {
       if (SSTPage.actualPage != PAGE_MENU) {

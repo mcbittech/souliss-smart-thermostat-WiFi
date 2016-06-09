@@ -38,3 +38,4 @@ void printMenuMove(Ucglib_ILI9341_18x240x320_HWSPI);
 void printMenu(Ucglib_ILI9341_18x240x320_HWSPI);
 void ReadAllSettingsFromEEPROM();
 void ReadAllSettingsFromPreferences();
+void ReadAllSettingsFromSPIFFS();
