@@ -300,35 +300,41 @@ void loop()
   EXECUTEFAST() {
     UPDATEFAST();
 
+    //selezione voci menu
+    switch (SSTPage.actualPage) {
+      case PAGE_MENU :
+        if (getMenuEnabled()) {
+          //Bright high if menu enabled
+          FADE = 1;
+          //Menu Command Section
+          if (getEncoderValue() != encoderValue_prec)
+          {
+            if (getEncoderValue() > encoderValue_prec) {
+              //Menu DOWN
+              myMenu->next();
+            } else {
+              //Menu UP
+              myMenu->prev();
+            }
+            printMenuMove(ucg);
+            encoderValue_prec = getEncoderValue();
+          }
+          if (!digitalRead(ENCODER_SWITCH)) {
+            //IF MENU ENABLED
+            myMenu->select(true);
+            ucg.clearScreen();
+            printMenu(ucg);
+          }
+        }
+    }
+
     SHIFT_50ms(0) {
       //set point attuale
       setpoint = Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3);
       //Stampa il setpoint solo se il valore dell'encoder è diverso da quello impostato nel T31
       switch (SSTPage.actualPage) {
         case PAGE_MENU :
-          if (getMenuEnabled()) {
-            //Bright high if menu enabled
-            FADE = 1;
-            //Menu Command Section
-            if (getEncoderValue() != encoderValue_prec)
-            {
-              if (getEncoderValue() > encoderValue_prec) {
-                //Menu DOWN
-                myMenu->next();
-              } else {
-                //Menu UP
-                myMenu->prev();
-              }
-              printMenu(ucg);
-              encoderValue_prec = getEncoderValue();
-            }
-            if (!digitalRead(ENCODER_SWITCH)) {
-              //IF MENU ENABLED
-              myMenu->select(true);
-              ucg.clearScreen();
-              printMenu(ucg);
-            }
-          } else {
+          if (!getMenuEnabled()) {
             SERIAL_OUT.println("from PAGE_MENU to PAGE_HOME");
             SSTPage.actualPage = PAGE_HOME;
             //ucg.clearScreen();
