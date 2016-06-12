@@ -340,10 +340,10 @@ void initMenu() {
   muMenu_Crono.add_item(&muMenu_mi_Crono_ON, &on_item_cronoON_selected);
   muMenu_Crono.add_item(&muMenu_mi_Crono_OFF, &on_item_cronoOFF_selected);
   muMenu_Crono.add_item(&muMenu_mi_Crono_LEARN, &on_item_cronoLEARN_selected);
-  if (bCrono) {
+ // if (bCrono) {
   muMenu.add_item(&muMenu_mi_ProgCrono, &on_item_ProgCrono_selected);
   SERIAL_OUT.println("Aggiungo la voce di menu ProgCrono");   
-  }
+ // }
 
   muMenu.add_menu(&muMenu_System);
   muMenu_System.add_item(&mm_miBack, &on_itemBack_selected);
