@@ -187,8 +187,8 @@ void initScreen() {
     display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
     display_layout2_print_circle_white(ucg);
     display_layout2_print_datetime(ucg);
-    if (ACTIVATETOPICSPAGE ==1) {
-    displayTopicsHomePageLayout2(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
+    if (ACTIVATETOPICSPAGE == 1) {
+      displayTopicsHomePageLayout2(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
     }
     display_layout2_print_circle_black(ucg);
     yield();
@@ -220,16 +220,16 @@ void setup()
   // EEPROM
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   /* momentaneamente tutto commentato per testare spiffs
-  Store_Init();
+    Store_Init();
 
-  if (read_eeprom_byte(1) == 1) {
+    if (read_eeprom_byte(1) == 1) {
     ReadAllSettingsFromEEPROM();
     ReadCronoMatrix();
     backLEDvalueLOW = getDisplayBright();
-  } else {
+    } else {
     ReadAllSettingsFromPreferences();
     ReadCronoMatrix();
-  }
+    }
   */
 
   //SPIFFS
@@ -251,7 +251,7 @@ void setup()
     //ReadCronoMatrix();
     backLEDvalueLOW = getDisplayBright();
   }
-  
+
   //DISPLAY INIT
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   ucg.begin(UCG_FONT_MODE_SOLID);
@@ -320,7 +320,7 @@ void setup()
 
 
   // Init the OTA
-  ArduinoOTA.setHostname("souliss-smart-souliss-thermostat");
+  ArduinoOTA.setHostname(OTA_NAME);
   ArduinoOTA.begin();
 
   // Init HomeScreen
@@ -331,34 +331,6 @@ void loop()
 {
   EXECUTEFAST() {
     UPDATEFAST();
-
-    //selezione voci menu
-    switch (SSTPage.actualPage) {
-      case PAGE_MENU :
-        if (getMenuEnabled()) {
-          //Bright high if menu enabled
-          FADE = 1;
-          //Menu Command Section
-          if (getEncoderValue() != encoderValue_prec)
-          {
-            if (getEncoderValue() > encoderValue_prec) {
-              //Menu DOWN
-              myMenu->next();
-            } else {
-              //Menu UP
-              myMenu->prev();
-            }
-            printMenuMove(ucg);
-            encoderValue_prec = getEncoderValue();
-          }
-          if (!digitalRead(ENCODER_SWITCH)) {
-            //IF MENU ENABLED
-            myMenu->select(true);
-            ucg.clearScreen();
-            printMenu(ucg);
-          }
-        }
-    }
 
     SHIFT_50ms(0) {
       //set point attuale
@@ -372,6 +344,28 @@ void loop()
             //ucg.clearScreen();
             initScreen();
             setUIChanged();
+          } else {
+            //Bright high if menu enabled
+            FADE = 1;
+            //Menu Command Section
+            if (getEncoderValue() != encoderValue_prec)
+            {
+              if (getEncoderValue() > encoderValue_prec) {
+                //Menu DOWN
+                myMenu->next();
+              } else {
+                //Menu UP
+                myMenu->prev();
+              }
+              printMenuMove(ucg);
+              encoderValue_prec = getEncoderValue();
+            }
+            if (!digitalRead(ENCODER_SWITCH)) {
+              //IF MENU ENABLED
+              myMenu->select(true);
+              ucg.clearScreen();
+              printMenu(ucg);
+            }
           }
           break;
         case PAGE_CRONO :
@@ -398,6 +392,7 @@ void loop()
           break;
       }
     }
+    
     SHIFT_50ms(3) {
       Logic_T19(SLOT_BRIGHT_DISPLAY);
       Logic_T11(SLOT_AWAY);
@@ -460,11 +455,9 @@ void loop()
             setMenuEnabled();
             //se system and UI changed
             setUIChanged();
-            SERIAL_OUT.println("Print Menu");
-            printMenu(ucg);
             break;
           case PAGE_TOPICS2:
-          SERIAL_OUT.println("from PAGE_TOPICS2 to PAGE_MENU");
+            SERIAL_OUT.println("from PAGE_TOPICS2 to PAGE_MENU");
             SSTPage.actualPage = PAGE_MENU;
             setUIChanged();
             ucg.clearScreen();
@@ -607,11 +600,11 @@ void loop()
             //************************************************
             displayTopics(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output);
             break;
-         case PAGE_TOPICS2:
+          case PAGE_TOPICS2:
             //************************************************
             //TOPICS PAGE n.2
             //************************************************
-             displayTopicsPage2(ucg, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
+            displayTopicsPage2(ucg, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
             break;
         }
       } else {
