@@ -36,31 +36,33 @@
   if (IsRuntimeGateway())  \
   { \
     SERIAL_OUT.println("display_print_splash_waiting_connection_gateway"); \
-    display_print_splash_waiting_connection_gateway(ucg); \
     /** Connect to the WiFi network and get an address from DHCP*/ \
     SetAsGateway(myvNet_dhcp);       /** Set this node as gateway for SoulissApp */ \
+    display_print_splash_waiting_connection_gateway(ucg); \
     SetAddressingServer(); \
+    display_print_splash_waiting_connection_gateway(ucg); \
   } \
   else \
   { \
     SERIAL_OUT.println("display_print_splash_waiting_connection_peer"); \
-    display_print_splash_waiting_connection_peer(ucg); \
     /** This board request an address to the gateway at runtime, no need */ \
     /** to configure any parameter here. */ \
     SetDynamicAddressing(); \
+    display_print_splash_waiting_connection_peer(ucg); \
     GetAddress(); \
     SERIAL_OUT.println("Address received"); \
+    display_print_splash_waiting_connection_peer(ucg); \
   } \
 
-  #define DYNAMIC_CONNECTION_fast()      /** Run communication as Gateway or Peer */ \
+#define DYNAMIC_CONNECTION_fast()      /** Run communication as Gateway or Peer */ \
   if (IsRuntimeGateway())   \
     FAST_GatewayComms();    \
   else                      \
     FAST_PeerComms();       \
-  
+
 
 #define DYNAMIC_CONNECTION_slow()      /** Run communication as Peer */ \
   /** If running as Peer */ \
   if (!IsRuntimeGateway()) {  \
-  SLOW_PeerJoin(); \
-    }\
+    SLOW_PeerJoin(); \
+  }\
