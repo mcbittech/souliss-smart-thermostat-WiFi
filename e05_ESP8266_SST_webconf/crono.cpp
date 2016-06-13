@@ -502,8 +502,6 @@ void setBoxes(Ucglib_ILI9341_18x240x320_HWSPI ucg){
     longpress=0;
     Serial.println("Saving Crono Program... ");
     Serial.println("longpress 2");
-    //EEPROM SAVE
-    //SaveCronoMatrix(ucg); 
     //SPIFFS SAVE
     SaveCronoMatrixSPIFFS(ucg);
     exitmain=0; 
@@ -586,42 +584,8 @@ boolean exitmainmenu() {
   on_item_ProgCrono_deselected();
   return exitmain;       }
 
-void SaveCronoMatrix(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
-  dS=0;
-  gS=0;
-  i=0;
-  for (byte dS=1;dS<8;dS++){ 
-    for (byte gS=0;gS<48;gS++){
-      ucg.setColor(102, 255, 0);              //Verde Chiaro
-      ucg.drawBox(3, 217, 60, 21);            //Rettangolo basso sx
-      ucg.setColor(255, 255, 255);            //Bianco
-      ucg.setFont(ucg_font_helvB10_hf);
-      ucg.setPrintPos(5,233);
-      ucg.print("SAVING"); 
-      save_eeprom_byte(i+10,dHourSel[dS][gS]);
-        //byte pS=dHourSel[dS][gS];
-        //Serial.print("save_eeprom_byte :  index ");Serial.print(i);Serial.print(" day ");Serial.print(dS);Serial.print(" hour/2 ");Serial.print(gS);Serial.print(" value ");Serial.println(pS);
-      delay(1);
-      i++;
-      ucg.setColor(0, 0, 0);                  //Nero
-      ucg.drawBox(3, 217, 60, 21);            //Rettangolo basso sx    
-    }
-    gS=0;
-  }
-  dS=0;
-  i=0;  
-  save_eeprom_int(400,setP[0]*100);
-  save_eeprom_int(402,setP[1]*100);
-  save_eeprom_int(404,setP[2]*100);
-  save_eeprom_int(406,setP[3]*100);
-}
-
 void SaveCronoMatrixSPIFFS (Ucglib_ILI9341_18x240x320_HWSPI ucg){
   SPIFFS.begin();
-  //const int BUFFER_SIZE = JSON_OBJECT_SIZE(4) + JSON_ARRAY_SIZE(384);
-  //Serial.print ("Imposto il buffer json a : ");Serial.println(BUFFER_SIZE);
-  //StaticJsonBuffer<BUFFER_SIZE> jsonBuffer;
-  //StaticJsonBuffer<1000> jsonBuffer;
   DynamicJsonBuffer jsonBuffer;
   
   JsonObject& root = jsonBuffer.createObject();
@@ -644,8 +608,6 @@ void SaveCronoMatrixSPIFFS (Ucglib_ILI9341_18x240x320_HWSPI ucg){
       ucg.setFont(ucg_font_helvB10_hf);
       ucg.setPrintPos(5,233);
       ucg.print("SAVING"); 
-     // vecchio codice faceva : save_eeprom_byte(i+10,dHourSel[dS][gS]);
-     //provato yield anche qui
      cronomatrix.add(dHourSel[dS][gS]);
      byte pS=dHourSel[dS][gS];
      Serial.print("Saving in SPIFFS : ");Serial.print(i);Serial.print(" day ");Serial.print(dS);Serial.print(" hour/2 ");Serial.print(gS);Serial.print(" value ");Serial.println(pS);
@@ -663,9 +625,7 @@ void SaveCronoMatrixSPIFFS (Ucglib_ILI9341_18x240x320_HWSPI ucg){
   Serial.print("Ecco i dati in json: ");
   //cronomatrix.printTo(Serial);
   root.printTo(Serial);
-  //char buffer[BUFFER_SIZE];
   char buffer[1000];
-  //cronomatrix.printTo(buffer, sizeof(buffer));
   root.printTo(buffer, sizeof(buffer));
   Serial.println();
    
@@ -700,26 +660,12 @@ void ReadCronoMatrixSPIFFS() {
   setP[1] = rootcronomatrix_inlettura["Sp1"]; 
   setP[2] = rootcronomatrix_inlettura["Sp2"]; 
   setP[3] = rootcronomatrix_inlettura["Sp3"]; 
-  
-  /*
-  //leggo il valore e lo parso:
-  
-  Serial.print("Spiffs Json parsed value of Sp0 : "); Serial.println(setP[0]);
-  setP[1] = atol (rootcronomatrix_inlettura["Sp1"])*0.01;
-  Serial.print("Spiffs Json parsed value of Sp1 : "); Serial.println(setP[1]);
-  setP[2] = atol (rootcronomatrix_inlettura["Sp2"])*0.01;
-  Serial.print("Spiffs Json parsed value of Sp2 : "); Serial.println(setP[2]);
-  setP[3] = atol (rootcronomatrix_inlettura["Sp3"])*0.01;
-  Serial.print("Spiffs Json parsed value of Sp3 : "); Serial.println(setP[3]);
-  cronomatrix_inlettura.close();
-  */
 
   dS=0;
   gS=0;
   ii=0;
   for (byte dS=1;dS<8;dS++){ 
     for (byte gS=0;gS<48;gS++){
-      //vecchio metodo dHourSel[dS][gS]=read_eeprom_byte(ii+10);
       dHourSel[dS][gS]=rootcronomatrix_inlettura["cronomatrix"][ii]; 
       byte pS=dHourSel[dS][gS];
         Serial.print("Reading from SPIFFS : ");Serial.print(" day ");Serial.print(dS);Serial.print(" hour/2 ");Serial.print(gS);Serial.print(" value ");Serial.println(pS);
@@ -731,28 +677,6 @@ void ReadCronoMatrixSPIFFS() {
   dS=0;
   ii=0;  
   cronomatrix_inlettura.close();
-}
-
-void ReadCronoMatrix() {
-  dS=0;
-  gS=0;
-  ii=0;
-  for (byte dS=1;dS<8;dS++){ 
-    for (byte gS=0;gS<48;gS++){
-      dHourSel[dS][gS]=read_eeprom_byte(ii+10);
-        //byte pS=dHourSel[dS][gS];
-        //Serial.print("save_eeprom_byte :  index ");Serial.print(i);Serial.print(" day ");Serial.print(dS);Serial.print(" hour/2 ");Serial.print(gS);Serial.print(" value ");Serial.println(pS);
-      delay(1);  
-      ii++;
-    }    
-    gS=0;
-  }
-  dS=0;
-  ii=0;  
-  setP[0]=read_eeprom_int(400)*0.01;
-  setP[1]=read_eeprom_int(402)*0.01;
-  setP[2]=read_eeprom_int(404)*0.01;
-  setP[3]=read_eeprom_int(406)*0.01;
 }
 
 void copyDay(int dayCopy){

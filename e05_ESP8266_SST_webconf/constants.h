@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 
-#define VERSION "v0.85"
+#define VERSION "v0.80"
 
 //DHT22
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -59,9 +59,6 @@
 
 //AWAY
 #define TEMP_MINUS 1
-
-//EEPROM
-const int offset=500;       //start address for eeprom data save
 
 #define SERIAL_OUT Serial
 

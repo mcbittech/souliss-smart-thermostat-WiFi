@@ -187,8 +187,8 @@ void initScreen() {
     display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
     display_layout2_print_circle_white(ucg);
     display_layout2_print_datetime(ucg);
-    if (ACTIVATETOPICSPAGE == 1) {
-      displayTopicsHomePageLayout2(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
+    if (ACTIVATETOPICSPAGE ==1) {
+    displayTopicsHomePageLayout2(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
     }
     display_layout2_print_circle_black(ucg);
     yield();
@@ -217,21 +217,6 @@ void setup()
 
   SERIAL_OUT.begin(115200);
 
-  // EEPROM
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /* momentaneamente tutto commentato per testare spiffs
-    Store_Init();
-
-    if (read_eeprom_byte(1) == 1) {
-    ReadAllSettingsFromEEPROM();
-    ReadCronoMatrix();
-    backLEDvalueLOW = getDisplayBright();
-    } else {
-    ReadAllSettingsFromPreferences();
-    ReadCronoMatrix();
-    }
-  */
-
   //SPIFFS
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   SPIFFS.begin();
@@ -242,7 +227,7 @@ void setup()
     SPIFFS.format();
     Serial.println("Spiffs formatted");
     ReadAllSettingsFromPreferences();
-    //ReadCronoMatrix();
+    ReadCronoMatrixSPIFFS();
   }
   else
   {
@@ -251,7 +236,7 @@ void setup()
     //ReadCronoMatrix();
     backLEDvalueLOW = getDisplayBright();
   }
-
+  
   //DISPLAY INIT
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   ucg.begin(UCG_FONT_MODE_SOLID);
@@ -320,7 +305,7 @@ void setup()
 
 
   // Init the OTA
-  ArduinoOTA.setHostname(OTA_NAME);
+  ArduinoOTA.setHostname("M10-SST-Thermostat");
   ArduinoOTA.begin();
 
   // Init HomeScreen
@@ -338,13 +323,7 @@ void loop()
       //Stampa il setpoint solo se il valore dell'encoder è diverso da quello impostato nel T31
       switch (SSTPage.actualPage) {
         case PAGE_MENU :
-          if (!getMenuEnabled()) {
-            SERIAL_OUT.println("from PAGE_MENU to PAGE_HOME");
-            SSTPage.actualPage = PAGE_HOME;
-            //ucg.clearScreen();
-            initScreen();
-            setUIChanged();
-          } else {
+          if (getMenuEnabled()) {
             //Bright high if menu enabled
             FADE = 1;
             //Menu Command Section
@@ -357,7 +336,7 @@ void loop()
                 //Menu UP
                 myMenu->prev();
               }
-              printMenuMove(ucg);
+              printMenu(ucg);
               encoderValue_prec = getEncoderValue();
             }
             if (!digitalRead(ENCODER_SWITCH)) {
@@ -366,6 +345,12 @@ void loop()
               ucg.clearScreen();
               printMenu(ucg);
             }
+          } else {
+            SERIAL_OUT.println("from PAGE_MENU to PAGE_HOME");
+            SSTPage.actualPage = PAGE_HOME;
+            //ucg.clearScreen();
+            initScreen();
+            setUIChanged();
           }
           break;
         case PAGE_CRONO :
@@ -392,14 +377,13 @@ void loop()
           break;
       }
     }
-    
     SHIFT_50ms(3) {
       Logic_T19(SLOT_BRIGHT_DISPLAY);
       Logic_T11(SLOT_AWAY);
     }
 
     SHIFT_110ms(0) {
-      if (SSTPage.actualPage != PAGE_MENU) {
+      if (SSTPage.actualPage != PAGE_MENU && SSTPage.actualPage != PAGE_TOPICS1 && SSTPage.actualPage != PAGE_TOPICS2) {
         if (timerDisplay_setpoint()) {
           //timeout scaduto
           display_layout1_background_black(ucg);
@@ -442,22 +426,32 @@ void loop()
       if (buttonState) {
         switch (SSTPage.actualPage) {
           case PAGE_HOME:
+           if (ACTIVATETOPICSPAGE ==1) {
             SERIAL_OUT.println("from PAGE_HOME to PAGE_TOPICS1");
             SSTPage.actualPage = PAGE_TOPICS1;
             setUIChanged();
+            }
             break;
           case PAGE_TOPICS1:
-            SERIAL_OUT.println("from PAGE_TOPICS1 to PAGE_TOPICS2");
-            SSTPage.actualPage = PAGE_TOPICS2;
+            if (TOPICSPAGESNUMBER ==1){
+            SERIAL_OUT.println("from PAGE_TOPICS1 to PAGE_MENU");
+            SSTPage.actualPage = PAGE_MENU;
             setUIChanged();
             ucg.clearScreen();
-
             setMenuEnabled();
             //se system and UI changed
             setUIChanged();
+            SERIAL_OUT.println("Print Menu");
+            printMenu(ucg);
+            }
+            else if (TOPICSPAGESNUMBER ==2){
+            SERIAL_OUT.println("from PAGE_TOPICS1 to PAGE_TOPICS2");
+            SSTPage.actualPage = PAGE_TOPICS2;
+            setUIChanged(); 
+            }
             break;
           case PAGE_TOPICS2:
-            SERIAL_OUT.println("from PAGE_TOPICS2 to PAGE_MENU");
+          SERIAL_OUT.println("from PAGE_TOPICS2 to PAGE_MENU");
             SSTPage.actualPage = PAGE_MENU;
             setUIChanged();
             ucg.clearScreen();
@@ -532,8 +526,8 @@ void loop()
         mOutput(SLOT_THERMOSTAT) &= ~Souliss_T3n_CoolingOn;
 
       //if menu disabled and nothing changed
-      if (SSTPage.actualPage != PAGE_MENU) {
-        if (!getSystemChanged()) {
+    if (SSTPage.actualPage != PAGE_MENU && SSTPage.actualPage != PAGE_TOPICS1 && SSTPage.actualPage != PAGE_TOPICS2) {
+           if (!getSystemChanged()) {
           if (getLocalSystem() != getSoulissSystemState())
             setSystem(getSoulissSystemState());
         }
@@ -553,7 +547,7 @@ void loop()
     FAST_710ms() {
       //HOMESCREEN ////////////////////////////////////////////////////////////////
       ///update homescreen only if menu exit
-      if (SSTPage.actualPage != PAGE_MENU) {
+      if (SSTPage.actualPage != PAGE_MENU && SSTPage.actualPage != PAGE_TOPICS1 && SSTPage.actualPage != PAGE_TOPICS2) {
         if (getSystemChanged()) {
           //EXIT MENU - Actions
           //write min bright on T19
@@ -598,13 +592,17 @@ void loop()
             //************************************************
             //TOPICS PAGE n.1
             //************************************************
-            displayTopics(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output);
+            if (ACTIVATETOPICSPAGE ==1) {
+           displayTopics(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output);
+            } 
             break;
-          case PAGE_TOPICS2:
+         case PAGE_TOPICS2:
             //************************************************
             //TOPICS PAGE n.2
             //************************************************
-            displayTopicsPage2(ucg, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
+            if (ACTIVATETOPICSPAGE ==1) {
+             displayTopicsPage2(ucg, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
+            } 
             break;
         }
       } else {
@@ -629,7 +627,7 @@ void loop()
     UPDATESLOW();
 
     SLOW_50s() {
-      if (SSTPage.actualPage != PAGE_MENU) {
+      if (SSTPage.actualPage != PAGE_MENU && SSTPage.actualPage != PAGE_TOPICS1 && SSTPage.actualPage != PAGE_TOPICS2) {
         if (getLayout2()) {
           display_layout2_print_circle_white(ucg);
           display_layout2_print_circle_black(ucg);
@@ -642,6 +640,9 @@ void loop()
           ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
           yield();
           display_layout2_print_circle_green(ucg);
+          if (ACTIVATETOPICSPAGE ==1) {
+          displayTopicsHomePageLayout2(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
+          }
         }
         getTemp();
         if (getCrono()) {
@@ -654,7 +655,7 @@ void loop()
     }
 
     SLOW_70s() {
-      if (SSTPage.actualPage != PAGE_MENU) {
+      if (SSTPage.actualPage != PAGE_MENU && SSTPage.actualPage != PAGE_TOPICS1 && SSTPage.actualPage != PAGE_TOPICS2) {
         if (getLayout1()) {
           //
         } else if (getLayout2()) {
@@ -677,6 +678,7 @@ void loop()
 #if(DYNAMIC_CONNECTION==1)
     DYNAMIC_CONNECTION_slow();
 #endif
+
   }
 
   // Look for a new sketch to update over the air

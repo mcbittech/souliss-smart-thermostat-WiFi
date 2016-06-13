@@ -9,9 +9,3 @@
 #define TOPIC5 0xF001,0x09
 #define TOPIC6 0xF001,0x0A
 
-//***************************************************** 
-//  ES:
-//  #define ENERGY_TOPIC 0xF001,0x05
-//  #define SOLAR_TOPIC 0xF001,0x06
-//  #define TEMPERATURE_TOPIC 0xF001,0x07
- 

@@ -203,7 +203,7 @@ void displayTopicsHomePageLayout2(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fC1
   ucg.setFontPosTop();
   ucg.setFont(ucg_font_helvB12_hf);
   C1_AREA_TEXT_COLOR_LAYOUT2();
-  ucg.setPrintPos(170, 25);
+  ucg.setPrintPos(175, 25);
   ucg.print(C1_AREA_TEXT);
   ucg.setFont(ucg_font_helvB14_hf);
   ucg.setPrintPos(195, 42);
