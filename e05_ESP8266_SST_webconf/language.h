@@ -20,36 +20,6 @@
 #define HUM_TEXT "H: "
 #define SYSTEM_OFF_TEXT "SPENTO"
 
-//TOPICS
-#define C1_COLOR()  ucg.setColor(13, 105, 226);    // Blu
-#define C1_AREA_UNITY " W"
-#define C1_AREA_TEXT " Home"
-#define C1_AREA_TEXT_COLOR_LAYOUT2() ucg.setColor(255, 0, 0); //red
-
-#define C2_COLOR()  ucg.setColor(226, 183, 13);    // Giallo Chiaro
-#define C2_AREA_UNITY " W"
-#define C2_AREA_TEXT " Solar"
-#define C2_AREA_TEXT_COLOR_LAYOUT2() ucg.setColor(255, 0, 0); //red
-
-#define C3_COLOR()  ucg.setColor(226, 105, 13);    // Giallo Chiaro
-#define C3_AREA_UNITY " C°"
-#define C3_AREA_TEXT " Temp."
-#define C3_AREA_TEXT_COLOR_LAYOUT2() ucg.setColor(255, 0, 0); //red
-
-#define C4_COLOR()  ucg.setColor(13, 105, 226);    // Giallo Chiaro
-#define C4_AREA_UNITY "°"
-#define C4_AREA_TEXT " Esterno"
-#define C4_AREA_TEXT_COLOR_LAYOUT2() ucg.setColor(255, 0, 0); //red
-
-#define C5_COLOR()  ucg.setColor(0, 255, 255);    // Giallo Chiaro
-#define C5_AREA_UNITY "W"
-#define C5_AREA_TEXT " Casa"
-#define C5_AREA_TEXT_COLOR_LAYOUT2() ucg.setColor(255, 0, 0); //red
-
-#define C6_COLOR()  ucg.setColor(255, 255, 102);    // Giallo Chiaro
-#define C6_AREA_UNITY "W"
-#define C6_AREA_TEXT " Desk"
-#define C6_AREA_TEXT_COLOR_LAYOUT2() ucg.setColor(255, 0, 0); //red
 
 //MENU
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -73,5 +43,8 @@
 #define MENU_TIMEZONE_2 "UTC+2 Eu Est,Romania"
 #define MENU_TIMEZONE_3 "UTC+3 Eu Est,Bel,Russia"
 #define MENU_TIMEZONE_4 "UTC+4 Turchia,Azerb."
+#define MENU_TEXT_DAYLIGHTSAVINGTIME_SET "Ora Legale"
+#define MENU_DAYLIGHTSAVINGTIME_ON "ON"
+#define MENU_DAYLIGHTSAVINGTIME_OFF "OFF"
 
 

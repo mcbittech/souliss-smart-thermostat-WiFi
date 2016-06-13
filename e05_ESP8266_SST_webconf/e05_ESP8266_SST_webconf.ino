@@ -187,8 +187,8 @@ void initScreen() {
     display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
     display_layout2_print_circle_white(ucg);
     display_layout2_print_datetime(ucg);
-    if (ACTIVATETOPICSPAGE == 1) {
-      displayTopicsHomePageLayout2(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
+    if (ACTIVATETOPICSPAGE ==1) {
+    displayTopicsHomePageLayout2(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
     }
     display_layout2_print_circle_black(ucg);
     yield();
@@ -217,21 +217,6 @@ void setup()
 
   SERIAL_OUT.begin(115200);
 
-  // EEPROM
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /* momentaneamente tutto commentato per testare spiffs
-    Store_Init();
-
-    if (read_eeprom_byte(1) == 1) {
-    ReadAllSettingsFromEEPROM();
-    ReadCronoMatrix();
-    backLEDvalueLOW = getDisplayBright();
-    } else {
-    ReadAllSettingsFromPreferences();
-    ReadCronoMatrix();
-    }
-  */
-
   //SPIFFS
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   SPIFFS.begin();
@@ -242,7 +227,7 @@ void setup()
     SPIFFS.format();
     Serial.println("Spiffs formatted");
     ReadAllSettingsFromPreferences();
-    //ReadCronoMatrix();
+    ReadCronoMatrixSPIFFS();
   }
   else
   {
@@ -251,7 +236,7 @@ void setup()
     //ReadCronoMatrix();
     backLEDvalueLOW = getDisplayBright();
   }
-
+  
   //DISPLAY INIT
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   ucg.begin(UCG_FONT_MODE_SOLID);
@@ -392,7 +377,6 @@ void loop()
           break;
       }
     }
-    
     SHIFT_50ms(3) {
       Logic_T19(SLOT_BRIGHT_DISPLAY);
       Logic_T11(SLOT_AWAY);
@@ -442,22 +426,43 @@ void loop()
       if (buttonState) {
         switch (SSTPage.actualPage) {
           case PAGE_HOME:
+           if (ACTIVATETOPICSPAGE >0) {
             SERIAL_OUT.println("from PAGE_HOME to PAGE_TOPICS1");
             SSTPage.actualPage = PAGE_TOPICS1;
             setUIChanged();
-            break;
-          case PAGE_TOPICS1:
-            SERIAL_OUT.println("from PAGE_TOPICS1 to PAGE_TOPICS2");
-            SSTPage.actualPage = PAGE_TOPICS2;
+            } else {
+SERIAL_OUT.println("from PAGE_HOME to PAGE_MENU");
+            SSTPage.actualPage = PAGE_MENU;
             setUIChanged();
             ucg.clearScreen();
-
             setMenuEnabled();
             //se system and UI changed
             setUIChanged();
+            SERIAL_OUT.println("Print Menu");
+            printMenu(ucg);
+            break;
+}
+            break;
+          case PAGE_TOPICS1:
+            if (TOPICSPAGESNUMBER ==1){
+            SERIAL_OUT.println("from PAGE_TOPICS1 to PAGE_MENU");
+            SSTPage.actualPage = PAGE_MENU;
+            setUIChanged();
+            ucg.clearScreen();
+            setMenuEnabled();
+            //se system and UI changed
+            setUIChanged();
+            SERIAL_OUT.println("Print Menu");
+            printMenu(ucg);
+            }
+            else if (TOPICSPAGESNUMBER ==2){
+            SERIAL_OUT.println("from PAGE_TOPICS1 to PAGE_TOPICS2");
+            SSTPage.actualPage = PAGE_TOPICS2;
+            setUIChanged(); 
+            }
             break;
           case PAGE_TOPICS2:
-            SERIAL_OUT.println("from PAGE_TOPICS2 to PAGE_MENU");
+          SERIAL_OUT.println("from PAGE_TOPICS2 to PAGE_MENU");
             SSTPage.actualPage = PAGE_MENU;
             setUIChanged();
             ucg.clearScreen();
@@ -642,6 +647,9 @@ void loop()
           ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
           yield();
           display_layout2_print_circle_green(ucg);
+          if (ACTIVATETOPICSPAGE ==1) {
+          displayTopicsHomePageLayout2(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
+          }
         }
         getTemp();
         if (getCrono()) {
@@ -677,6 +685,7 @@ void loop()
 #if(DYNAMIC_CONNECTION==1)
     DYNAMIC_CONNECTION_slow();
 #endif
+
   }
 
   // Look for a new sketch to update over the air
