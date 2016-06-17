@@ -366,6 +366,9 @@ MenuComponent const* cp_m_comp;
 boolean bFlagColour = true;
 boolean bFirstPrint = true;
 int x, y, y_step_plus , y_step;
+  int y = 4;
+  int y_step_plus = 5;
+  int y_step;
 
 void printMenuBody(Ucglib_ILI9341_18x240x320_HWSPI ucg, boolean bFlagFirstPrint) {
   x = 2;
@@ -384,6 +387,9 @@ void printMenuBody(Ucglib_ILI9341_18x240x320_HWSPI ucg, boolean bFlagFirstPrint)
     ucg.setFontMode(UCG_FONT_MODE_SOLID);
   }
 
+
+  ucg.setColor(0, 255, 255, 255);    // Bianco
+  ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SMALL);
 
   //Current menu name
@@ -395,10 +401,10 @@ void printMenuBody(Ucglib_ILI9341_18x240x320_HWSPI ucg, boolean bFlagFirstPrint)
   //One line space
   y = y + y_step;
 
-  cp_menu_sel = cp_menu->get_selected();
+  MenuComponent const* cp_menu_sel = cp_menu->get_selected();
   for (int i = 0; i < cp_menu->get_num_menu_components(); ++i)
   {
-    cp_m_comp = cp_menu->get_menu_component(i);
+    MenuComponent const* cp_m_comp = cp_menu->get_menu_component(i);
     y = y + y_step + y_step_plus;
     ucg.setPrintPos(x, y);
 
