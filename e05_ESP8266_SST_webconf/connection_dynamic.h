@@ -59,10 +59,10 @@
     FAST_GatewayComms();    \
   else                      \
     FAST_PeerComms();       \
-
+  
 
 #define DYNAMIC_CONNECTION_slow()      /** Run communication as Peer */ \
   /** If running as Peer */ \
   if (!IsRuntimeGateway()) {  \
-    SLOW_PeerJoin(); \
-  }\
+  SLOW_PeerJoin(); \
+    }\

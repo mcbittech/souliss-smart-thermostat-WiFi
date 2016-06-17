@@ -305,7 +305,7 @@ void setup()
 
 
   // Init the OTA
-  ArduinoOTA.setHostname(OTA_NAME);
+  ArduinoOTA.setHostname("M10-SST-Thermostat");
   ArduinoOTA.begin();
 
   // Init HomeScreen
@@ -330,6 +330,7 @@ void loop()
             initScreen();
             setUIChanged();
           } else {
+         
             //Bright high if menu enabled
             FADE = 1;
             //Menu Command Section
@@ -342,7 +343,7 @@ void loop()
                 //Menu UP
                 myMenu->prev();
               }
-              printMenuMove(ucg);
+             
               encoderValue_prec = getEncoderValue();
             }
             if (!digitalRead(ENCODER_SWITCH)) {
@@ -351,6 +352,7 @@ void loop()
               ucg.clearScreen();
               printMenu(ucg);
             }
+         
           }
           break;
         case PAGE_CRONO :
@@ -383,7 +385,7 @@ void loop()
     }
 
     SHIFT_110ms(0) {
-      if (SSTPage.actualPage != PAGE_MENU) {
+     
         if (timerDisplay_setpoint()) {
           //timeout scaduto
           display_layout1_background_black(ucg);
@@ -440,18 +442,17 @@ SERIAL_OUT.println("from PAGE_HOME to PAGE_MENU");
             setUIChanged();
             SERIAL_OUT.println("Print Menu");
             printMenu(ucg);
-            break;
 }
             break;
           case PAGE_TOPICS1:
             if (TOPICSPAGESNUMBER ==1){
             SERIAL_OUT.println("from PAGE_TOPICS1 to PAGE_MENU");
             SSTPage.actualPage = PAGE_MENU;
-            setUIChanged();
+
+setUIChanged();
             ucg.clearScreen();
             setMenuEnabled();
-            //se system and UI changed
-            setUIChanged();
+
             SERIAL_OUT.println("Print Menu");
             printMenu(ucg);
             }
@@ -558,8 +559,7 @@ SERIAL_OUT.println("from PAGE_HOME to PAGE_MENU");
     FAST_710ms() {
       //HOMESCREEN ////////////////////////////////////////////////////////////////
       ///update homescreen only if menu exit
-      if (SSTPage.actualPage != PAGE_MENU) {
-        if (getSystemChanged()) {
+             if (getSystemChanged()) {
           //EXIT MENU - Actions
           //write min bright on T19
           memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1] = getDisplayBright();
@@ -603,13 +603,12 @@ SERIAL_OUT.println("from PAGE_HOME to PAGE_MENU");
             //************************************************
             //TOPICS PAGE n.1
             //************************************************
-            displayTopics(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output);
+           
             break;
-          case PAGE_TOPICS2:
+         case PAGE_TOPICS2:
             //************************************************
             //TOPICS PAGE n.2
             //************************************************
-            displayTopicsPage2(ucg, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
             break;
         }
       } else {
@@ -634,8 +633,7 @@ SERIAL_OUT.println("from PAGE_HOME to PAGE_MENU");
     UPDATESLOW();
 
     SLOW_50s() {
-      if (SSTPage.actualPage != PAGE_MENU) {
-        if (getLayout2()) {
+              if (getLayout2()) {
           display_layout2_print_circle_white(ucg);
           display_layout2_print_circle_black(ucg);
           display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
@@ -662,7 +660,7 @@ SERIAL_OUT.println("from PAGE_HOME to PAGE_MENU");
     }
 
     SLOW_70s() {
-      if (SSTPage.actualPage != PAGE_MENU) {
+      
         if (getLayout1()) {
           //
         } else if (getLayout2()) {
