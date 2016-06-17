@@ -366,9 +366,6 @@ MenuComponent const* cp_m_comp;
 boolean bFlagColour = true;
 boolean bFirstPrint = true;
 int x, y, y_step_plus , y_step;
-  int y = 4;
-  int y_step_plus = 5;
-  int y_step;
 
 void printMenuBody(Ucglib_ILI9341_18x240x320_HWSPI ucg, boolean bFlagFirstPrint) {
   x = 2;
