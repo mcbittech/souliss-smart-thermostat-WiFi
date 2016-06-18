@@ -1,12 +1,14 @@
 #include <Arduino.h>
 #include <EEPROM.h>
 #include "constants.h"
-#include "tools/store/store.h"          
-#include "read_save.h" 
+#include "tools/store/store.h"
+#include "read_save.h"
 #include "FS.h"
 #include <ArduinoJson.h>
 
-void save_spiffs_prefs(int json_iDisplayBright, int json_bClock, int json_timeZone,int json_DayLightSavingTime, int json_bCrono, int json_bCronoLearn, int json_bSystem, int json_bLayout1,int json_bLayout2){
+char json[200];
+
+void save_spiffs_prefs(int json_iDisplayBright, int json_bClock, int json_timeZone, int json_DayLightSavingTime, int json_bCrono, int json_bCronoLearn, int json_bSystem, int json_bLayout1, int json_bLayout2) {
   SPIFFS.begin();
   StaticJsonBuffer<200> jsonBuffer;
   JsonObject& root = jsonBuffer.createObject();
@@ -24,35 +26,50 @@ void save_spiffs_prefs(int json_iDisplayBright, int json_bClock, int json_timeZo
   char buffer[256];
   root.printTo(buffer, sizeof(buffer));
   //Serial.println();
-   
+
   // open file for writing
   File sst_spiffs = SPIFFS.open("/sst_settings.json", "w");
-  if (!sst_spiffs) { Serial.println("sst_settings.json open failed"); }
+  if (!sst_spiffs) {
+    Serial.println("sst_settings.json open failed");
+  }
   //qui salvo il buffer su file
   sst_spiffs.println(buffer);
-  Serial.print("Salvo in SPIFFS il buffer con i settings :");Serial.println(buffer);
+  Serial.print("Salvo in SPIFFS il buffer con i settings :"); Serial.println(buffer);
   delay(1);
   //chiudo il file
   sst_spiffs.close();
 }
 
-const char* read_spiffs_prefs(const char*  valuedaleggere){
+boolean read_spiffs_prefs() {
   File  sst_spiffs_inlettura = SPIFFS.open("/sst_settings.json", "r");
-  if (!sst_spiffs_inlettura) { Serial.println("sst_settings.json open failed"); }
-  String risultato= sst_spiffs_inlettura.readStringUntil('\n');
-  //Serial.print("Ho letto dal file : ");Serial.println(risultato);  
+  if (!sst_spiffs_inlettura) {
+    Serial.println("sst_settings.json open failed");
+    return false;
+  }
+  String risultato = sst_spiffs_inlettura.readStringUntil('\n');
   char json[200];
   risultato.toCharArray(json, 200);
-  //Serial.print("Ecco l'array json convertito: ");Serial.println(json);  
-  StaticJsonBuffer<200> jsonBuffer_inlettura;
-  JsonObject& root_inlettura = jsonBuffer_inlettura.parseObject(json);
-  if (!root_inlettura.success()) {    Serial.println("parseObject() failed");  }
-  //leggo il valore e lo parso:
-  const char* risultatoparsed = root_inlettura[valuedaleggere];
-  Serial.print("Spiffs Json parsed value of ");Serial.print(valuedaleggere);Serial.print(" :");
-  Serial.println(risultatoparsed);
+
   sst_spiffs_inlettura.close();
-  return risultatoparsed;
-} 
+  return true;
+}
+
+int read_JSON_integer(const char* itemName) {
+  //Serial.print("Ecco l'array json convertito: ");Serial.println(json);
+  StaticJsonBuffer<200> jsonBuffer_inlettura;
+  JsonObject& root_JSON = jsonBuffer_inlettura.parseObject(json);
+int iValue=0;
+  if (root_JSON.success()) {
+    //leggo il valore e lo parso:
+    iValue = root_JSON[itemName];
+    Serial.print("Spiffs Json parsed value of "); Serial.print(itemName); Serial.print(" : ");
+    Serial.println(iValue);
+  } else {
+    Serial.println("parseObject() failed");
+  }
+
+  return iValue;
+}
+
 
 
