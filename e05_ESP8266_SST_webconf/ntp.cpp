@@ -61,8 +61,8 @@ time_t getNtpTime()
       secsSince1900 |= (unsigned long)packetBuffer[42] << 8;
       secsSince1900 |= (unsigned long)packetBuffer[43];
       //return secsSince1900 - 2208988800UL + read_eeprom_byte(9) * SECS_PER_HOUR;
-      int tZonetemp =read_JSON_integer("Tzone");
-      int tDayLighttemp = read_JSON_integer("DayLightSavingTime");
+      int tZonetemp =read_spiffs_prefs("Tzone");
+      int tDayLighttemp = read_spiffs_prefs("DayLightSavingTime");
       
       if (tDayLighttemp == 0)
        {

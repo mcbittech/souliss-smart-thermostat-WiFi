@@ -480,18 +480,13 @@ void ReadAllSettingsFromSPIFFS() {
   //SPIFFS
   SERIAL_OUT.println(" ");
   SERIAL_OUT.print("Read All Settings From SPIFFS.... ");
-  if(read_spiffs_prefs()){
-  iDisplayBright = read_JSON_integer("Luminosita");
-  bClock = read_JSON_integer("Orologio");
-  bCrono = read_JSON_integer("Crono");
-  bCronoLearn = read_JSON_integer("CronoLearn");
-  bSystem = read_JSON_integer("Dispositivo");
-  bLayout1 = read_JSON_integer("Layout1");
-  bLayout2 = read_JSON_integer("Layout2");
-  tZone = read_JSON_integer("Tzone");
-  bDayLightSavingTime = read_JSON_integer("DayLightSavingTime");
-  SERIAL_OUT.println("Success");
-  } else {
-     SERIAL_OUT.println("Failed");
-  }
+  iDisplayBright = read_spiffs_prefs("Luminosita");
+  bClock = read_spiffs_prefs("Orologio");
+  bCrono = read_spiffs_prefs("Crono");
+  bCronoLearn = read_spiffs_prefs("CronoLearn");
+  bSystem = read_spiffs_prefs("Dispositivo");
+  bLayout1 = read_spiffs_prefs("Layout1");
+  bLayout2 = read_spiffs_prefs("Layout2");
+  tZone = read_spiffs_prefs("Tzone");
+  bDayLightSavingTime = read_spiffs_prefs("DayLightSavingTime");
 }

@@ -6,8 +6,6 @@
 #include "FS.h"
 #include <ArduinoJson.h>
 
-char json[200];
-
 void save_spiffs_prefs(int json_iDisplayBright, int json_bClock, int json_timeZone, int json_DayLightSavingTime, int json_bCrono, int json_bCronoLearn, int json_bSystem, int json_bLayout1, int json_bLayout2) {
   SPIFFS.begin();
   StaticJsonBuffer<200> jsonBuffer;
@@ -40,36 +38,29 @@ void save_spiffs_prefs(int json_iDisplayBright, int json_bClock, int json_timeZo
   sst_spiffs.close();
 }
 
-boolean read_spiffs_prefs() {
+int read_spiffs_prefs(const char*  valuedaleggere) {
   File  sst_spiffs_inlettura = SPIFFS.open("/sst_settings.json", "r");
   if (!sst_spiffs_inlettura) {
     Serial.println("sst_settings.json open failed");
-    return false;
+    return 0;
   }
   String risultato = sst_spiffs_inlettura.readStringUntil('\n');
+  //Serial.print("Ho letto dal file : ");Serial.println(risultato);
   char json[200];
   risultato.toCharArray(json, 200);
-
-  sst_spiffs_inlettura.close();
-  return true;
-}
-
-int read_JSON_integer(const char* itemName) {
   //Serial.print("Ecco l'array json convertito: ");Serial.println(json);
   StaticJsonBuffer<200> jsonBuffer_inlettura;
-  JsonObject& root_JSON = jsonBuffer_inlettura.parseObject(json);
-int iValue=0;
-  if (root_JSON.success()) {
-    //leggo il valore e lo parso:
-    iValue = root_JSON[itemName];
-    Serial.print("Spiffs Json parsed value of "); Serial.print(itemName); Serial.print(" : ");
-    Serial.println(iValue);
-  } else {
+  JsonObject& root_inlettura = jsonBuffer_inlettura.parseObject(json);
+  if (!root_inlettura.success()) {
     Serial.println("parseObject() failed");
+    return 0;
   }
-
-  return iValue;
+  //leggo il valore e lo parso:
+  int risultatoparsed = root_inlettura[valuedaleggere];
+  Serial.print("Spiffs Json parsed value of "); Serial.print(valuedaleggere); Serial.print(" :");
+  Serial.println(risultatoparsed);
+  sst_spiffs_inlettura.close();
+  return risultatoparsed;
 }
-
 
 

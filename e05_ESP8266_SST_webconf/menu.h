@@ -34,6 +34,8 @@ void resetSystemChanged();
 //void setFlag_initScreen(boolean);
 
 void on_item_ProgCrono_deselected();
+void printMenuBody(Ucglib_ILI9341_18x240x320_HWSPI, boolean);
+void printMenuMove(Ucglib_ILI9341_18x240x320_HWSPI);
 void printMenu(Ucglib_ILI9341_18x240x320_HWSPI);
 void ReadAllSettingsFromPreferences();
 void ReadAllSettingsFromSPIFFS();
