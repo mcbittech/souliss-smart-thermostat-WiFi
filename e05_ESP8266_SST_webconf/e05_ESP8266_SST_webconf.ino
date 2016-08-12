@@ -317,25 +317,15 @@ void loop()
   EXECUTEFAST() {
     UPDATEFAST();
 
-    SHIFT_50ms(0) {
-      //set point attuale
-      setpoint = Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3);
-      //Stampa il setpoint solo se il valore dell'encoder è diverso da quello impostato nel T31
-      switch (SSTPage.actualPage) {
-        case PAGE_MENU :
-          if (!getMenuEnabled()) {
-            SERIAL_OUT.println("from PAGE_MENU to PAGE_HOME");
-            SSTPage.actualPage = PAGE_HOME;
-            //ucg.clearScreen();
-            initScreen();
-            setUIChanged();
-          } else {
 
+
+switch (SSTPage.actualPage) {
+     case PAGE_MENU :    
+     if (getMenuEnabled()) {
             //Bright high if menu enabled
             FADE = 1;
             //Menu Command Section
             SERIAL_OUT.print("getEncoderValue: "); SERIAL_OUT.println(getEncoderValue());
-            SERIAL_OUT.print("encoderValue_prec: "); SERIAL_OUT.println(encoderValue_prec);
             if (getEncoderValue() != encoderValue_prec)
             {
               if (getEncoderValue() > encoderValue_prec) {
@@ -356,7 +346,20 @@ void loop()
               ucg.clearScreen();
               printMenu(ucg);
             }
-          }
+     }
+}      
+
+    SHIFT_50ms(0) {
+      //set point attuale
+      setpoint = Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3);
+      //Stampa il setpoint solo se il valore dell'encoder è diverso da quello impostato nel T31
+      switch (SSTPage.actualPage) {
+        case PAGE_MENU :
+          if (!getMenuEnabled()) {
+            SSTPage.actualPage = PAGE_HOME;
+            initScreen();
+            setUIChanged();
+          } 
           break;
         case PAGE_CRONO :
           break;
@@ -387,10 +390,11 @@ void loop()
     }
 
     SHIFT_110ms(0) {
-
+if (!getMenuEnabled()) {
       if (timerDisplay_setpoint()) {
         //timeout scaduto
         display_layout1_background_black(ucg);
+         SERIAL_OUT.println("setEncoderValue(setpoint);");
         setEncoderValue(setpoint);
       } else {
         //timer non scaduto. Memorizzo
@@ -401,6 +405,7 @@ void loop()
         // Trig the next change of the state
         setSoulissDataChanged();
       }
+    }
     }
 
 
