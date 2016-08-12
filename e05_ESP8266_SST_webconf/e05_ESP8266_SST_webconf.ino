@@ -334,14 +334,18 @@ void loop()
             //Bright high if menu enabled
             FADE = 1;
             //Menu Command Section
+            SERIAL_OUT.print("getEncoderValue: "); SERIAL_OUT.println(getEncoderValue());
+            SERIAL_OUT.print("encoderValue_prec: "); SERIAL_OUT.println(encoderValue_prec);
             if (getEncoderValue() != encoderValue_prec)
             {
               if (getEncoderValue() > encoderValue_prec) {
                 //Menu DOWN
                 myMenu->next();
+                SERIAL_OUT.println("Menu Down");
               } else {
                 //Menu UP
                 myMenu->prev();
+                SERIAL_OUT.println("Menu Up");
               }
               printMenuMove(ucg);
               encoderValue_prec = getEncoderValue();
@@ -373,7 +377,6 @@ void loop()
               display_layout2_Setpoint(ucg, getEncoderValue(), getSoulissSystemState());
             }
           }
-
           encoderValue_prec = getEncoderValue();
           break;
       }
@@ -593,6 +596,7 @@ void loop()
         switch (SSTPage.actualPage) {
           case PAGE_HOME:
             if (getLayout1()) {
+              SERIAL_OUT.println("display_layout1_HomeScreen");
               display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSoulissSystemState());
             } else if (getLayout2()) {
               display_layout2_Setpoint(ucg, getEncoderValue(), getSoulissSystemState());
@@ -602,12 +606,18 @@ void loop()
             //************************************************
             //TOPICS PAGE n.1
             //************************************************
-
+            if (ACTIVATETOPICSPAGE == 1) {
+              displayTopics(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output);
+            }
             break;
+
           case PAGE_TOPICS2:
             //************************************************
             //TOPICS PAGE n.2
             //************************************************
+            if (ACTIVATETOPICSPAGE == 1) {
+              displayTopicsPage2(ucg, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
+            }
             break;
         }
       } else {
