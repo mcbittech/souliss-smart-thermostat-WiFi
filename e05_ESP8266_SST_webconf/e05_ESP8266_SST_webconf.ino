@@ -158,20 +158,32 @@ void encoderFunction() {
 boolean getSoulissSystemState() {
   return memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] & Souliss_T3n_SystemOn;
 }
+
+boolean T_or_H_isNan=false;
 void getTemp() {
   // Read temperature value from DHT sensor and convert from single-precision to half-precision
   temperature = dht.readTemperature();
+  if(!isnan(temperature)){
   //Import temperature into T31 Thermostat
   ImportAnalog(SLOT_THERMOSTAT + 1, &temperature);
   ImportAnalog(SLOT_TEMPERATURE, &temperature);
-
+  }
+  
   // Read humidity value from DHT sensor and convert from single-precision to half-precision
   humidity = dht.readHumidity();
+  if(!isnan(humidity)){
   ImportAnalog(SLOT_HUMIDITY, &humidity);
+  }
 
+if(isnan(temperature) || isnan(humidity)){
+  //if DHT fail then try to reinit
+   dht.begin();
+}
+  
   SERIAL_OUT.print("acquisizione Temperature: "); SERIAL_OUT.println(temperature);
   SERIAL_OUT.print("acquisizione Humidity: "); SERIAL_OUT.println(humidity);
 }
+
 void initScreen() {
   ucg.clearScreen();
   SERIAL_OUT.println("clearScreen ok");
@@ -319,35 +331,35 @@ void loop()
 
 
 
-switch (SSTPage.actualPage) {
-     case PAGE_MENU :    
-     if (getMenuEnabled()) {
-            //Bright high if menu enabled
-            FADE = 1;
-            //Menu Command Section
-            SERIAL_OUT.print("getEncoderValue: "); SERIAL_OUT.println(getEncoderValue());
-            if (getEncoderValue() != encoderValue_prec)
-            {
-              if (getEncoderValue() > encoderValue_prec) {
-                //Menu DOWN
-                myMenu->next();
-                SERIAL_OUT.println("Menu Down");
-              } else {
-                //Menu UP
-                myMenu->prev();
-                SERIAL_OUT.println("Menu Up");
-              }
-              printMenuMove(ucg);
-              encoderValue_prec = getEncoderValue();
+    switch (SSTPage.actualPage) {
+      case PAGE_MENU :
+        if (getMenuEnabled()) {
+          //Bright high if menu enabled
+          FADE = 1;
+          //Menu Command Section
+          SERIAL_OUT.print("getEncoderValue: "); SERIAL_OUT.println(getEncoderValue());
+          if (getEncoderValue() != encoderValue_prec)
+          {
+            if (getEncoderValue() > encoderValue_prec) {
+              //Menu DOWN
+              myMenu->next();
+              SERIAL_OUT.println("Menu Down");
+            } else {
+              //Menu UP
+              myMenu->prev();
+              SERIAL_OUT.println("Menu Up");
             }
-            if (!digitalRead(ENCODER_SWITCH)) {
-              //IF MENU ENABLED
-              myMenu->select(true);
-              ucg.clearScreen();
-              printMenu(ucg);
-            }
-     }
-}      
+            printMenuMove(ucg);
+            encoderValue_prec = getEncoderValue();
+          }
+          if (!digitalRead(ENCODER_SWITCH)) {
+            //IF MENU ENABLED
+            myMenu->select(true);
+            ucg.clearScreen();
+            printMenu(ucg);
+          }
+        }
+    }
 
     SHIFT_50ms(0) {
       //set point attuale
@@ -359,7 +371,7 @@ switch (SSTPage.actualPage) {
             SSTPage.actualPage = PAGE_HOME;
             initScreen();
             setUIChanged();
-          } 
+          }
           break;
         case PAGE_CRONO :
           break;
@@ -390,22 +402,21 @@ switch (SSTPage.actualPage) {
     }
 
     SHIFT_110ms(0) {
-if (!getMenuEnabled()) {
-      if (timerDisplay_setpoint()) {
-        //timeout scaduto
-        display_layout1_background_black(ucg);
-         SERIAL_OUT.println("setEncoderValue(setpoint);");
-        setEncoderValue(setpoint);
-      } else {
-        //timer non scaduto. Memorizzo
-        setpoint = getEncoderValue();
-        //memorizza il setpoint nel T31
-        setSetpoint(setpoint);
+      if (!getMenuEnabled()) {
+        if (timerDisplay_setpoint()) {
+          //timeout scaduto
+          display_layout1_background_black(ucg);
+          setEncoderValue(setpoint);
+        } else {
+          //timer non scaduto. Memorizzo
+          setpoint = getEncoderValue();
+          //memorizza il setpoint nel T31
+          setSetpoint(setpoint);
 
-        // Trig the next change of the state
-        setSoulissDataChanged();
+          // Trig the next change of the state
+          setSoulissDataChanged();
+        }
       }
-    }
     }
 
 
@@ -495,6 +506,7 @@ if (!getMenuEnabled()) {
           SERIAL_OUT.println("Crono");
           ucg.clearScreen();
           drawCrono(ucg);
+          SERIAL_OUT.println("drawCrono ok");
           menu = 1;
           while (menu == 1 && exitmainmenu() == 0) {
             setDay(ucg);
