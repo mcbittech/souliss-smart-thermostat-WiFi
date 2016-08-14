@@ -18,12 +18,12 @@
 #include "FS.h" //SPIFFS
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
-
 #include <DHT.h>
 
 // Configure the Souliss framework
 #include "bconf/MCU_ESP8266.h"              /** Load the code directly on the ESP8266 */
 #include "preferences.h"
+#include "multiClick.h" 
 
 #if(DYNAMIC_CONNECTION)
 #include "conf/RuntimeGateway.h"            // This node is a Peer and can became a Gateway at runtime
@@ -69,15 +69,6 @@ float encoderValue_prec = 0;
 #include <SPI.h>
 #include <Arduino.h>
 #include "Ucglib.h"
-
-//BUTTON GPIO0
-boolean reading;
-boolean buttonState = LOW;
-long lastDebounceTime = 0;
-boolean lastReadingState = HIGH;
-
-long debounceDelay = 50;
-
 
 int backLEDvalue = 0;
 int backLEDvalueHIGH = BRIGHT_MAX;
@@ -159,27 +150,27 @@ boolean getSoulissSystemState() {
   return memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] & Souliss_T3n_SystemOn;
 }
 
-boolean T_or_H_isNan=false;
+boolean T_or_H_isNan = false;
 void getTemp() {
   // Read temperature value from DHT sensor and convert from single-precision to half-precision
   temperature = dht.readTemperature();
-  if(!isnan(temperature)){
-  //Import temperature into T31 Thermostat
-  ImportAnalog(SLOT_THERMOSTAT + 1, &temperature);
-  ImportAnalog(SLOT_TEMPERATURE, &temperature);
-  }
-  
-  // Read humidity value from DHT sensor and convert from single-precision to half-precision
-  humidity = dht.readHumidity();
-  if(!isnan(humidity)){
-  ImportAnalog(SLOT_HUMIDITY, &humidity);
+  if (!isnan(temperature)) {
+    //Import temperature into T31 Thermostat
+    ImportAnalog(SLOT_THERMOSTAT + 1, &temperature);
+    ImportAnalog(SLOT_TEMPERATURE, &temperature);
   }
 
-if(isnan(temperature) || isnan(humidity)){
-  //if DHT fail then try to reinit
-   dht.begin();
-}
-  
+  // Read humidity value from DHT sensor and convert from single-precision to half-precision
+  humidity = dht.readHumidity();
+  if (!isnan(humidity)) {
+    ImportAnalog(SLOT_HUMIDITY, &humidity);
+  }
+
+  if (isnan(temperature) || isnan(humidity)) {
+    //if DHT fail then try to reinit
+    dht.begin();
+  }
+
   SERIAL_OUT.print("acquisizione Temperature: "); SERIAL_OUT.println(temperature);
   SERIAL_OUT.print("acquisizione Humidity: "); SERIAL_OUT.println(humidity);
 }
@@ -423,27 +414,13 @@ void loop()
     SHIFT_110ms(4) {
       //SWITCH ENCODER
       //Al click in base al valore attuale di SSTPage, si imposta la pagina successiva
-      //Debounce
-      reading = digitalRead(ENCODER_SWITCH);
 
-      if (reading == LOW) {
-        if (lastReadingState == LOW) {
-          //non fa niente
-          buttonState = LOW;
-
-        } else {
-          if ((millis() - lastDebounceTime) > debounceDelay) {
-            buttonState = HIGH;
-            lastDebounceTime = millis();
-          }
-        }
-      } else {
-        lastDebounceTime = millis();
-        buttonState = LOW;
-      }
-      lastReadingState = reading;
-
-      if (buttonState) {
+      int b = checkButton(ENCODER_SWITCH);
+      if (b==2) SERIAL_OUT.println("Double Click");
+   if (b == 3) SERIAL_OUT.println("Hold");
+   if (b == 4) SERIAL_OUT.println("Long Hold");
+   
+      if (b == 1) {
         switch (SSTPage.actualPage) {
           case PAGE_HOME:
             if (ACTIVATETOPICSPAGE > 0) {
