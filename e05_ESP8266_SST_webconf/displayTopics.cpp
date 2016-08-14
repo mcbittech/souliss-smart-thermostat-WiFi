@@ -51,7 +51,7 @@ void display_print_C1(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVal) {
   //  ucg.clearScreen();
 
   printNumber(ucg, fVal, C1_AREA_UNITY, C1_AREA_TEXT);
-  SERIAL_OUT.print("C1_AREA: "); SERIAL_OUT.print(fVal); SERIAL_OUT.print(C1_AREA_UNITY); SERIAL_OUT.println(C1_AREA_TEXT);
+ // SERIAL_OUT.print("C1_AREA: "); SERIAL_OUT.print(fVal); SERIAL_OUT.print(C1_AREA_UNITY); SERIAL_OUT.println(C1_AREA_TEXT);
 }
 
 float fPrecC2;
@@ -70,7 +70,7 @@ void display_print_C2(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVal) {
 
   printNumber(ucg, fVal, C2_AREA_UNITY, C2_AREA_TEXT);
 
-  SERIAL_OUT.print("C2_AREA: "); SERIAL_OUT.print(fVal); SERIAL_OUT.print(C2_AREA_UNITY); SERIAL_OUT.println(C2_AREA_TEXT);
+//  SERIAL_OUT.print("C2_AREA: "); SERIAL_OUT.print(fVal); SERIAL_OUT.print(C2_AREA_UNITY); SERIAL_OUT.println(C2_AREA_TEXT);
 }
 
 
@@ -91,7 +91,7 @@ void display_print_C3(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVal) {
 
   printNumber(ucg, fVal, C3_AREA_UNITY, C3_AREA_TEXT);
 
-  SERIAL_OUT.print("C3_AREA: "); SERIAL_OUT.print(fVal); SERIAL_OUT.print(C3_AREA_UNITY); SERIAL_OUT.println(C3_AREA_TEXT);
+//  SERIAL_OUT.print("C3_AREA: "); SERIAL_OUT.print(fVal); SERIAL_OUT.print(C3_AREA_UNITY); SERIAL_OUT.println(C3_AREA_TEXT);
 }
 float fPrecC4;
 void display_print_C4(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVal) {
@@ -110,7 +110,7 @@ void display_print_C4(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVal) {
 
   printNumber(ucg, fVal, C4_AREA_UNITY, C4_AREA_TEXT);
 
-  SERIAL_OUT.print("C4_AREA: "); SERIAL_OUT.print(fVal); SERIAL_OUT.print(C4_AREA_UNITY); SERIAL_OUT.println(C4_AREA_TEXT);
+ // SERIAL_OUT.print("C4_AREA: "); SERIAL_OUT.print(fVal); SERIAL_OUT.print(C4_AREA_UNITY); SERIAL_OUT.println(C4_AREA_TEXT);
 }
 
 float fPrecC5;
@@ -130,7 +130,7 @@ void display_print_C5(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVal) {
 
   printNumber(ucg, fVal, C5_AREA_UNITY, C5_AREA_TEXT);
 
-  SERIAL_OUT.print("C5_AREA: "); SERIAL_OUT.print(fVal); SERIAL_OUT.print(C5_AREA_UNITY); SERIAL_OUT.println(C5_AREA_TEXT);
+//  SERIAL_OUT.print("C5_AREA: "); SERIAL_OUT.print(fVal); SERIAL_OUT.print(C5_AREA_UNITY); SERIAL_OUT.println(C5_AREA_TEXT);
 }
 
 float fPrecC6;
@@ -151,7 +151,7 @@ void display_print_C6(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVal) {
 
   printNumber(ucg, fVal, C6_AREA_UNITY, C6_AREA_TEXT);
 
-  SERIAL_OUT.print("C6_AREA: "); SERIAL_OUT.print(fVal); SERIAL_OUT.print(C6_AREA_UNITY); SERIAL_OUT.println(C6_AREA_TEXT);
+ // SERIAL_OUT.print("C6_AREA: "); SERIAL_OUT.print(fVal); SERIAL_OUT.print(C6_AREA_UNITY); SERIAL_OUT.println(C6_AREA_TEXT);
 }
 
 float fC1_Value, fC2_Value, fC3_Value, fC4_Value, fC5_Value, fC6_Value;
@@ -160,7 +160,6 @@ float fPrecC1_Value, fPrecC2_Value, fPrecC3_Value, fPrecC4_Value, fPrecC5_Value,
 
 void displayTopics(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fC1_Value, float fC2_Value, float fC3_Value) {
   //se uno dei valori è diverso dal precedente allora ripulisco lo schermo
-  SERIAL_OUT.println("displayTopics");
   //fa in modo che sia fatto un cleanscreen del setpoint, al prossimo cambio pagina
   setOnetime_clear_SetpointPage();
   if ( getUIChanged() || fPrecC1_Value != fC1_Value || fPrecC2_Value != fC2_Value ||  fPrecC3_Value != fC3_Value) {
@@ -178,7 +177,6 @@ void displayTopics(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fC1_Value, float f
 }
 void displayTopicsPage2(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fC4_Value, float fC5_Value, float fC6_Value) {
   //se uno dei valori è diverso dal precedente allora ripulisco lo schermo
-  SERIAL_OUT.println("displayTopics page2");
   //fa in modo che sia fatto un cleanscreen del setpoint, al prossimo cambio pagina
   setOnetime_clear_SetpointPage();
   if ( getUIChanged() || fPrecC4_Value != fC4_Value || fPrecC5_Value != fC5_Value ||  fPrecC6_Value != fC6_Value) {

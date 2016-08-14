@@ -23,7 +23,7 @@
 // Configure the Souliss framework
 #include "bconf/MCU_ESP8266.h"              /** Load the code directly on the ESP8266 */
 #include "preferences.h"
-#include "multiClick.h" 
+#include "multiClick.h"
 
 #if(DYNAMIC_CONNECTION)
 #include "conf/RuntimeGateway.h"            // This node is a Peer and can became a Gateway at runtime
@@ -61,6 +61,7 @@ Page SSTPage;
 DHT dht(DHTPIN, DHTTYPE);
 float temperature = 0;
 float humidity = 0;
+float fVal = 0;
 float setpoint = 0;
 float encoderValue_prec = 0;
 
@@ -153,26 +154,30 @@ boolean getSoulissSystemState() {
 boolean T_or_H_isNan = false;
 void getTemp() {
   // Read temperature value from DHT sensor and convert from single-precision to half-precision
-  temperature = dht.readTemperature();
-  if (!isnan(temperature)) {
+  fVal = dht.readTemperature();
+  SERIAL_OUT.print("acquisizione Temperature: "); SERIAL_OUT.println(fVal);
+  if (!isnan(fVal)) {
+    temperature = fVal; //memorizza temperatura se non è Not A Number
     //Import temperature into T31 Thermostat
     ImportAnalog(SLOT_THERMOSTAT + 1, &temperature);
     ImportAnalog(SLOT_TEMPERATURE, &temperature);
+  } else {
+    //if DHT fail then try to reinit
+    dht.begin();
+    SERIAL_OUT.println(" dht.begin();");
   }
 
   // Read humidity value from DHT sensor and convert from single-precision to half-precision
-  humidity = dht.readHumidity();
-  if (!isnan(humidity)) {
+  fVal = dht.readHumidity();
+  SERIAL_OUT.print("acquisizione Humidity: "); SERIAL_OUT.println(fVal);
+  if (!isnan(fVal)) {
+    fVal = humidity;
     ImportAnalog(SLOT_HUMIDITY, &humidity);
-  }
-
-  if (isnan(temperature) || isnan(humidity)) {
+  } else {
     //if DHT fail then try to reinit
     dht.begin();
+    SERIAL_OUT.println(" dht.begin();");
   }
-
-  SERIAL_OUT.print("acquisizione Temperature: "); SERIAL_OUT.println(temperature);
-  SERIAL_OUT.print("acquisizione Humidity: "); SERIAL_OUT.println(humidity);
 }
 
 void initScreen() {
@@ -320,15 +325,12 @@ void loop()
   EXECUTEFAST() {
     UPDATEFAST();
 
-
-
     switch (SSTPage.actualPage) {
       case PAGE_MENU :
         if (getMenuEnabled()) {
           //Bright high if menu enabled
           FADE = 1;
           //Menu Command Section
-          SERIAL_OUT.print("getEncoderValue: "); SERIAL_OUT.println(getEncoderValue());
           if (getEncoderValue() != encoderValue_prec)
           {
             if (getEncoderValue() > encoderValue_prec) {
@@ -416,10 +418,10 @@ void loop()
       //Al click in base al valore attuale di SSTPage, si imposta la pagina successiva
 
       int b = checkButton(ENCODER_SWITCH);
-      if (b==2) SERIAL_OUT.println("Double Click");
-   if (b == 3) SERIAL_OUT.println("Hold");
-   if (b == 4) SERIAL_OUT.println("Long Hold");
-   
+      if (b == 2) SERIAL_OUT.println("Double Click");
+      if (b == 3) SERIAL_OUT.println("Hold");
+      if (b == 4) SERIAL_OUT.println("Long Hold");
+
       if (b == 1) {
         switch (SSTPage.actualPage) {
           case PAGE_HOME:
@@ -520,7 +522,7 @@ void loop()
       }
     }
 
-    SHIFT_210ms(10) {   // We process the logic and relevant input and output
+    SHIFT_210ms(2) {   // We process the logic and relevant input and output
       //*************************************************************************
       //*************************************************************************
       Logic_Thermostat(SLOT_THERMOSTAT);
@@ -581,7 +583,7 @@ void loop()
     }
 
 
-    SHIFT_910ms(0) {
+    SHIFT_210ms(3) {
       if (timerDisplay_setpoint()) {
         //if timeout read value of T19
         backLEDvalueLOW =  memory_map[MaCaco_OUT_s + SLOT_BRIGHT_DISPLAY + 1];
@@ -590,7 +592,6 @@ void loop()
         switch (SSTPage.actualPage) {
           case PAGE_HOME:
             if (getLayout1()) {
-              SERIAL_OUT.println("display_layout1_HomeScreen");
               display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSoulissSystemState());
             } else if (getLayout2()) {
               display_layout2_Setpoint(ucg, getEncoderValue(), getSoulissSystemState());
