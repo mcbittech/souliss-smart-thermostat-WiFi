@@ -159,6 +159,19 @@ void display_layout1_print_B3(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text, 
   ucg.print("°");
 }
 
+void display_layout1_print_B3_ChildLock(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text) {
+  SERIAL_OUT.println("display_print_B4 [ChildClocked]");
+  SERIAL_OUT.println("display_print_B3");
+  ucg.setFontMode(UCG_FONT_MODE_SOLID);
+  ucg.setFont(FONT_SMALL);
+  ucg.setFontPosBaseline();
+  String str = text;
+  const char * c = str.c_str();
+  setRosso(&ucg);
+  ucg.setPrintPos(ucg.getWidth() - ucg.getStrWidth(c) - 5, ucg.getHeight() - 5);
+  ucg.print(text);
+}
+
 void display_layout1_print_B4_Hum(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text, float temp) {
   SERIAL_OUT.println("display_print_B4 [Humidity]");
   SERIAL_OUT.println("display_print_B4 [Humidity]");
@@ -313,9 +326,9 @@ void display_layout1_print_B1_datetime(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
 float temp_prec = 0;
 float setpoint_prec = 0;
 
-void display_layout1_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp, float hum, float setpoint, boolean bSystemOn) {
+void display_layout1_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp, float hum, float setpoint, boolean bSystemOn, boolean bChildLock) {
   //ripristina la variabile bool. Viene fatto il clear della pagina ogni volta soltato una volta
-    setOnetime_clear_SetpointPage();
+  setOnetime_clear_SetpointPage();
   //uso flag_onetime per visualizzare almeno una volta la schermata, anche in assenza di variazione di temperatura
   //flag_onetime_HomeScreen è rimessa a false display_layout1_setpointPage
   //flag_initScreen è impostato true all'uscita dal menu
@@ -325,7 +338,7 @@ void display_layout1_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp,
       resetUIChanged();
       flag_onetime_HomeScreen = true;
     }
-    
+
 
     ucg.setFontMode(UCG_FONT_MODE_SOLID);
 
@@ -333,8 +346,13 @@ void display_layout1_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp,
 
     temp_prec = temp;
     setpoint_prec = setpoint;
-   
-    display_layout1_print_B3(ucg, SETPOINT_TEXT, setpoint);
+
+    if (!bChildLock) {
+      display_layout1_print_B3(ucg, SETPOINT_TEXT, setpoint);
+    } else
+    {
+      display_layout1_print_B3_ChildLock(ucg, CHILDLOCK_TEXT);
+    }
 
     if (bSystemOn) {
       display_layout1_print_B4_Hum(ucg, HUM_TEXT, hum) ;

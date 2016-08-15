@@ -19,6 +19,8 @@
 #define TEMP_TEXT "T: "
 #define HUM_TEXT "H: "
 #define SYSTEM_OFF_TEXT "SPENTO"
+#define CHILDLOCK_TEXT "LOCKED"
+
 
 
 //MENU

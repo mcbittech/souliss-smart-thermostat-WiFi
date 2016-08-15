@@ -84,6 +84,7 @@ float fTopic_C4_Output;
 float fTopic_C5_Output;
 float fTopic_C6_Output;
 
+boolean bChildLock = false;
 
 // Menu
 MenuSystem* myMenu;
@@ -152,6 +153,7 @@ boolean getSoulissSystemState() {
 }
 
 boolean T_or_H_isNan = false;
+boolean bFlagBegin = false;
 void getTemp() {
   // Read temperature value from DHT sensor and convert from single-precision to half-precision
   fVal = dht.readTemperature();
@@ -162,18 +164,20 @@ void getTemp() {
     ImportAnalog(SLOT_THERMOSTAT + 1, &temperature);
     ImportAnalog(SLOT_TEMPERATURE, &temperature);
   } else {
-    //if DHT fail then try to reinit
-    dht.begin();
-    SERIAL_OUT.println(" dht.begin();");
+    bFlagBegin = true;
   }
 
   // Read humidity value from DHT sensor and convert from single-precision to half-precision
   fVal = dht.readHumidity();
   SERIAL_OUT.print("acquisizione Humidity: "); SERIAL_OUT.println(fVal);
   if (!isnan(fVal)) {
-    fVal = humidity;
+    humidity = fVal;
     ImportAnalog(SLOT_HUMIDITY, &humidity);
   } else {
+    bFlagBegin = true;
+  }
+
+  if ( bFlagBegin) {
     //if DHT fail then try to reinit
     dht.begin();
     SERIAL_OUT.println(" dht.begin();");
@@ -186,7 +190,7 @@ void initScreen() {
   if (getLayout1()) {
     SERIAL_OUT.println("HomeScreen Layout 1");
 
-    display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSoulissSystemState());
+    display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSoulissSystemState(), bChildLock);
     getTemp();
   }
   else if (getLayout2()) {
@@ -327,7 +331,7 @@ void loop()
 
     switch (SSTPage.actualPage) {
       case PAGE_MENU :
-        if (getMenuEnabled()) {
+        if (getMenuEnabled() && !bChildLock) {
           //Bright high if menu enabled
           FADE = 1;
           //Menu Command Section
@@ -345,13 +349,14 @@ void loop()
             printMenuMove(ucg);
             encoderValue_prec = getEncoderValue();
           }
-          if (!digitalRead(ENCODER_SWITCH)) {
-            //IF MENU ENABLED
-            myMenu->select(true);
-            ucg.clearScreen();
-            printMenu(ucg);
-          }
         }
+        if (getMenuEnabled() && !digitalRead(ENCODER_SWITCH)) {
+          //IF MENU ENABLED
+          myMenu->select(true);
+          ucg.clearScreen();
+          printMenu(ucg);
+        }
+
     }
 
     SHIFT_50ms(0) {
@@ -369,7 +374,7 @@ void loop()
         case PAGE_CRONO :
           break;
         default:
-          if (arrotonda(getEncoderValue()) != arrotonda(encoderValue_prec)) {
+          if (arrotonda(getEncoderValue()) != arrotonda(encoderValue_prec) && !bChildLock) {
             FADE = 1;
             //TICK TIMER
             timerDisplay_setpoint_Tick();
@@ -419,7 +424,13 @@ void loop()
 
       int b = checkButton(ENCODER_SWITCH);
       if (b == 2) SERIAL_OUT.println("Double Click");
-      if (b == 3) SERIAL_OUT.println("Hold");
+      if (b == 3) {
+        SERIAL_OUT.println("Hold");
+        bChildLock = !bChildLock;
+        SERIAL_OUT.print("Child Lock: "); SERIAL_OUT.println(bChildLock);
+        ucg.clearScreen();
+        setUIChanged();
+      }
       if (b == 4) SERIAL_OUT.println("Long Hold");
 
       if (b == 1) {
@@ -592,7 +603,7 @@ void loop()
         switch (SSTPage.actualPage) {
           case PAGE_HOME:
             if (getLayout1()) {
-              display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSoulissSystemState());
+              display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSoulissSystemState(), bChildLock);
             } else if (getLayout2()) {
               display_layout2_Setpoint(ucg, getEncoderValue(), getSoulissSystemState());
             }
