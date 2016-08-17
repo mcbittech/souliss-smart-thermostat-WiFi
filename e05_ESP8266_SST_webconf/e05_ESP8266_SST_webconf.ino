@@ -320,6 +320,7 @@ void setup()
   // Set Hostname.
   String hostname(HOSTNAME);
   hostname += String(ESP.getChipId(), HEX);
+  SERIAL_OUT.print("set OTA hostname: ");SERIAL_OUT.println(hostname);
   ArduinoOTA.setHostname((const char *)hostname.c_str());
   ArduinoOTA.begin();
 

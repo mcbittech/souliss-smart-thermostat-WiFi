@@ -343,7 +343,6 @@ void initMenu() {
   muMenu_Crono.add_item(&muMenu_mi_Crono_LEARN, &on_item_cronoLEARN_selected);
   // if (bCrono) {
   muMenu.add_item(&muMenu_mi_ProgCrono, &on_item_ProgCrono_selected);
-  SERIAL_OUT.println("Aggiungo la voce di menu ProgCrono");
   // }
 
   muMenu.add_menu(&muMenu_System);
