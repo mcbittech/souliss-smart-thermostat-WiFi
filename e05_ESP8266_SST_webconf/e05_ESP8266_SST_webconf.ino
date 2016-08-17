@@ -502,6 +502,8 @@ void loop()
           drawCrono(ucg);
           SERIAL_OUT.println("drawCrono ok");
           menu = 1;
+          //save encoder value before crono programmation
+          setpoint = getEncoderValue();
           while (menu == 1 && exitmainmenu() == 0) {
             setDay(ucg);
             drawBoxes(ucg);
@@ -515,6 +517,8 @@ void loop()
               menu = 0;
             }
           }
+          //restore encoder value
+          setEncoderValue(setpoint);
         }
       }
     }
