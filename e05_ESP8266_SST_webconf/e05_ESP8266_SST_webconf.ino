@@ -12,7 +12,7 @@
 #include "SoulissFramework.h"
 
 #include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
+//#include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <EEPROM.h>
 #include "FS.h" //SPIFFS
@@ -317,7 +317,10 @@ void setup()
 
 
   // Init the OTA
-  ArduinoOTA.setHostname("M10-SST-Thermostat");
+  // Set Hostname.
+  String hostname(HOSTNAME);
+  hostname += String(ESP.getChipId(), HEX);
+  ArduinoOTA.setHostname((const char *)hostname.c_str());
   ArduinoOTA.begin();
 
   // Init HomeScreen
@@ -703,8 +706,7 @@ void loop()
 
   // Look for a new sketch to update over the air
   ArduinoOTA.handle();
-
-
+  yield();
 }
 
 

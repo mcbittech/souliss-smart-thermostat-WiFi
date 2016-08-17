@@ -72,7 +72,7 @@ time_t getNtpTime()
        else 
        {
        SERIAL_OUT.print("This is NTP Response with tzone and tDayLightSavingTime  : ");SERIAL_OUT.println(secsSince1900 - 2208988800UL + tZonetemp + tDayLighttemp * SECS_PER_HOUR);
-       return secsSince1900 - 2208988800UL + tZonetemp + tDayLighttemp * SECS_PER_HOUR;
+       return secsSince1900 - 2208988800UL + tZonetemp + 1 * SECS_PER_HOUR;
        } 
     }
   }
