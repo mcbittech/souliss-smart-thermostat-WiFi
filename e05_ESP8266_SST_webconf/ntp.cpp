@@ -63,16 +63,17 @@ time_t getNtpTime()
       //return secsSince1900 - 2208988800UL + read_eeprom_byte(9) * SECS_PER_HOUR;
       int tZonetemp =read_spiffs_prefs("Tzone");
       int tDayLighttemp = read_spiffs_prefs("DayLightSavingTime");
-      
+
       if (tDayLighttemp == 0)
        {
-       SERIAL_OUT.print("This is NTP Response with tzone : ");SERIAL_OUT.println(secsSince1900 - 2208988800UL + tZonetemp * SECS_PER_HOUR);
+       SERIAL_OUT.print("This is NTP Response with tzone: ");SERIAL_OUT.print(tZonetemp);SERIAL_OUT.println(" and tDayLighttemp OFF");
+       
        return secsSince1900 - 2208988800UL + tZonetemp * SECS_PER_HOUR;       
        }
        else 
        {
-       SERIAL_OUT.print("This is NTP Response with tzone and tDayLightSavingTime  : ");SERIAL_OUT.println(secsSince1900 - 2208988800UL + tZonetemp + tDayLighttemp * SECS_PER_HOUR);
-       return secsSince1900 - 2208988800UL + tZonetemp + 1 * SECS_PER_HOUR;
+       SERIAL_OUT.print("This is NTP Response with tzone: ");SERIAL_OUT.print(tZonetemp);SERIAL_OUT.println(" and tDayLighttemp ON");
+       return secsSince1900 - 2208988800UL + (tZonetemp + 1) * SECS_PER_HOUR;
        } 
     }
   }

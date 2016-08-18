@@ -5,6 +5,7 @@
 #include "language.h"
 #include "Ucglib.h"
 #include "crono.h"
+#include "ntp.h"
 #include "read_save.h"
 
 
@@ -193,6 +194,7 @@ void on_item_Timezone0_selected(MenuItem* p_menu_item)
   SERIAL_OUT.println("on_item_Timezone0_selected");
   tZone = 0;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
+  initNTP();
 }
 
 void on_item_Timezone1_selected(MenuItem* p_menu_item)
@@ -200,25 +202,28 @@ void on_item_Timezone1_selected(MenuItem* p_menu_item)
   SERIAL_OUT.println("on_item_Timezone1_selected");
   tZone = 1;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
+  initNTP();
 }
 void on_item_Timezone2_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_Timezone2_selected");
   tZone = 2;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
+  initNTP();
 }
 void on_item_Timezone3_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_Timezone3_selected");
   tZone = 3;
-
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
+  initNTP();
 }
 void on_item_Timezone4_selected(MenuItem* p_menu_item)
 {
   SERIAL_OUT.println("on_item_Timezone4_selected");
   tZone = 4;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
+  initNTP();
 }
 
 void on_item_DayLightSavingTimeON_selected(MenuItem* p_menu_item)
@@ -226,6 +231,7 @@ void on_item_DayLightSavingTimeON_selected(MenuItem* p_menu_item)
   SERIAL_OUT.println("on_item_DayLightSavingTimeON");
   bDayLightSavingTime = true;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
+  initNTP();
 }
 
 void on_item_DaylightSavingTimeOFF_selected(MenuItem* p_menu_item)
@@ -233,6 +239,7 @@ void on_item_DaylightSavingTimeOFF_selected(MenuItem* p_menu_item)
   SERIAL_OUT.println("on_item_DaylightSavingTimeOFF");
   bDayLightSavingTime = false;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
+   initNTP();
 }
 
 
