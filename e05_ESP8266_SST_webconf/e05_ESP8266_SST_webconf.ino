@@ -320,7 +320,7 @@ void setup()
   // Set Hostname.
   String hostname(HOSTNAME);
   hostname += String(ESP.getChipId(), HEX);
-  SERIAL_OUT.print("set OTA hostname: ");SERIAL_OUT.println(hostname);
+  SERIAL_OUT.print("set OTA hostname: "); SERIAL_OUT.println(hostname);
   ArduinoOTA.setHostname((const char *)hostname.c_str());
   ArduinoOTA.begin();
 
@@ -656,22 +656,6 @@ void loop()
     UPDATESLOW();
 
     SLOW_50s() {
-      if (getLayout2()) {
-        display_layout2_print_circle_white(ucg);
-        display_layout2_print_circle_black(ucg);
-        display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
-        display_layout2_print_datetime(ucg);
-        ucg.setColor(0, 0, 0);       // black
-        ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
-        ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
-        ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
-        ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
-        yield();
-        display_layout2_print_circle_green(ucg);
-        if (ACTIVATETOPICSPAGE == 1) {
-          displayTopicsHomePageLayout2(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
-        }
-      }
       getTemp();
       if (getCrono()) {
         Serial.println("CRONO: aggiornamento");
@@ -679,17 +663,41 @@ void loop()
         setEncoderValue(checkNTPcrono(ucg));
         Serial.print("CRONO: setpoint: "); Serial.println(setpoint);
       }
+
+
+      switch (SSTPage.actualPage) {
+        case PAGE_HOME:
+          if (getLayout2()) {
+            display_layout2_print_circle_white(ucg);
+            display_layout2_print_circle_black(ucg);
+            display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
+            display_layout2_print_datetime(ucg);
+            ucg.setColor(0, 0, 0);       // black
+            ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
+            ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
+            ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
+            ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
+            yield();
+            display_layout2_print_circle_green(ucg);
+            if (ACTIVATETOPICSPAGE == 1) {
+              displayTopicsHomePageLayout2(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
+            }
+          }
+      }
     }
 
 
-    SLOW_70s() {
 
-      if (getLayout1()) {
-        //
-      } else if (getLayout2()) {
-        calcoloAndamento(ucg, temperature);
-        display_layout2_print_datetime(ucg);
-        display_layout2_print_circle_green(ucg);
+    SLOW_70s() {
+      switch (SSTPage.actualPage) {
+        case PAGE_HOME:
+          if (getLayout1()) {
+            //
+          } else if (getLayout2()) {
+            calcoloAndamento(ucg, temperature);
+            display_layout2_print_datetime(ucg);
+            display_layout2_print_circle_green(ucg);
+          }
       }
     }
 

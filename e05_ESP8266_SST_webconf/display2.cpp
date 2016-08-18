@@ -32,7 +32,7 @@ int dopovirgola2(const float v)
 void display_layout2_Setpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint, boolean bSystemOn) {
   if (bSystemOn){
     if(setpoint!=oldsetpoint){
-      SERIAL_OUT.print("Refresh Setpoint ");
+     // SERIAL_OUT.print("Refresh Setpoint ");
       ucg.setColor(0, 255, 255, 255);     // Bianco
       ucg.setFontMode(UCG_FONT_MODE_SOLID);
       ucg.setPrintPos(25, 52);
@@ -41,11 +41,11 @@ void display_layout2_Setpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoin
       ucg.setFont(ucg_font_profont11_mr);
       ucg.setPrintPos(135, 36);
       ucg.print("o");
-      SERIAL_OUT.print("new setpoint: "); SERIAL_OUT.print(setpoint);SERIAL_OUT.print("  old setpoint: "); SERIAL_OUT.println(oldsetpoint);
+   //   SERIAL_OUT.print("new setpoint: "); SERIAL_OUT.print(setpoint);SERIAL_OUT.print("  old setpoint: "); SERIAL_OUT.println(oldsetpoint);
       oldsetpoint=setpoint;
       }
     }else{
-    SERIAL_OUT.print("Refresh Setpoint system OFF");
+  //  SERIAL_OUT.print("Refresh Setpoint system OFF");
     ucg.setColor(255, 0, 0);            // Rosso
     ucg.setFontMode(UCG_FONT_MODE_SOLID);
     ucg.setPrintPos(30, 52);
