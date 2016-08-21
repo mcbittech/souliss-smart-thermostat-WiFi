@@ -11,25 +11,42 @@ boolean bTopicsPageEnabled = false;
 String strVoid = "    "; //4 cifre
 int iPortion = 0;
 int integerPartNumber;
-
+String sTemp;
+int iLenght;
 int getHeightPortion(Ucglib_ILI9341_18x240x320_HWSPI *ucg) {
   return ucg->getHeight() / 3 ;
 }
 void printNumber(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVal, String sUnity, String sText) {
-
+  
   if (fVal == 0) {
-    ucg.print("----");
+    ucg.print("----"); //4 caratteri
   } else {
     integerPartNumber = (int) fVal;
+    sTemp = integerPartNumber;
+    iLenght = 4 - sTemp.length();
+    sTemp = "";
+
     if (fVal - integerPartNumber > 0) {
+      //aggiunge gli spazi necessari per occupare sempre lo spazion di 4 caratteri
+      for (int i = 2; i < iLenght; i++) //considero lo spazio necessario al punto ed al carattere decimale
+      {
+        sTemp = sTemp + " ";
+      }
       //se esiste la parte decimale, ne stampa una sola cifra
+      ucg.print(sTemp);
       ucg.print(arrotonda(fVal), 1);
+
     } else {
+      //aggiunge gli spazi necessari per occupare sempre lo spazion di 4 caratteri
+      for (int i = 0; i < iLenght; i++)
+      {
+        sTemp = sTemp + " ";
+      }
+      sTemp = sTemp + integerPartNumber;
       // omette la parte decimale se è uguale a zero
-      ucg.print(integerPartNumber);
+      ucg.print(sTemp);
     }
   }
-
   ucg.setFont(FONT_BIG_MIN_50_PERCENT);
   ucg.print(sUnity);
   ucg.print(sText);
@@ -159,7 +176,7 @@ float fPrecC1_Value, fPrecC2_Value, fPrecC3_Value, fPrecC4_Value, fPrecC5_Value,
 
 
 void displayTopics(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fC1_Value, float fC2_Value, float fC3_Value) {
-   setOnetime_clear_SetpointPage();
+  setOnetime_clear_SetpointPage();
   if ( getUIChanged()) {
     ucg.clearScreen();
     SERIAL_OUT.println("TOPICS PAGE 1 - ClearScreen");
