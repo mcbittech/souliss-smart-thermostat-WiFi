@@ -596,7 +596,8 @@ void loop()
         // Trig the next change of the state
         setSoulissDataChanged();
         SERIAL_OUT.println("Init Screen");
-        initScreen();
+       setUIChanged();
+        //initScreen();
         resetSystemChanged();
       }
     }
