@@ -35,10 +35,12 @@
 #define MENU_TEXT_LEARN "Autoapprendimento"
 #define MENU_TEXT_CLOCK "Orologio"
 #define MENU_TEXT_BRIGHT "Luminosita'"
-#define MENU_TEXT_SYSTEM "Dispositivo"
+#define MENU_TEXT_SYSTEM_ENABLED "Dispositivo"
 #define MENU_TEXT_LAYOUTS "Layouts"
 #define MENU_TEXT_LAYOUT_1 "Lineare"
 #define MENU_TEXT_LAYOUT_2 "Circolare"
+#define MENU_TEXT_SYSTEM "Sistema"
+#define MENU_TEXT_SYSTEM_1 "Imp.Fabbrica"
 #define MENU_TEXT_TIMEZONE_SET "Timezone"
 #define MENU_TIMEZONE_0 "UTC+0 Eu West,Greenw."
 #define MENU_TIMEZONE_1 "UTC+1 Eu Cent,Italia"
@@ -48,5 +50,3 @@
 #define MENU_TEXT_DAYLIGHTSAVINGTIME_SET "Ora Legale"
 #define MENU_DAYLIGHTSAVINGTIME_ON "ON"
 #define MENU_DAYLIGHTSAVINGTIME_OFF "OFF"
-
-

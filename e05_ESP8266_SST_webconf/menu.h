@@ -21,6 +21,7 @@ boolean getCrono();
 boolean getCronoSet();
 boolean getProgCrono();
 boolean getCronoLearn();
+boolean getDoSystemReset();
 
 boolean getUIChanged();
 boolean getSystemChanged();

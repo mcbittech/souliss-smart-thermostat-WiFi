@@ -8,7 +8,6 @@
 #include "ntp.h"
 #include "read_save.h"
 
-
 boolean bMenuEnabled;
 int iDisplayBright;
 boolean bClock;
@@ -22,6 +21,7 @@ boolean bUIChanged;
 boolean bSystemChanged;
 int tZone;
 boolean bDayLightSavingTime;
+boolean bDoSystemReset=false;
 
 // Menu variables
 MenuSystem ms;
@@ -62,13 +62,16 @@ MenuItem muMenu_mi_Crono_LEARN(MENU_TEXT_LEARN);
 
 MenuItem muMenu_mi_ProgCrono(MENU_TEXT_CRONO_PROGRAM);
 
-Menu muMenu_System(MENU_TEXT_SYSTEM);
-MenuItem muMenu_mi_System_ON(MENU_TEXT_ON);
-MenuItem muMenu_mi_System_OFF(MENU_TEXT_OFF);
+Menu muMenu_SystemEnabled(MENU_TEXT_SYSTEM_ENABLED);
+MenuItem muMenu_SystemEnabled_ON(MENU_TEXT_ON);
+MenuItem muMenu_SystemEnabled_OFF(MENU_TEXT_OFF);
 
 Menu muMenu_Layouts(MENU_TEXT_LAYOUTS);
 MenuItem muMenu_mi_Layouts_1(MENU_TEXT_LAYOUT_1);
 MenuItem muMenu_mi_Layouts_2(MENU_TEXT_LAYOUT_2);
+
+Menu muMenu_System(MENU_TEXT_SYSTEM);
+MenuItem muMenu_mi_System_1(MENU_TEXT_SYSTEM_1);
 
 MenuSystem* getMenu() {
   return &ms;
@@ -119,7 +122,6 @@ void setSystem(boolean bVal) {
     SERIAL_OUT.print("System setted to "); SERIAL_OUT.println(bVal);
     setSystemChanged();
   }
-
 }
 void on_item_MenuExit_selected(MenuItem* p_menu_item)
 {
@@ -239,7 +241,7 @@ void on_item_DaylightSavingTimeOFF_selected(MenuItem* p_menu_item)
   SERIAL_OUT.println("on_item_DaylightSavingTimeOFF");
   bDayLightSavingTime = false;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
-   initNTP();
+  initNTP();
 }
 
 
@@ -284,15 +286,15 @@ void on_item_cronoLEARN_selected(MenuItem* p_menu_item)
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
 }
 
-void on_item_systemON_selected(MenuItem* p_menu_item)
+void on_item_systemEnabledON_selected(MenuItem* p_menu_item)
 {
-  SERIAL_OUT.println("on_item_systemON_selected");
+  SERIAL_OUT.println("on_item_systemEnabledON_selected");
   setSystem(true);
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
 }
-void on_item_systemOFF_selected(MenuItem* p_menu_item)
+void on_item_systemEnabledOFF_selected(MenuItem* p_menu_item)
 {
-  SERIAL_OUT.println("on_item_systemOFF_selected");
+  SERIAL_OUT.println("on_item_systemEnabledOFF_selected");
   setSystem(false);
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
 }
@@ -312,6 +314,13 @@ void on_item_layout2_selected(MenuItem* p_menu_item)
   bLayout2 = true;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
 }
+
+void on_item_system1_selected(MenuItem* p_menu_item)
+{
+  bDoSystemReset=true;
+
+}
+
 
 void initMenu() {
 
@@ -352,15 +361,19 @@ void initMenu() {
   muMenu.add_item(&muMenu_mi_ProgCrono, &on_item_ProgCrono_selected);
   // }
 
-  muMenu.add_menu(&muMenu_System);
-  muMenu_System.add_item(&mm_miBack, &on_itemBack_selected);
-  muMenu_System.add_item(&muMenu_mi_System_ON, &on_item_systemON_selected);
-  muMenu_System.add_item(&muMenu_mi_System_OFF, &on_item_systemOFF_selected);
+  muMenu.add_menu(&muMenu_SystemEnabled);
+  muMenu_SystemEnabled.add_item(&mm_miBack, &on_itemBack_selected);
+  muMenu_SystemEnabled.add_item(&muMenu_SystemEnabled_ON, &on_item_systemEnabledON_selected);
+  muMenu_SystemEnabled.add_item(&muMenu_SystemEnabled_OFF, &on_item_systemEnabledOFF_selected);
 
   muMenu.add_menu(&muMenu_Layouts);
   muMenu_Layouts.add_item(&mm_miBack, &on_itemBack_selected);
   muMenu_Layouts.add_item(&muMenu_mi_Layouts_1, &on_item_layout1_selected);
   muMenu_Layouts.add_item(&muMenu_mi_Layouts_2, &on_item_layout2_selected);
+
+  muMenu.add_menu(&muMenu_System);
+  muMenu_System.add_item(&mm_miBack, &on_itemBack_selected);
+  muMenu_System.add_item(&muMenu_mi_System_1, &on_item_system1_selected);
 
   ms.set_root_menu(&muMenu);
 }
@@ -404,7 +417,7 @@ void printMenuBody(Ucglib_ILI9341_18x240x320_HWSPI ucg, boolean bFlagFirstPrint)
   //One line space
   y = y + y_step;
 
- cp_menu_sel = cp_menu->get_selected();
+  cp_menu_sel = cp_menu->get_selected();
   for (int i = 0; i < cp_menu->get_num_menu_components(); ++i)
   {
     cp_m_comp = cp_menu->get_menu_component(i);
@@ -466,6 +479,10 @@ int getTimeZone() {
 
 int getDaylightSavingTime() {
   return bDayLightSavingTime;
+}
+
+boolean getDoSystemReset() {
+  return bDoSystemReset;
 }
 
 void ReadAllSettingsFromPreferences() {

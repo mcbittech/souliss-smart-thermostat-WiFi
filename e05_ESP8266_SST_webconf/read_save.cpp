@@ -64,3 +64,18 @@ int read_spiffs_prefs(const char*  valuedaleggere) {
 }
 
 
+void spiffs_Reset() {
+  Serial.println("Reset EEPROM");
+
+  Serial.print("SPIFFS Formatting... ");
+
+  if (SPIFFS.format()) {
+    Serial.println("OK");
+  } else {
+    Serial.println("Fail");
+  }
+
+}
+
+
+
