@@ -7,7 +7,7 @@ Wi-Fi Smart Thermostat based on Souliss IoT Framework
 Youtube video:
 https://youtu.be/Pk9kK5DvYXE
 
-[Wiki-How to Compile & Upload](https://github.com/mcbittech/souliss-smart-thermostat-WiFi/wiki/SST---WiFi-Smart-Thermostat-Wiki)
+[Wiki-How to Compile & Upload](https://github.com/mcbittech/souliss-smart-thermostat-WiFi/wiki/SST---WiFi-Souliss-Smart-Thermostat-Wiki)
 
 # Example of layout 2:
 ![layout2](https://github.com/mcbittech/souliss-smart-thermostat-WiFi/blob/master/Libraries-Core-Docs/layout2_assembled.png?raw=true "layout2")
