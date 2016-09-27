@@ -217,95 +217,144 @@ void displayTopicsPage2(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fC4_Value, fl
 
 void displayTopicsHomePageLayout2(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fC1_Value, float fC2_Value, float fC3_Value, float fC4_Value, float fC5_Value, float fC6_Value) {
 
-  SERIAL_OUT.println("displayTopics Home Page Layout2");
-  ucg.setFontMode(UCG_FONT_MODE_SOLID);
-  ucg.setFont(FONT_SMALL);
-  ucg.setFontPosTop();
-  ucg.setFont(ucg_font_helvB12_hf);
-  C1_AREA_TEXT_COLOR_LAYOUT2();
-  ucg.setPrintPos(175, 25);
-  ucg.print(C1_AREA_TEXT);
-  ucg.setFont(ucg_font_helvB14_hf);
-  ucg.setPrintPos(195, 42);
-  C1_COLOR();
-  ucg.print(fC1_Value);
-  if (C1_AREA_UNITY == "°") {
-    ucg.print((char)176);
+  //SERIAL_OUT.println("displayTopics Home Page Layout2");
+          
+          ucg.setFontMode(UCG_FONT_MODE_SOLID);
+          ucg.setFont(FONT_SMALL);
+          ucg.setFontPosTop();
+   
+   if (fPrecC1_Value != fC1_Value) 
+  {     
+          
+          ucg.setFont(ucg_font_helvB12_hf);
+          C1_AREA_TEXT_COLOR_LAYOUT2();
+          ucg.setPrintPos(175, 25);
+          ucg.print(C1_AREA_TEXT);
+          ucg.setFont(ucg_font_helvB14_hf);
+          ucg.setPrintPos(195, 42);
+          ucg.setColor(0,0,0); 
+          ucg.print("          "); //clear old value
+          ucg.setPrintPos(195, 42);
+          C1_COLOR();
+          ucg.print(fC1_Value);
+          if (C1_AREA_UNITY == "°") {
+            ucg.print((char)176);
+          }
+          else {
+            ucg.print(C1_AREA_UNITY);
+          }
+          fPrecC1_Value = fC1_Value;
+ }     
+ if (fPrecC2_Value != fC2_Value)          
+  { 
+          ucg.setFont(ucg_font_helvB12_hf);
+          C2_AREA_TEXT_COLOR_LAYOUT2();
+          ucg.setPrintPos(200, 63);
+          ucg.print(C2_AREA_TEXT);
+          ucg.setFont(ucg_font_helvB14_hf);
+          ucg.setPrintPos(210, 82);
+          ucg.setColor(0,0,0); 
+          ucg.print("          "); //clear old value
+          ucg.setPrintPos(210, 82);
+          C2_COLOR();
+          ucg.print(fC2_Value);
+          if (C2_AREA_UNITY == "°") {
+            ucg.print((char)176);
+          }
+          else {
+            ucg.print(C2_AREA_UNITY);
+          }
+          fPrecC2_Value = fC2_Value;
   }
-  else {
-    ucg.print(C1_AREA_UNITY);
+  if (fPrecC3_Value != fC3_Value)          
+  {     
+          ucg.setFont(ucg_font_helvB12_hf);
+          C3_AREA_TEXT_COLOR_LAYOUT2();
+          ucg.setPrintPos(210, 102);
+          ucg.print(C3_AREA_TEXT);
+          ucg.setFont(ucg_font_helvB14_hf);
+          ucg.setPrintPos(215, 120);
+          ucg.setColor(0,0,0); 
+          ucg.print("          "); //clear old value
+          ucg.setPrintPos(215, 120);
+          C3_COLOR();
+          ucg.print(fC3_Value);
+          if (C3_AREA_UNITY == "°") {
+            ucg.print((char)176);
+          }
+          else {
+            ucg.print(C3_AREA_UNITY);
+          }
+          fPrecC3_Value = fC3_Value;
   }
-  ucg.setFont(ucg_font_helvB12_hf);
-  C2_AREA_TEXT_COLOR_LAYOUT2();
-  ucg.setPrintPos(200, 63);
-  ucg.print(C2_AREA_TEXT);
-  ucg.setFont(ucg_font_helvB14_hf);
-  ucg.setPrintPos(210, 82);
-  C2_COLOR();
-  ucg.print(fC2_Value);
-  if (C2_AREA_UNITY == "°") {
-    ucg.print((char)176);
-  }
-  else {
-    ucg.print(C2_AREA_UNITY);
-  }
-  ucg.setFont(ucg_font_helvB12_hf);
-  C3_AREA_TEXT_COLOR_LAYOUT2();
-  ucg.setPrintPos(210, 102);
-  ucg.print(C3_AREA_TEXT);
-  ucg.setFont(ucg_font_helvB14_hf);
-  ucg.setPrintPos(215, 120);
-  C3_COLOR();
-  ucg.print(fC3_Value);
-  if (C3_AREA_UNITY == "°") {
-    ucg.print((char)176);
-  }
-  else {
-    ucg.print(C3_AREA_UNITY);
-  }
-  ucg.setFont(ucg_font_helvB12_hf);
-  C4_AREA_TEXT_COLOR_LAYOUT2();
-  ucg.setPrintPos(205, 138);
-  ucg.print(C4_AREA_TEXT);
-  ucg.setFont(ucg_font_helvB14_hf);
-  ucg.setPrintPos(205, 155);
-  C4_COLOR();
-  ucg.print(fC4_Value);
-  if (C4_AREA_UNITY == "°") {
-    ucg.print((char)176);
-  }
-  else {
-    ucg.print(C4_AREA_UNITY);
-  }
+  
+if (TOPICSPAGESNUMBER == 2) {
 
-  ucg.setFont(ucg_font_helvB12_hf);
-  C5_AREA_TEXT_COLOR_LAYOUT2();
-  ucg.setPrintPos(193, 173);
-  ucg.print(C5_AREA_TEXT);
-  ucg.setFont(ucg_font_helvB14_hf);
-  ucg.setPrintPos(188, 190);
-  C5_COLOR();
-  ucg.print(fC5_Value);
-  if (C5_AREA_UNITY == "°") {
-    ucg.print((char)176);
+  if(fPrecC4_Value != fC4_Value)          
+  { 
+                ucg.setFont(ucg_font_helvB12_hf);
+                C4_AREA_TEXT_COLOR_LAYOUT2();
+                ucg.setPrintPos(205, 138);
+                ucg.print(C4_AREA_TEXT);
+                ucg.setFont(ucg_font_helvB14_hf);
+                ucg.setPrintPos(205, 155);
+                ucg.setColor(0,0,0); 
+                ucg.print("          "); //clear old value
+                ucg.setPrintPos(205, 155);
+                C4_COLOR();
+                ucg.print(fC4_Value);
+                if (C4_AREA_UNITY == "°") {
+                  ucg.print((char)176);
+                }
+                else {
+                  ucg.print(C4_AREA_UNITY);
+                }
+                fPrecC4_Value = fC4_Value;
   }
-  else {
-    ucg.print(C5_AREA_UNITY);
+  if (fPrecC5_Value != fC5_Value)          
+  {              
+                ucg.setFont(ucg_font_helvB12_hf);
+                C5_AREA_TEXT_COLOR_LAYOUT2();
+                ucg.setPrintPos(193, 173);
+                ucg.print(C5_AREA_TEXT);
+                ucg.setFont(ucg_font_helvB14_hf);
+                ucg.setPrintPos(188, 190);
+                ucg.setColor(0,0,0); 
+                ucg.print("          "); //clear old value
+                ucg.setPrintPos(188, 190);
+                C5_COLOR();
+                ucg.print(fC5_Value);
+                if (C5_AREA_UNITY == "°") {
+                  ucg.print((char)176);
+                }
+                else {
+                  ucg.print(C5_AREA_UNITY);
+                }
+                fPrecC5_Value = fC5_Value;
   }
-  ucg.setFont(ucg_font_helvB12_hf);
-  C6_AREA_TEXT_COLOR_LAYOUT2();
-  ucg.setPrintPos(170, 208);
-  ucg.print(C6_AREA_TEXT);
-  ucg.setFont(ucg_font_helvB14_hf);
-  ucg.setPrintPos(160, 225);
-  C6_COLOR();
-  ucg.print(fC6_Value);
-  if (C6_AREA_UNITY == "°") {
-    ucg.print((char)176);
+  if (fPrecC6_Value != fC6_Value)          
+  {              
+                ucg.setFont(ucg_font_helvB12_hf);
+                C6_AREA_TEXT_COLOR_LAYOUT2();
+                ucg.setPrintPos(170, 208);
+                ucg.print(C6_AREA_TEXT);
+                ucg.setFont(ucg_font_helvB14_hf);
+                ucg.setPrintPos(160, 225);
+                ucg.setColor(0,0,0); 
+                ucg.print("          "); //clear old value
+                ucg.setPrintPos(160, 225);
+                C6_COLOR();
+                ucg.print(fC6_Value);
+                if (C6_AREA_UNITY == "°") {
+                  ucg.print((char)176);
+                }
+                else {
+                  ucg.print(C6_AREA_UNITY);
+                }
+                fPrecC6_Value = fC6_Value;
   }
-  else {
-    ucg.print(C6_AREA_UNITY);
-  }
+ }
+          
 }
 
 boolean getTopicsPageEnabled() {
