@@ -78,10 +78,11 @@ time_t getNtpTime()
        } 
     }else {
     SERIAL_OUT.println("NTP failed, try to reinit ");
-    goto reinit_NTP;
     } 
   }
   SERIAL_OUT.println("No NTP Response :-(");
+  delay(100);
+  goto reinit_NTP;
   return 0; // return 0 if unable to get the time
 }
 
