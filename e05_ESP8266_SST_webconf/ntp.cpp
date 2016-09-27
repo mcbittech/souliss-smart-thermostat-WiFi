@@ -45,6 +45,7 @@ void sendNTPpacket(IPAddress &address)
 
 time_t getNtpTime()
 {
+  reinit_NTP:
   while (udp_NTP.parsePacket() > 0) ; // discard any previously received packets
   SERIAL_OUT.println("Transmit NTP Request");
   sendNTPpacket(timeServer);
@@ -75,7 +76,10 @@ time_t getNtpTime()
        SERIAL_OUT.print("This is NTP Response with tzone: ");SERIAL_OUT.print(tZonetemp);SERIAL_OUT.println(" and tDayLighttemp ON");
        return secsSince1900 - 2208988800UL + (tZonetemp + 1) * SECS_PER_HOUR;
        } 
-    }
+    }else {
+    SERIAL_OUT.println("NTP failed, try to reinit ");
+    goto reinit_NTP;
+    } 
   }
   SERIAL_OUT.println("No NTP Response :-(");
   return 0; // return 0 if unable to get the time
