@@ -4,6 +4,9 @@
 #include "constants.h"
 #include <TimeLib.h>
 #include "read_save.h"
+
+int itrytosync=0;
+
 //NTP
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 unsigned int localPort = 8888;  // local port to listen for UDP packets
@@ -45,12 +48,13 @@ void sendNTPpacket(IPAddress &address)
 
 time_t getNtpTime()
 {
+  itrytosync=0;
   reinit_NTP:
   while (udp_NTP.parsePacket() > 0) ; // discard any previously received packets
-  SERIAL_OUT.println("Transmit NTP Request");
+    SERIAL_OUT.println("Transmit NTP Request");
   sendNTPpacket(timeServer);
   uint32_t beginWait = millis();
-  while (millis() - beginWait < 1500) {
+  while ((millis() - beginWait) < 1500) {
     int size = udp_NTP.parsePacket();
     if (size >= NTP_PACKET_SIZE) {
       SERIAL_OUT.println("Receive NTP Response");
@@ -78,11 +82,17 @@ time_t getNtpTime()
        } 
     }else {
     SERIAL_OUT.println("NTP failed, try to reinit ");
+    delay(100);
     } 
   }
   SERIAL_OUT.println("No NTP Response :-(");
-  delay(100);
-  goto reinit_NTP;
+  if (itrytosync<5) {
+    ++itrytosync;
+    #ifdef DEBUGDEV
+      SERIAL_OUT.print("NTP failed, try to reinit: ");SERIAL_OUT.println(itrytosync);
+    #endif
+    goto reinit_NTP;
+  }
   return 0; // return 0 if unable to get the time
 }
 
