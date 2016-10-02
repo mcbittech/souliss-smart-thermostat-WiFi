@@ -240,6 +240,18 @@ void bright(int lum) {
   analogWrite(BACKLED, val);
 }
 
+void publishHeating_ON_OFF() {
+  //code from Souliss_nDigOut(...
+  //nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
+
+  if (memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] & Souliss_T3n_HeatingOn)
+    publishdata(SST_HEAT_ONOFF, &HEAT_ON, 1);
+  else
+    publishdata(SST_HEAT_ONOFF, &HEAT_OFF, 1);
+}
+
+
+
 void setup()
 {
 
@@ -657,8 +669,13 @@ void loop()
 
     SHIFT_910ms(1) {
       subscribeTopics();
-      if(getDoSystemReset()) EEPROM_Reset();
+      if (getDoSystemReset()) EEPROM_Reset();
     }
+
+FAST_7110ms(){
+  //PUBLISH MESSAGE WHEN HEATING ON OR OFF
+  publishHeating_ON_OFF();
+}
 
 #if(DYNAMIC_CONNECTION)
     DYNAMIC_CONNECTION_fast();

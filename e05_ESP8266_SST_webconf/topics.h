@@ -9,9 +9,11 @@
 #define TOPIC5 0xF001,0x09
 #define TOPIC6 0xF001,0x0A
 
-//***************************************************** 
+#define SST_HEAT_ONOFF 0xF001,0x0B
+U8 HEAT_ON = 0X01;
+U8 HEAT_OFF = 0X00;
+
+//*****************************************************
 //  ES:
-//  #define ENERGY_TOPIC 0xF001,0x05
-//  #define SOLAR_TOPIC 0xF001,0x06
-//  #define TEMPERATURE_TOPIC 0xF001,0x07
- 
+//#define TEMPERATURE_TOPIC_NODE_DHT_RELE 0xF001,0x15
+//#define HUMIDITY_TOPIC_NODE_DHT_RELE 0xF001,0x16
