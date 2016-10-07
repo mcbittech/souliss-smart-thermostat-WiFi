@@ -741,56 +741,22 @@ float checkNTPcrono(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
     switch (pointernow) {
       case 0:
         getsetpoint = (setP[0] - 2.0);         //da sistemare con taglio uscita T31
-        if (getLayout2()) {
-          ucg.setColor(0, 0, 0);       // black
-          ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
-          ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
-          ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
-          ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
-        }
         Serial.println("CRONO: Off");
         break;
       case 1:
         getsetpoint = setP[0];
-        if (getLayout2()) {
-          ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
-          ucg.setColor(0, 0, 0);       // black
-          ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
-          ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
-          ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
-        }
         Serial.println("CRONO: Attivo Eco");
         break;
       case 2:
         getsetpoint = setP[1];
-        if (getLayout2()) {
-          ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
-          ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
-          ucg.setColor(0, 0, 0);       // black
-          ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
-          ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
-        }
         Serial.println("CRONO: Attivo Normal");
         break;
       case 3:
         getsetpoint = setP[2];
-        if (getLayout2()) {
-          ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
-          ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
-          ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
-          ucg.setColor(0, 0, 0);       // black
-          ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
-        }
         Serial.println("CRONO: Attivo Comfort");
         break;
       case 4:
         getsetpoint = setP[3];
-        if (getLayout2()) {
-          ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
-          ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
-          ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
-          ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
-        }
         Serial.println("CRONO: Attivo Comfort+");
         break;
       default:
@@ -799,6 +765,15 @@ float checkNTPcrono(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   }
   return getsetpoint;
 }
-
+float checkCronoStatus(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
+  float getsetpoint;
+  int deyweek = getNTPday();
+  int hourday = getNTPhour();
+  int minuteday = getNTPminute();
+  int minute_30_59;
+  int pointernow = dHourSel[deyweek][(hourday * 2) + minute_30_59];
+  
+  return dHourSel[deyweek][(hourday * 2) + minute_30_59];;
+}
 
 

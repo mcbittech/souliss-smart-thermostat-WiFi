@@ -18,7 +18,8 @@
 #define SETPOINT_TEXT "Set: "
 #define TEMP_TEXT "T: "
 #define HUM_TEXT "H: "
-#define SYSTEM_OFF_TEXT "SPENTO  " //due spazi in più per coprire il valore dell'umidità, che rimane sotto. Preferisco non dare il clearscreen.
+#define SYSTEM_OFF_TEXT "SPENTO  " //due spazi in più per coprire il valore dell'umidità, che rimane sotto. Preferisco non dare il clearscreen. 
+#define SYSTEM_OFF_TEXT_LAYOUT2 "SPENTO" //senza i due spazi in più che vanno sopra il cerchio di layout2
 #define CHILDLOCK_TEXT "LOCKED"
 
 

@@ -17,4 +17,5 @@ void ReadCronoMatrixSPIFFS();
 void copyDay(int);
 void pasteDay(int);
 float checkNTPcrono(Ucglib_ILI9341_18x240x320_HWSPI);
+float checkCronoStatus(Ucglib_ILI9341_18x240x320_HWSPI);
 boolean exitmainmenu();
