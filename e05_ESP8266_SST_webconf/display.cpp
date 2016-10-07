@@ -8,7 +8,7 @@
 
 float arrotonda(const float v)
 {
-  float vX10 = v * 10;
+  float vX10 = v * 10;    
   int vInt = (int) vX10;
   float diff = abs(vX10 - vInt);
   if (diff < 0.5) {
@@ -20,11 +20,10 @@ float arrotonda(const float v)
 
 int dopovigola(const float v)
 {
-  float vX10 = v * 1;
-  int vInt = (int) vX10;
-  int result;
-  float diff = abs(vX10 - vInt);
-  return result = diff * 10;
+  int iIrouded = v; 
+  float fIX10 = v * 10;   
+  int result; 
+  return result = fIX10 - (iIrouded*10); 
 }
 
 long lastClickTime = 0;  // the last time the output pin was toggled

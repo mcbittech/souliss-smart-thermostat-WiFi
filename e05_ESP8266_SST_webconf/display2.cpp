@@ -22,11 +22,10 @@ float arrotonda2(const float v)
 
 int dopovirgola2(const float v)
 {
-  float vX10 = v * 1;
-  int vInt = (int) vX10;
-  int result;
-  float diff = abs(vX10 - vInt);
-  return result = diff * 10;
+  int iIrouded = v; 
+  float fIX10 = v * 10;   
+  int result; 
+  return result = fIX10 - (iIrouded*10); 
 }
 
 void display_layout2_Setpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint, boolean bSystemOn, boolean bChildLock) {
