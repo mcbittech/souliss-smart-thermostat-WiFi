@@ -216,7 +216,7 @@ void initScreen() {
     display_layout2_print_circle_white(ucg);
     display_layout2_print_datetime(ucg);
     if (ACTIVATETOPICSPAGE == 1) {
-      displayTopicsHomePageLayout2(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
+      alwaysdisplayTopicsHomePageLayout2(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
     }
     display_layout2_print_circle_black(ucg);
     yield();
@@ -239,18 +239,6 @@ void bright(int lum) {
   if (val < 0) val = 0;
   analogWrite(BACKLED, val);
 }
-
-void publishHeating_ON_OFF() {
-  //code from Souliss_nDigOut(...
-  //nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
-
-  if (memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] & Souliss_T3n_HeatingOn)
-    publishdata(SST_HEAT_ONOFF, &HEAT_ON, 1);
-  else
-    publishdata(SST_HEAT_ONOFF, &HEAT_OFF, 1);
-}
-
-
 
 void setup()
 {
@@ -461,17 +449,7 @@ void loop()
         setUIChanged();
         if (getLayout2()) {
           //Reinizializzo la Home per mostrare subito il cambio stato locked/unlocked e non aspettare il refresh
-          getTemp();
-          display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
-          display_layout2_print_circle_white(ucg);
-          display_layout2_print_datetime(ucg);
-          if (ACTIVATETOPICSPAGE == 1) {
-            displayTopicsHomePageLayout2(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
-          }
-          display_layout2_print_circle_black(ucg);
-          yield();
-          display_layout2_print_circle_green(ucg);
-          
+          initScreen();
         }
       }
       if (b == 4) SERIAL_OUT.println("Long Hold");
@@ -631,10 +609,13 @@ void loop()
 
         //write system ON/OFF
         if (getLocalSystem()) {
+          
           //ON
           SERIAL_OUT.println("Set system ON ");
           set_ThermostatModeOn(SLOT_THERMOSTAT);        // Set System On
+          
         } else {
+          
           //OFF
           SERIAL_OUT.println("Set system OFF ");
           set_ThermostatOff(SLOT_THERMOSTAT);
@@ -644,7 +625,8 @@ void loop()
         setSoulissDataChanged();
         SERIAL_OUT.println("Init Screen");
         setUIChanged();
-        //initScreen();
+        initScreen();
+        
         resetSystemChanged();
       }
     }
@@ -743,13 +725,8 @@ void loop()
 
     SHIFT_910ms(1) {
       subscribeTopics();
-      if (getDoSystemReset()) EEPROM_Reset();
+      if(getDoSystemReset()) EEPROM_Reset();
     }
-
-FAST_7110ms(){
-  //PUBLISH MESSAGE WHEN HEATING ON OR OFF
-  publishHeating_ON_OFF();
-}
 
 #if(DYNAMIC_CONNECTION)
     DYNAMIC_CONNECTION_fast();
@@ -764,7 +741,6 @@ FAST_7110ms(){
     SLOW_50s() {
       getTemp();
       
-
       switch (SSTPage.actualPage) {
         case PAGE_HOME:
           if (getLayout2()) {
@@ -779,6 +755,11 @@ FAST_7110ms(){
             ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
             yield();
             display_layout2_print_circle_green(ucg);
+
+            if (ACTIVATETOPICSPAGE == 1) {
+            alwaysdisplayTopicsHomePageLayout2(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
+            }
+            
           }
       }
       if (getCrono()) {
@@ -798,19 +779,20 @@ FAST_7110ms(){
             calcoloAndamento(ucg, temperature);
             display_layout2_print_datetime(ucg);
             display_layout2_print_circle_green(ucg);
+             if (ACTIVATETOPICSPAGE == 1) {
+             alwaysdisplayTopicsHomePageLayout2(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
+             }
           }
       }
     }
 
-
-    SLOW_15m() {
+SLOW_15m() {
       //NTP
       /////////////////////////////////////////////////////////////////////////////////////////////////////////
       yield();
       initNTP();
       yield();
     }
-
 
 #if(DYNAMIC_CONNECTION==1)
     DYNAMIC_CONNECTION_slow();
