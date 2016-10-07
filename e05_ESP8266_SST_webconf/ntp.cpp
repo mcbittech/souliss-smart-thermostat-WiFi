@@ -51,13 +51,11 @@ time_t getNtpTime()
   itrytosync=0;
   reinit_NTP:
   while (udp_NTP.parsePacket() > 0) ; // discard any previously received packets
-    SERIAL_OUT.println("Transmit NTP Request");
   sendNTPpacket(timeServer);
   uint32_t beginWait = millis();
   while ((millis() - beginWait) < 1500) {
     int size = udp_NTP.parsePacket();
     if (size >= NTP_PACKET_SIZE) {
-      SERIAL_OUT.println("Receive NTP Response");
       udp_NTP.read(packetBuffer, NTP_PACKET_SIZE);  // read packet into the buffer
       unsigned long secsSince1900;
       // convert four bytes starting at location 40 to a long integer
@@ -65,40 +63,28 @@ time_t getNtpTime()
       secsSince1900 |= (unsigned long)packetBuffer[41] << 16;
       secsSince1900 |= (unsigned long)packetBuffer[42] << 8;
       secsSince1900 |= (unsigned long)packetBuffer[43];
-      //return secsSince1900 - 2208988800UL + read_eeprom_byte(9) * SECS_PER_HOUR;
       int tZonetemp =read_spiffs_prefs("Tzone");
       int tDayLighttemp = read_spiffs_prefs("DayLightSavingTime");
 
-      if (tDayLighttemp == 0)
-       {
-       SERIAL_OUT.print("This is NTP Response with tzone: ");SERIAL_OUT.print(tZonetemp);SERIAL_OUT.println(" and tDayLighttemp OFF");
-       
-       return secsSince1900 - 2208988800UL + tZonetemp * SECS_PER_HOUR;       
-       }
-       else 
-       {
-       SERIAL_OUT.print("This is NTP Response with tzone: ");SERIAL_OUT.print(tZonetemp);SERIAL_OUT.println(" and tDayLighttemp ON");
-       return secsSince1900 - 2208988800UL + (tZonetemp + 1) * SECS_PER_HOUR;
-       } 
-    }else {
-<<<<<<< HEAD
-    SERIAL_OUT.println("NTP failed, try to reinit ");
-    } 
-  }
-  SERIAL_OUT.println("No NTP Response :-(");
-  delay(100); 
-  goto reinit_NTP; 
-=======
-    SERIAL_OUT.println("NTP failed, try again ");
+      if (tDayLighttemp == 0){
+        #ifdef DEBUG
+          SERIAL_OUT.print("This is NTP Response with tzone: ");SERIAL_OUT.print(tZonetemp);SERIAL_OUT.println(" and tDayLighttemp OFF");
+        #endif
+        return secsSince1900 - 2208988800UL + tZonetemp * SECS_PER_HOUR;       
+        } else {
+        #ifdef DEBUG
+          SERIAL_OUT.print("This is NTP Response with tzone: ");SERIAL_OUT.print(tZonetemp);SERIAL_OUT.println(" and tDayLighttemp ON");
+        #endif
+        return secsSince1900 - 2208988800UL + (tZonetemp + 1) * SECS_PER_HOUR;
+        } 
+    } else {
     delay(100);
-    } 
+  } 
   }
-  SERIAL_OUT.println("No NTP Response :-(");
-  if (itrytosync<5) {
-    ++itrytosync;
-    goto reinit_NTP;
-  }
->>>>>>> origin/test_new_mod_dcdj
+    if (itrytosync<5) {
+      ++itrytosync;
+      goto reinit_NTP;
+    }
   return 0; // return 0 if unable to get the time
 }
 
