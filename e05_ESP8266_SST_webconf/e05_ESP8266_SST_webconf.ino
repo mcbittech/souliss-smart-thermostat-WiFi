@@ -240,6 +240,18 @@ void bright(int lum) {
   analogWrite(BACKLED, val);
 }
 
+void publishHeating_ON_OFF() {
+  //code from Souliss_nDigOut(...
+  //nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
+
+  if (memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] & Souliss_T3n_HeatingOn)
+    publishdata(SST_HEAT_ONOFF, &HEAT_ON, 1);
+  else
+    publishdata(SST_HEAT_ONOFF, &HEAT_OFF, 1);
+}
+
+
+
 void setup()
 {
 
@@ -559,6 +571,15 @@ void loop()
     }
 
     SHIFT_210ms(2) {   // We process the logic and relevant input and output
+      // Update topics in layout2 home page
+      if (getLayout2()) {
+        if (ACTIVATETOPICSPAGE == 1 && SSTPage.actualPage == PAGE_HOME) {
+          displayTopicsHomePageLayout2(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
+        }
+      }
+    }
+
+    FAST_510ms() {
       //*************************************************************************
       //*************************************************************************
       Logic_Thermostat(SLOT_THERMOSTAT);
@@ -581,21 +602,9 @@ void loop()
 
       //*************************************************************************
       //*************************************************************************
-    }
 
-    FAST_510ms() {
-      // Compare the acquired input with the stored one, send the new value to the
-      // user interface if the difference is greater than the deadband
       Logic_T52(SLOT_TEMPERATURE);
       Logic_T53(SLOT_HUMIDITY);
-
-       // Update topics in layout2 home page
-       if (getLayout2()) {
-         if (ACTIVATETOPICSPAGE == 1 && SSTPage.actualPage == PAGE_HOME) {
-         displayTopicsHomePageLayout2(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
-         }
-      }
-      
     }
 
     FAST_710ms() {
@@ -609,13 +618,13 @@ void loop()
 
         //write system ON/OFF
         if (getLocalSystem()) {
-          
+
           //ON
           SERIAL_OUT.println("Set system ON ");
           set_ThermostatModeOn(SLOT_THERMOSTAT);        // Set System On
-          
+
         } else {
-          
+
           //OFF
           SERIAL_OUT.println("Set system OFF ");
           set_ThermostatOff(SLOT_THERMOSTAT);
@@ -626,64 +635,64 @@ void loop()
         SERIAL_OUT.println("Init Screen");
         setUIChanged();
         initScreen();
-        
+
         resetSystemChanged();
       }
     }
 
     FAST_2110ms() {
-      
+
       //Crono Status in Layout 2
       if (getCrono() && getLayout2() && SSTPage.actualPage == PAGE_HOME ) {
-         
-         if (checkCronoStatus(ucg) == 0) //OFF
-         {
+
+        if (checkCronoStatus(ucg) == 0) //OFF
+        {
           ucg.setColor(0, 0, 0);       // black
           ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
           ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
           ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
           ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
-         } 
-        
+        }
+
         if (checkCronoStatus(ucg) == 1) //ECO
-         {
+        {
           ucg.setColor( 102, 255, 0);       // Verde
           ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
           ucg.setColor(0, 0, 0);       // black
           ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
           ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
           ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
-         } 
-         
-         if (checkCronoStatus(ucg) == 2) //NORMAL
-         {
-          ucg.setColor(255, 255, 153);       // Giallo            
+        }
+
+        if (checkCronoStatus(ucg) == 2) //NORMAL
+        {
+          ucg.setColor(255, 255, 153);       // Giallo
           ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
           ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
           ucg.setColor(0, 0, 0);       // black
           ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
           ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
-         } 
-         if (checkCronoStatus(ucg) == 3) //COMFORT
-         {
+        }
+        if (checkCronoStatus(ucg) == 3) //COMFORT
+        {
           ucg.setColor(255, 204, 0);       // Arancio
           ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
           ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
           ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
           ucg.setColor(0, 0, 0);       // black
           ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
-         } 
-          if (checkCronoStatus(ucg) == 4) //COMFORT+
-         {
+        }
+        if (checkCronoStatus(ucg) == 4) //COMFORT+
+        {
           ucg.setColor(255, 0, 0);       // Rosso
           ucg.drawDisc(156, 50, 5, UCG_DRAW_ALL);
           ucg.drawDisc(165, 62, 6, UCG_DRAW_ALL);
           ucg.drawDisc(173, 77, 7, UCG_DRAW_ALL);
           ucg.drawDisc(179, 95, 8, UCG_DRAW_ALL);
-         } 
+        }
       }
     }
-    
+
 
     SHIFT_210ms(3) {
       if (timerDisplay_setpoint()) {
@@ -725,7 +734,12 @@ void loop()
 
     SHIFT_910ms(1) {
       subscribeTopics();
-      if(getDoSystemReset()) EEPROM_Reset();
+      if (getDoSystemReset()) EEPROM_Reset();
+    }
+
+    FAST_7110ms() {
+      //PUBLISH MESSAGE WHEN HEATING ON OR OFF
+      publishHeating_ON_OFF();
     }
 
 #if(DYNAMIC_CONNECTION)
@@ -740,7 +754,7 @@ void loop()
 
     SLOW_50s() {
       getTemp();
-      
+
       switch (SSTPage.actualPage) {
         case PAGE_HOME:
           if (getLayout2()) {
@@ -757,9 +771,9 @@ void loop()
             display_layout2_print_circle_green(ucg);
 
             if (ACTIVATETOPICSPAGE == 1) {
-            alwaysdisplayTopicsHomePageLayout2(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
+              alwaysdisplayTopicsHomePageLayout2(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
             }
-            
+
           }
       }
       if (getCrono()) {
@@ -779,14 +793,14 @@ void loop()
             calcoloAndamento(ucg, temperature);
             display_layout2_print_datetime(ucg);
             display_layout2_print_circle_green(ucg);
-             if (ACTIVATETOPICSPAGE == 1) {
-             alwaysdisplayTopicsHomePageLayout2(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
-             }
+            if (ACTIVATETOPICSPAGE == 1) {
+              alwaysdisplayTopicsHomePageLayout2(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
+            }
           }
       }
     }
 
-SLOW_15m() {
+    SLOW_15m() {
       //NTP
       /////////////////////////////////////////////////////////////////////////////////////////////////////////
       yield();
