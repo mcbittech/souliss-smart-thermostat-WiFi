@@ -111,22 +111,22 @@ void EEPROM_Reset() {
 }
 
 void subscribeTopics() {
-  if (subscribedata(TOPIC1, mypayload, &mypayload_len)) {
+  if (sbscrbdata(TOPIC1, mypayload, &mypayload_len)) {
     float32((uint16_t*) mypayload,  &fTopic_C1_Output);
     SERIAL_OUT.print("TOPIC1: "); SERIAL_OUT.println(fTopic_C1_Output);
-  } else if (subscribedata(TOPIC2, mypayload, &mypayload_len)) {
+  } else if (sbscrbdata(TOPIC2, mypayload, &mypayload_len)) {
     float32((uint16_t*) mypayload,  &fTopic_C2_Output);
     SERIAL_OUT.print("TOPIC2: "); SERIAL_OUT.println(fTopic_C2_Output);
-  } else if (subscribedata(TOPIC3, mypayload, &mypayload_len)) {
+  } else if (sbscrbdata(TOPIC3, mypayload, &mypayload_len)) {
     float32((uint16_t*) mypayload,  &fTopic_C3_Output);
     SERIAL_OUT.print("TOPIC3: "); SERIAL_OUT.println(fTopic_C3_Output);
-  } else if (subscribedata(TOPIC4, mypayload, &mypayload_len)) {
+  } else if (sbscrbdata(TOPIC4, mypayload, &mypayload_len)) {
     float32((uint16_t*) mypayload,  &fTopic_C4_Output);
     SERIAL_OUT.print("TOPIC4: "); SERIAL_OUT.println(fTopic_C4_Output);
-  } else if (subscribedata(TOPIC5, mypayload, &mypayload_len)) {
+  } else if (sbscrbdata(TOPIC5, mypayload, &mypayload_len)) {
     float32((uint16_t*) mypayload,  &fTopic_C5_Output);
     SERIAL_OUT.print("TOPIC5: "); SERIAL_OUT.println(fTopic_C5_Output);
-  } else if (subscribedata(TOPIC6, mypayload, &mypayload_len)) {
+  } else if (sbscrbdata(TOPIC6, mypayload, &mypayload_len)) {
     float32((uint16_t*) mypayload,  &fTopic_C6_Output);
     SERIAL_OUT.print("TOPIC6: "); SERIAL_OUT.println(fTopic_C6_Output);
   }
@@ -245,9 +245,9 @@ void publishHeating_ON_OFF() {
   //nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
 
   if (memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] & Souliss_T3n_HeatingOn)
-    publishdata(SST_HEAT_ONOFF, &HEAT_ON, 1);
+    pblshdata(SST_HEAT_ONOFF, &HEAT_ON, 1);
   else
-    publishdata(SST_HEAT_ONOFF, &HEAT_OFF, 1);
+    pblshdata(SST_HEAT_ONOFF, &HEAT_OFF, 1);
 }
 
 
