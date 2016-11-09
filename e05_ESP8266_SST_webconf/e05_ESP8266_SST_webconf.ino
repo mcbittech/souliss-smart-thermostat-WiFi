@@ -92,165 +92,63 @@ MenuSystem* myMenu;
 // Use hardware SPI
 Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ 2 , /*cs=*/ 15);
 
-void EEPROM_Reset() {
-  // Erase network configuration parameters from previous use of ZeroConf
-  SERIAL_OUT.println("Store_Init");
-  Store_Init();
-  SERIAL_OUT.println("Store_Clear");
-  Store_Clear();
-  SERIAL_OUT.println("Store_Commit");
-  Store_Commit();
-  SERIAL_OUT.println("OK");
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// wbserver
+ESP8266WebServer wbServer(80);
+//holds the current upload
+File fsUploadFile;
 
-  // Print the EEPROM contents, if erase has been succesfull you should see only zeros.
-  for (uint16_t i = 0; i < STORE__USABLESIZE; i++)
-    SERIAL_OUT.println(Return_8bit(i));
-
-  spiffs_Reset();
-  ESP.reset();
-}
-
-void subscribeTopics() {
-  if (sbscrbdata(TOPIC1, mypayload, &mypayload_len)) {
-    float32((uint16_t*) mypayload,  &fTopic_C1_Output);
-    SERIAL_OUT.print("TOPIC1: "); SERIAL_OUT.println(fTopic_C1_Output);
-  } else if (sbscrbdata(TOPIC2, mypayload, &mypayload_len)) {
-    float32((uint16_t*) mypayload,  &fTopic_C2_Output);
-    SERIAL_OUT.print("TOPIC2: "); SERIAL_OUT.println(fTopic_C2_Output);
-  } else if (sbscrbdata(TOPIC3, mypayload, &mypayload_len)) {
-    float32((uint16_t*) mypayload,  &fTopic_C3_Output);
-    SERIAL_OUT.print("TOPIC3: "); SERIAL_OUT.println(fTopic_C3_Output);
-  } else if (sbscrbdata(TOPIC4, mypayload, &mypayload_len)) {
-    float32((uint16_t*) mypayload,  &fTopic_C4_Output);
-    SERIAL_OUT.print("TOPIC4: "); SERIAL_OUT.println(fTopic_C4_Output);
-  } else if (sbscrbdata(TOPIC5, mypayload, &mypayload_len)) {
-    float32((uint16_t*) mypayload,  &fTopic_C5_Output);
-    SERIAL_OUT.print("TOPIC5: "); SERIAL_OUT.println(fTopic_C5_Output);
-  } else if (sbscrbdata(TOPIC6, mypayload, &mypayload_len)) {
-    float32((uint16_t*) mypayload,  &fTopic_C6_Output);
-    SERIAL_OUT.print("TOPIC6: "); SERIAL_OUT.println(fTopic_C6_Output);
-  }
-}
-
-
-void setSoulissDataChanged() {
-  if (data_changed != Souliss_TRIGGED) {
-
-    data_changed = Souliss_TRIGGED;
-  }
-}
-
-void set_ThermostatModeOn(U8 slot) {
-  SERIAL_OUT.println("set_ThermostatModeOn");
-  memory_map[MaCaco_OUT_s + slot] |= Souliss_T3n_SystemOn;
-  memory_map[MaCaco_OUT_s + slot] &= ~Souliss_T3n_HeatingMode;
-
-  // Trig the next change of the state
-  setSoulissDataChanged();
-}
-void set_ThermostatOff(U8 slot) {
-  //memory_map[MaCaco_IN_s + slot] = Souliss_T3n_ShutDown;
-  memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] &= ~ (Souliss_T3n_SystemOn | Souliss_T3n_FanOn1 | Souliss_T3n_FanOn2 | Souliss_T3n_FanOn3 | Souliss_T3n_CoolingOn | Souliss_T3n_HeatingOn);
-  setSoulissDataChanged();
-}
-void set_DisplayMinBright(U8 slot, U8 val) {
-  memory_map[MaCaco_OUT_s + slot + 1] = val;
-  // Trig the next change of the state
-
-  setSoulissDataChanged();
-}
-
-void encoderFunction() {
-  encoder();
-}
-
-boolean getSoulissSystemState() {
-  return memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] & Souliss_T3n_SystemOn;
-}
-
-boolean T_or_H_isNan = false;
-boolean bFlagBegin = false;
-void getTemp() {
-  // Read temperature value from DHT sensor and convert from single-precision to half-precision
-  fVal = dht.readTemperature();
-  SERIAL_OUT.print("acquisizione Temperature: "); SERIAL_OUT.println(fVal);
-  if (!isnan(fVal)) {
-    temperature = fVal; //memorizza temperatura se non è Not A Number
-    //Import temperature into T31 Thermostat
-    ImportAnalog(SLOT_THERMOSTAT + 1, &temperature);
-    ImportAnalog(SLOT_TEMPERATURE, &temperature);
+//format bytes
+String formatBytes(size_t bytes){
+  if (bytes < 1024){
+    return String(bytes)+"B";
+  } else if(bytes < (1024 * 1024)){
+    return String(bytes/1024.0)+"KB";
+  } else if(bytes < (1024 * 1024 * 1024)){
+    return String(bytes/1024.0/1024.0)+"MB";
   } else {
-    bFlagBegin = true;
-  }
-
-  // Read humidity value from DHT sensor and convert from single-precision to half-precision
-  fVal = dht.readHumidity();
-  SERIAL_OUT.print("acquisizione Humidity: "); SERIAL_OUT.println(fVal);
-  if (!isnan(fVal)) {
-    humidity = fVal;
-    ImportAnalog(SLOT_HUMIDITY, &humidity);
-  } else {
-    bFlagBegin = true;
-  }
-
-  if ( bFlagBegin) {
-    //if DHT fail then try to reinit
-    dht.begin();
-    SERIAL_OUT.println(" dht.begin();");
+    return String(bytes/1024.0/1024.0/1024.0)+"GB";
   }
 }
 
-void initScreen() {
-  ucg.clearScreen();
-  SERIAL_OUT.println("clearScreen ok");
-  if (getLayout1()) {
-    SERIAL_OUT.println("HomeScreen Layout 1");
+String getContentType(String filename){
+  if(wbServer.hasArg("download")) return "application/octet-stream";
+  else if(filename.endsWith(".htm")) return "text/html";
+  else if(filename.endsWith(".html")) return "text/html";
+  else if(filename.endsWith(".css")) return "text/css";
+  else if(filename.endsWith(".js")) return "application/javascript";
+  else if(filename.endsWith(".png")) return "image/png";
+  else if(filename.endsWith(".gif")) return "image/gif";
+  else if(filename.endsWith(".jpg")) return "image/jpeg";
+  else if(filename.endsWith(".ico")) return "image/x-icon";
+  else if(filename.endsWith(".xml")) return "text/xml";
+  else if(filename.endsWith(".pdf")) return "application/x-pdf";
+  else if(filename.endsWith(".zip")) return "application/x-zip";
+  else if(filename.endsWith(".gz")) return "application/x-gzip";
+  return "text/plain";
+}
 
-    display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSoulissSystemState(), bChildLock);
-    getTemp();
+bool handleFileRead(String path){
+  SERIAL_OUT.println("handleFileRead: " + path);
+  if(path.endsWith("/")) path += "index.htm";
+  String contentType = getContentType(path);
+  String pathWithGz = path + ".gz";
+  if(SPIFFS.exists(pathWithGz) || SPIFFS.exists(path)){
+    if(SPIFFS.exists(pathWithGz))
+      path += ".gz";
+    File file = SPIFFS.open(path, "r");
+    size_t sent = wbServer.streamFile(file, contentType);
+    file.close();
+    return true;
   }
-  else if (getLayout2()) {
-    SERIAL_OUT.println("HomeScreen Layout 2");
-    getTemp();
-    display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
-    display_layout2_print_circle_white(ucg);
-    display_layout2_print_datetime(ucg);
-    if (ACTIVATETOPICSPAGE == 1) {
-      alwaysdisplayTopicsHomePageLayout2(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
-    }
-    display_layout2_print_circle_black(ucg);
-    yield();
-    display_layout2_print_circle_green(ucg);
-  }
-}
-void setSetpoint(float setpoint) {
-  //SERIAL_OUT.print("Away: ");SERIAL_OUT.println(memory_map[MaCaco_OUT_s + SLOT_AWAY]);
-  if (memory_map[MaCaco_OUT_s + SLOT_AWAY]) {
-    //is Away
-
-  } else {
-    //is not Away
-  }
-  Souliss_HalfPrecisionFloating((memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3), &setpoint);
-}
-void bright(int lum) {
-  int val = ((float)lum / 100) * 1023;
-  if (val > 1023) val = 1023;
-  if (val < 0) val = 0;
-  analogWrite(BACKLED, val);
-}
-
-void publishHeating_ON_OFF() {
-  //code from Souliss_nDigOut(...
-  //nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
-
-  if (memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] & Souliss_T3n_HeatingOn)
-    pblshdata(SST_HEAT_ONOFF, &HEAT_ON, 1);
-  else
-    pblshdata(SST_HEAT_ONOFF, &HEAT_OFF, 1);
+  return false;
 }
 
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void setup()
 {
@@ -262,10 +160,10 @@ void setup()
   SPIFFS.begin();
   File  sst_spiffs_verifica = SPIFFS.open("/sst_settings.json", "r");
   if (!sst_spiffs_verifica) {
-    Serial.println(" ");
-    Serial.println("Non riesco a leggere sst_settings.json! formatto la SPIFFS...");
+    SERIAL_OUT.println(" ");
+    SERIAL_OUT.println("Non riesco a leggere sst_settings.json! formatto la SPIFFS...");
     SPIFFS.format();
-    Serial.println("Spiffs formatted");
+    SERIAL_OUT.println("Spiffs formatted");
     ReadAllSettingsFromPreferences();
     ReadCronoMatrixSPIFFS();
   }
@@ -275,6 +173,56 @@ void setup()
     ReadCronoMatrixSPIFFS();
     backLEDvalueLOW = getDisplayBright();
   }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  {
+    Dir dir = SPIFFS.openDir("/");
+    while (dir.next()) {    
+      String fileName = dir.fileName();
+      size_t fileSize = dir.fileSize();
+      SERIAL_OUT.printf("FS File: %s, size: %s\n", fileName.c_str(), formatBytes(fileSize).c_str());
+    }
+    SERIAL_OUT.printf("\n");
+  }
+  MDNS.begin(SST_Host);
+  SERIAL_OUT.print("Open http://");
+  SERIAL_OUT.print(SST_Host);
+  SERIAL_OUT.println(".local/edit to see the file browser");
+    //SERVER INIT
+  //list directory
+  wbServer.on("/list", HTTP_GET, handleFileList);
+  //load editor
+  wbServer.on("/edit", HTTP_GET, [](){
+    if(!handleFileRead("/edit.htm")) wbServer.send(404, "text/plain", "FileNotFound");
+  });
+  //create file
+  wbServer.on("/edit", HTTP_PUT, handleFileCreate);
+  //delete file
+  wbServer.on("/edit", HTTP_DELETE, handleFileDelete);
+  //first callback is called after the request has ended with all parsed arguments
+  //second callback handles file uploads at that location
+  wbServer.on("/edit", HTTP_POST, [](){ wbServer.send(200, "text/plain", ""); }, handleFileUpload);
+
+  //called when the url is not defined here
+  //use it to load content from SPIFFS
+  wbServer.onNotFound([](){
+    if(!handleFileRead(wbServer.uri()))
+      wbServer.send(404, "text/plain", "FileNotFound");
+  });
+
+  //get heap status, analog input value and all GPIO statuses in one json call
+  wbServer.on("/all", HTTP_GET, [](){
+    String json = "{";
+    json += "\"heap\":"+String(ESP.getFreeHeap());
+    json += "}";
+    wbServer.send(200, "text/json", json);
+    json = String();
+  });
+  wbServer.begin();
+  SERIAL_OUT.println("HTTP SST wbServer started");
+  
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   //DISPLAY INIT
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -817,6 +765,248 @@ void loop()
   // Look for a new sketch to update over the air
   ArduinoOTA.handle();
   yield();
+  wbServer.handleClient();
 }
 
+
+void EEPROM_Reset() {
+  // Erase network configuration parameters from previous use of ZeroConf
+  SERIAL_OUT.println("Store_Init");
+  Store_Init();
+  SERIAL_OUT.println("Store_Clear");
+  Store_Clear();
+  SERIAL_OUT.println("Store_Commit");
+  Store_Commit();
+  SERIAL_OUT.println("OK");
+
+  // Print the EEPROM contents, if erase has been succesfull you should see only zeros.
+  for (uint16_t i = 0; i < STORE__USABLESIZE; i++)
+    SERIAL_OUT.println(Return_8bit(i));
+
+  spiffs_Reset();
+  ESP.reset();
+}
+
+void subscribeTopics() {
+  if (sbscrbdata(TOPIC1, mypayload, &mypayload_len)) {
+    float32((uint16_t*) mypayload,  &fTopic_C1_Output);
+    SERIAL_OUT.print("TOPIC1: "); SERIAL_OUT.println(fTopic_C1_Output);
+  } else if (sbscrbdata(TOPIC2, mypayload, &mypayload_len)) {
+    float32((uint16_t*) mypayload,  &fTopic_C2_Output);
+    SERIAL_OUT.print("TOPIC2: "); SERIAL_OUT.println(fTopic_C2_Output);
+  } else if (sbscrbdata(TOPIC3, mypayload, &mypayload_len)) {
+    float32((uint16_t*) mypayload,  &fTopic_C3_Output);
+    SERIAL_OUT.print("TOPIC3: "); SERIAL_OUT.println(fTopic_C3_Output);
+  } else if (sbscrbdata(TOPIC4, mypayload, &mypayload_len)) {
+    float32((uint16_t*) mypayload,  &fTopic_C4_Output);
+    SERIAL_OUT.print("TOPIC4: "); SERIAL_OUT.println(fTopic_C4_Output);
+  } else if (sbscrbdata(TOPIC5, mypayload, &mypayload_len)) {
+    float32((uint16_t*) mypayload,  &fTopic_C5_Output);
+    SERIAL_OUT.print("TOPIC5: "); SERIAL_OUT.println(fTopic_C5_Output);
+  } else if (sbscrbdata(TOPIC6, mypayload, &mypayload_len)) {
+    float32((uint16_t*) mypayload,  &fTopic_C6_Output);
+    SERIAL_OUT.print("TOPIC6: "); SERIAL_OUT.println(fTopic_C6_Output);
+  }
+}
+
+
+void setSoulissDataChanged() {
+  if (data_changed != Souliss_TRIGGED) {
+
+    data_changed = Souliss_TRIGGED;
+  }
+}
+
+void set_ThermostatModeOn(U8 slot) {
+  SERIAL_OUT.println("set_ThermostatModeOn");
+  memory_map[MaCaco_OUT_s + slot] |= Souliss_T3n_SystemOn;
+  memory_map[MaCaco_OUT_s + slot] &= ~Souliss_T3n_HeatingMode;
+
+  // Trig the next change of the state
+  setSoulissDataChanged();
+}
+void set_ThermostatOff(U8 slot) {
+  //memory_map[MaCaco_IN_s + slot] = Souliss_T3n_ShutDown;
+  memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] &= ~ (Souliss_T3n_SystemOn | Souliss_T3n_FanOn1 | Souliss_T3n_FanOn2 | Souliss_T3n_FanOn3 | Souliss_T3n_CoolingOn | Souliss_T3n_HeatingOn);
+  setSoulissDataChanged();
+}
+void set_DisplayMinBright(U8 slot, U8 val) {
+  memory_map[MaCaco_OUT_s + slot + 1] = val;
+  // Trig the next change of the state
+
+  setSoulissDataChanged();
+}
+
+void encoderFunction() {
+  encoder();
+}
+
+boolean getSoulissSystemState() {
+  return memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] & Souliss_T3n_SystemOn;
+}
+
+boolean T_or_H_isNan = false;
+boolean bFlagBegin = false;
+void getTemp() {
+  // Read temperature value from DHT sensor and convert from single-precision to half-precision
+  fVal = dht.readTemperature();
+  SERIAL_OUT.print("acquisizione Temperature: "); SERIAL_OUT.println(fVal);
+  if (!isnan(fVal)) {
+    temperature = fVal; //memorizza temperatura se non è Not A Number
+    //Import temperature into T31 Thermostat
+    ImportAnalog(SLOT_THERMOSTAT + 1, &temperature);
+    ImportAnalog(SLOT_TEMPERATURE, &temperature);
+  } else {
+    bFlagBegin = true;
+  }
+
+  // Read humidity value from DHT sensor and convert from single-precision to half-precision
+  fVal = dht.readHumidity();
+  SERIAL_OUT.print("acquisizione Humidity: "); SERIAL_OUT.println(fVal);
+  if (!isnan(fVal)) {
+    humidity = fVal;
+    ImportAnalog(SLOT_HUMIDITY, &humidity);
+  } else {
+    bFlagBegin = true;
+  }
+
+  if ( bFlagBegin) {
+    //if DHT fail then try to reinit
+    dht.begin();
+    SERIAL_OUT.println(" dht.begin();");
+  }
+}
+
+void initScreen() {
+  ucg.clearScreen();
+  SERIAL_OUT.println("clearScreen ok");
+  if (getLayout1()) {
+    SERIAL_OUT.println("HomeScreen Layout 1");
+
+    display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSoulissSystemState(), bChildLock);
+    getTemp();
+  }
+  else if (getLayout2()) {
+    SERIAL_OUT.println("HomeScreen Layout 2");
+    getTemp();
+    display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
+    display_layout2_print_circle_white(ucg);
+    display_layout2_print_datetime(ucg);
+    if (ACTIVATETOPICSPAGE == 1) {
+      alwaysdisplayTopicsHomePageLayout2(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
+    }
+    display_layout2_print_circle_black(ucg);
+    yield();
+    display_layout2_print_circle_green(ucg);
+  }
+}
+void setSetpoint(float setpoint) {
+  //SERIAL_OUT.print("Away: ");SERIAL_OUT.println(memory_map[MaCaco_OUT_s + SLOT_AWAY]);
+  if (memory_map[MaCaco_OUT_s + SLOT_AWAY]) {
+    //is Away
+
+  } else {
+    //is not Away
+  }
+  Souliss_HalfPrecisionFloating((memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3), &setpoint);
+}
+void bright(int lum) {
+  int val = ((float)lum / 100) * 1023;
+  if (val > 1023) val = 1023;
+  if (val < 0) val = 0;
+  analogWrite(BACKLED, val);
+}
+
+void publishHeating_ON_OFF() {
+  //code from Souliss_nDigOut(...
+  //nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
+
+  if (memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] & Souliss_T3n_HeatingOn)
+    pblshdata(SST_HEAT_ONOFF, &HEAT_ON, 1);
+  else
+    pblshdata(SST_HEAT_ONOFF, &HEAT_OFF, 1);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void handleFileUpload(){
+  if(wbServer.uri() != "/edit") return;
+  HTTPUpload& upload = wbServer.upload();
+  if(upload.status == UPLOAD_FILE_START){
+    String filename = upload.filename;
+    if(!filename.startsWith("/")) filename = "/"+filename;
+    SERIAL_OUT.print("handleFileUpload Name: "); SERIAL_OUT.println(filename);
+    fsUploadFile = SPIFFS.open(filename, "w");
+    filename = String();
+  } else if(upload.status == UPLOAD_FILE_WRITE){
+    //SERIAL_OUT.print("handleFileUpload Data: "); SERIAL_OUT.println(upload.currentSize);
+    if(fsUploadFile)
+      fsUploadFile.write(upload.buf, upload.currentSize);
+  } else if(upload.status == UPLOAD_FILE_END){
+    if(fsUploadFile)
+      fsUploadFile.close();
+    SERIAL_OUT.print("handleFileUpload Size: "); SERIAL_OUT.println(upload.totalSize);
+  }
+}
+
+void handleFileDelete(){
+  if(wbServer.args() == 0) return wbServer.send(500, "text/plain", "BAD ARGS");
+  String path = wbServer.arg(0);
+  SERIAL_OUT.println("handleFileDelete: " + path);
+  if(path == "/")
+    return wbServer.send(500, "text/plain", "BAD PATH");
+  if(!SPIFFS.exists(path))
+    return wbServer.send(404, "text/plain", "FileNotFound");
+  SPIFFS.remove(path);
+  wbServer.send(200, "text/plain", "");
+  path = String();
+}
+
+void handleFileCreate(){
+  if(wbServer.args() == 0)
+    return wbServer.send(500, "text/plain", "BAD ARGS");
+  String path = wbServer.arg(0);
+  SERIAL_OUT.println("handleFileCreate: " + path);
+  if(path == "/")
+    return wbServer.send(500, "text/plain", "BAD PATH");
+  if(SPIFFS.exists(path))
+    return wbServer.send(500, "text/plain", "FILE EXISTS");
+  File file = SPIFFS.open(path, "w");
+  if(file)
+    file.close();
+  else
+    return wbServer.send(500, "text/plain", "CREATE FAILED");
+  wbServer.send(200, "text/plain", "");
+  path = String();
+}
+
+void handleFileList() {
+  if(!wbServer.hasArg("dir")) {wbServer.send(500, "text/plain", "BAD ARGS"); return;}
+  
+  String path = wbServer.arg("dir");
+  SERIAL_OUT.println("handleFileList: " + path);
+  Dir dir = SPIFFS.openDir(path);
+  path = String();
+
+  String output = "[";
+  while(dir.next()){
+    File entry = dir.openFile("r");
+    if (output != "[") output += ',';
+    bool isDir = false;
+    output += "{\"type\":\"";
+    output += (isDir)?"dir":"file";
+    output += "\",\"name\":\"";
+    output += String(entry.name()).substring(1);
+    output += "\"}";
+    entry.close();
+  }
+  
+  output += "]";
+  wbServer.send(200, "text/json", output);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

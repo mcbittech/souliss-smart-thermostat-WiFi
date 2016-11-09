@@ -52,6 +52,7 @@
 #define WIFICONF_INSKETCH
 #define WiFi_SSID               "*** toConfigure ***"
 #define WiFi_Password           "*** toConfigure ***"   
+#define SST_Host                "SSTwbserver"
 
 // Define the network configuration according to your router settingsuration according to your router settings
 // and the other on the wireless oneless one
