@@ -2,8 +2,8 @@
 
 //LAYOUT
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define LAYOUT_LINEAR 1
-#define LAYOUT_CIRCULAR 0
+#define LAYOUT_LINEAR 0
+#define LAYOUT_CIRCULAR 1
 
 //LOCAL CRONO FUNCTION
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,9 +43,9 @@
 
 //STATIC IP
 // use commas between number
-#define STATIC_IP 192,168,0,74
+#define STATIC_IP 192,168,1.26
 #define STATIC_SUBNET 255,255,255,0
-#define STATIC_IP_GW 192,168,0,1
+#define STATIC_IP_GW 192,168,1,1
 
 // **** Define the WiFi name and password ****
 //Only for DYNAMIC_CONNECTION = 0

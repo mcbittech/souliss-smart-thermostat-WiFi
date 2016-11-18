@@ -12,10 +12,10 @@
 #include "SoulissFramework.h"
 
 #include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
+
 #include <ESP8266mDNS.h>
 #include <EEPROM.h>
-#include "FS.h" //SPIFFS
+#include <FS.h>
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 #include <DHT.h>
@@ -92,63 +92,7 @@ MenuSystem* myMenu;
 // Use hardware SPI
 Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ 2 , /*cs=*/ 15);
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// wbserver
-ESP8266WebServer wbServer(80);
-//holds the current upload
-File fsUploadFile;
 
-//format bytes
-String formatBytes(size_t bytes){
-  if (bytes < 1024){
-    return String(bytes)+"B";
-  } else if(bytes < (1024 * 1024)){
-    return String(bytes/1024.0)+"KB";
-  } else if(bytes < (1024 * 1024 * 1024)){
-    return String(bytes/1024.0/1024.0)+"MB";
-  } else {
-    return String(bytes/1024.0/1024.0/1024.0)+"GB";
-  }
-}
-
-String getContentType(String filename){
-  if(wbServer.hasArg("download")) return "application/octet-stream";
-  else if(filename.endsWith(".htm")) return "text/html";
-  else if(filename.endsWith(".html")) return "text/html";
-  else if(filename.endsWith(".css")) return "text/css";
-  else if(filename.endsWith(".js")) return "application/javascript";
-  else if(filename.endsWith(".png")) return "image/png";
-  else if(filename.endsWith(".gif")) return "image/gif";
-  else if(filename.endsWith(".jpg")) return "image/jpeg";
-  else if(filename.endsWith(".ico")) return "image/x-icon";
-  else if(filename.endsWith(".xml")) return "text/xml";
-  else if(filename.endsWith(".pdf")) return "application/x-pdf";
-  else if(filename.endsWith(".zip")) return "application/x-zip";
-  else if(filename.endsWith(".gz")) return "application/x-gzip";
-  return "text/plain";
-}
-
-bool handleFileRead(String path){
-  SERIAL_OUT.println("handleFileRead: " + path);
-  if(path.endsWith("/")) path += "index.htm";
-  String contentType = getContentType(path);
-  String pathWithGz = path + ".gz";
-  if(SPIFFS.exists(pathWithGz) || SPIFFS.exists(path)){
-    if(SPIFFS.exists(pathWithGz))
-      path += ".gz";
-    File file = SPIFFS.open(path, "r");
-    size_t sent = wbServer.streamFile(file, contentType);
-    file.close();
-    return true;
-  }
-  return false;
-}
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void setup()
 {
@@ -173,56 +117,6 @@ void setup()
     ReadCronoMatrixSPIFFS();
     backLEDvalueLOW = getDisplayBright();
   }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  {
-    Dir dir = SPIFFS.openDir("/");
-    while (dir.next()) {    
-      String fileName = dir.fileName();
-      size_t fileSize = dir.fileSize();
-      SERIAL_OUT.printf("FS File: %s, size: %s\n", fileName.c_str(), formatBytes(fileSize).c_str());
-    }
-    SERIAL_OUT.printf("\n");
-  }
-  MDNS.begin(SST_Host);
-  SERIAL_OUT.print("Open http://");
-  SERIAL_OUT.print(SST_Host);
-  SERIAL_OUT.println(".local/edit to see the file browser");
-    //SERVER INIT
-  //list directory
-  wbServer.on("/list", HTTP_GET, handleFileList);
-  //load editor
-  wbServer.on("/edit", HTTP_GET, [](){
-    if(!handleFileRead("/edit.htm")) wbServer.send(404, "text/plain", "FileNotFound");
-  });
-  //create file
-  wbServer.on("/edit", HTTP_PUT, handleFileCreate);
-  //delete file
-  wbServer.on("/edit", HTTP_DELETE, handleFileDelete);
-  //first callback is called after the request has ended with all parsed arguments
-  //second callback handles file uploads at that location
-  wbServer.on("/edit", HTTP_POST, [](){ wbServer.send(200, "text/plain", ""); }, handleFileUpload);
-
-  //called when the url is not defined here
-  //use it to load content from SPIFFS
-  wbServer.onNotFound([](){
-    if(!handleFileRead(wbServer.uri()))
-      wbServer.send(404, "text/plain", "FileNotFound");
-  });
-
-  //get heap status, analog input value and all GPIO statuses in one json call
-  wbServer.on("/all", HTTP_GET, [](){
-    String json = "{";
-    json += "\"heap\":"+String(ESP.getFreeHeap());
-    json += "}";
-    wbServer.send(200, "text/json", json);
-    json = String();
-  });
-  wbServer.begin();
-  SERIAL_OUT.println("HTTP SST wbServer started");
-  
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   //DISPLAY INIT
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -765,7 +659,6 @@ void loop()
   // Look for a new sketch to update over the air
   ArduinoOTA.handle();
   yield();
-  wbServer.handleClient();
 }
 
 
@@ -926,87 +819,4 @@ void publishHeating_ON_OFF() {
   else
     pblshdata(SST_HEAT_ONOFF, &HEAT_OFF, 1);
 }
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void handleFileUpload(){
-  if(wbServer.uri() != "/edit") return;
-  HTTPUpload& upload = wbServer.upload();
-  if(upload.status == UPLOAD_FILE_START){
-    String filename = upload.filename;
-    if(!filename.startsWith("/")) filename = "/"+filename;
-    SERIAL_OUT.print("handleFileUpload Name: "); SERIAL_OUT.println(filename);
-    fsUploadFile = SPIFFS.open(filename, "w");
-    filename = String();
-  } else if(upload.status == UPLOAD_FILE_WRITE){
-    //SERIAL_OUT.print("handleFileUpload Data: "); SERIAL_OUT.println(upload.currentSize);
-    if(fsUploadFile)
-      fsUploadFile.write(upload.buf, upload.currentSize);
-  } else if(upload.status == UPLOAD_FILE_END){
-    if(fsUploadFile)
-      fsUploadFile.close();
-    SERIAL_OUT.print("handleFileUpload Size: "); SERIAL_OUT.println(upload.totalSize);
-  }
-}
-
-void handleFileDelete(){
-  if(wbServer.args() == 0) return wbServer.send(500, "text/plain", "BAD ARGS");
-  String path = wbServer.arg(0);
-  SERIAL_OUT.println("handleFileDelete: " + path);
-  if(path == "/")
-    return wbServer.send(500, "text/plain", "BAD PATH");
-  if(!SPIFFS.exists(path))
-    return wbServer.send(404, "text/plain", "FileNotFound");
-  SPIFFS.remove(path);
-  wbServer.send(200, "text/plain", "");
-  path = String();
-}
-
-void handleFileCreate(){
-  if(wbServer.args() == 0)
-    return wbServer.send(500, "text/plain", "BAD ARGS");
-  String path = wbServer.arg(0);
-  SERIAL_OUT.println("handleFileCreate: " + path);
-  if(path == "/")
-    return wbServer.send(500, "text/plain", "BAD PATH");
-  if(SPIFFS.exists(path))
-    return wbServer.send(500, "text/plain", "FILE EXISTS");
-  File file = SPIFFS.open(path, "w");
-  if(file)
-    file.close();
-  else
-    return wbServer.send(500, "text/plain", "CREATE FAILED");
-  wbServer.send(200, "text/plain", "");
-  path = String();
-}
-
-void handleFileList() {
-  if(!wbServer.hasArg("dir")) {wbServer.send(500, "text/plain", "BAD ARGS"); return;}
-  
-  String path = wbServer.arg("dir");
-  SERIAL_OUT.println("handleFileList: " + path);
-  Dir dir = SPIFFS.openDir(path);
-  path = String();
-
-  String output = "[";
-  while(dir.next()){
-    File entry = dir.openFile("r");
-    if (output != "[") output += ',';
-    bool isDir = false;
-    output += "{\"type\":\"";
-    output += (isDir)?"dir":"file";
-    output += "\",\"name\":\"";
-    output += String(entry.name()).substring(1);
-    output += "\"}";
-    entry.close();
-  }
-  
-  output += "]";
-  wbServer.send(200, "text/json", output);
-}
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
