@@ -94,14 +94,29 @@ MenuSystem* myMenu;
 // Use hardware SPI
 Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ 2 , /*cs=*/ 15);
 
-
+//WBServer
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+AsyncWebServer server(80);
+AsyncWebSocket ws("/ws");
+AsyncEventSource events("/events");
+File fsUploadFile;
+uint8_t buff{};
+String temp = "20";
+String setTemp= "12";
+String acceso = "1";
+String umidita = "80";
+String nextStep = "12:00";
+String filena = "";
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 void setup()
 {
 
   SERIAL_OUT.begin(115200);
+  Serial.setDebugOutput(true);  //debug WBServer
 
+  
   //SPIFFS
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   SPIFFS.begin();
@@ -160,6 +175,8 @@ void setup()
   Set_Thermostat(SLOT_THERMOSTAT);
   set_ThermostatModeOn(SLOT_THERMOSTAT);
   set_DisplayMinBright(SLOT_BRIGHT_DISPLAY, backLEDvalueLOW);
+  //*************************************************************************
+  //*************************************************************************
 
   // Define output pins
   pinMode(RELE, OUTPUT);    // Heater
@@ -188,14 +205,141 @@ void setup()
   myMenu = getMenu();
 
 
-  // Init the OTA
+  // Init the OTA + WebServer
   // Set Hostname.
-  String hostname(HOSTNAME);
-  hostname += String(ESP.getChipId(), HEX);
-  SERIAL_OUT.print("set OTA hostname: "); SERIAL_OUT.println(hostname);
-  ArduinoOTA.setHostname((const char *)hostname.c_str());
+  String hostNAME(HOSTNAME);
+  WiFi.hostname(hostNAME);
+  WiFi.mode(WIFI_AP_STA);
+  //WiFi.softAP(hostNAME);
+  
+  //hostname += String(ESP.getChipId(), HEX);
+  //SERIAL_OUT.print("set OTA hostname: "); SERIAL_OUT.println(hostname);
+  //ArduinoOTA.setHostname((const char *)hostNAME.c_str());
+  //ArduinoOTA.begin();
+  //Send OTA events to the browser
+  ArduinoOTA.onStart([]() { events.send("Update Start", "ota"); });
+  ArduinoOTA.onEnd([]() { events.send("Update End", "ota"); });
+  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+    char p[32];
+    sprintf(p, "Progress: %u%%\n", (progress/(total/100)));
+    events.send(p, "ota");
+  });
+  ArduinoOTA.onError([](ota_error_t error) {
+    if(error == OTA_AUTH_ERROR) events.send("Auth Failed", "ota");
+    else if(error == OTA_BEGIN_ERROR) events.send("Begin Failed", "ota");
+    else if(error == OTA_CONNECT_ERROR) events.send("Connect Failed", "ota");
+    else if(error == OTA_RECEIVE_ERROR) events.send("Recieve Failed", "ota");
+    else if(error == OTA_END_ERROR) events.send("End Failed", "ota");
+  });
+  ArduinoOTA.setHostname((const char *)hostNAME.c_str());
   ArduinoOTA.begin();
+                                                            ///////////////////////////////////////////
+  MDNS.addService("http","tcp",80);
 
+    ws.onEvent(onWsEvent);
+  server.addHandler(&ws);
+
+  events.onConnect([](AsyncEventSourceClient *client){
+    client->send("hello!",NULL,millis(),1000);
+  });
+  server.addHandler(&events);
+
+  server.addHandler(new SPIFFSEditor(http_username,http_password));
+
+  server.on("/heap", HTTP_GET, [](AsyncWebServerRequest *request){
+    Serial.printf("GET /heap");
+    request->send(200, "text/plain", String(ESP.getFreeHeap()));
+  });
+  server.on("/all", HTTP_GET, [](AsyncWebServerRequest *request){
+    Serial.printf("GET /all");
+    String json = "{";
+    json += "\"heap\":"+String(ESP.getFreeHeap());
+    json += ", \"temp\":"+temp;
+    json += ", \"setTemp\":"+setTemp;
+    json += ", \"umidita\":"+umidita;
+    json += ", \"stato\":" +acceso;
+    json += "}";
+    Serial.printf("Json: \n");
+    request->send(200, "application/json", json);
+  });
+  
+  server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.htm");
+
+  server.onNotFound([](AsyncWebServerRequest *request){
+    Serial.printf("NOT_FOUND: ");
+    if(request->method() == HTTP_GET)
+      Serial.printf("GET");
+    else if(request->method() == HTTP_POST)
+      Serial.printf(" POST http://%s%s\n", "Host",request->host().c_str());
+      //Serial.printf("POST");
+    else if(request->method() == HTTP_DELETE)
+      Serial.printf("DELETE");
+    else if(request->method() == HTTP_PUT)
+      Serial.printf("PUT");
+    else if(request->method() == HTTP_PATCH)
+      Serial.printf("PATCH");
+    else if(request->method() == HTTP_HEAD)
+      Serial.printf("HEAD");
+    else if(request->method() == HTTP_OPTIONS)
+      Serial.printf("OPTIONS");
+    else
+      Serial.printf("UNKNOWN");
+    Serial.printf(" http://%s%s\n", request->host().c_str(), request->url().c_str());
+
+    if(request->contentLength()){
+      Serial.printf("_CONTENT_TYPE: %s\n", request->contentType().c_str());
+      Serial.printf("_CONTENT_LENGTH: %u\n", request->contentLength());
+    }
+
+    int headers = request->headers();
+    int i;
+    for(i=0;i<headers;i++){
+      AsyncWebHeader* h = request->getHeader(i);
+      Serial.printf("_HEADER[%s]: %s\n", h->name().c_str(), h->value().c_str());
+    }
+
+    int params = request->params();
+    for(i=0;i<params;i++){
+      AsyncWebParameter* p = request->getParam(i);
+      if(p->isFile()){
+        Serial.printf("_FILE[%s]: %s, size: %u\n", p->name().c_str(), p->value().c_str(), p->size());
+      } else if(p->isPost()){
+        Serial.printf("_POST[%s]: %s\n", p->name().c_str(), p->value().c_str());
+      } else {
+        Serial.printf("_GET[%s]: %s\n", p->name().c_str(), p->value().c_str());
+      }
+    }
+
+    request->send(404);
+  });
+  server.onFileUpload([](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final){
+    if(!index)
+      Serial.printf("UploadStart: %s\n", filename.c_str());
+    Serial.printf("%s", (const char*)data);
+    if(final)
+      Serial.printf("UploadEnd: %s (%u)\n", filename.c_str(), index+len);
+  });
+  server.onRequestBody([](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total){
+    if(request->method() == HTTP_POST && request->url() == "/save")
+      if(!index)
+        Serial.printf("Request : %u\n",request);
+        Serial.printf("BodyStart: %u\n", index);
+        Serial.printf("scrivo file: sst_crono_matrix.json");
+        Serial.printf("%s", (const char*)data);
+        String filena = "/sst_crono_matrix.json";
+        fsUploadFile = SPIFFS.open(filena, "w");
+        if (!fsUploadFile) 
+          Serial.println("file open failed");
+        fsUploadFile.printf("%s",(const char*)data);  
+      if(index + len == total)
+        Serial.printf("BodyEnd: %u\n", total);
+        fsUploadFile.close();
+      
+  });
+  
+  server.begin();
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////
   // Init HomeScreen
   initScreen();
 }
@@ -810,4 +954,89 @@ void publishHeating_ON_OFF() {
     pblshdata(SST_HEAT_ONOFF, &HEAT_OFF, 1);
 }
 
+//WBServer
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len){
+  if(type == WS_EVT_CONNECT){
+    Serial.printf("ws[%s][%u] connect\n", server->url(), client->id());
+    client->printf("Hello Client %u :)", client->id());
+    client->ping();
+  } else if(type == WS_EVT_DISCONNECT){
+    Serial.printf("ws[%s][%u] disconnect: %u\n", server->url(), client->id());
+  } else if(type == WS_EVT_ERROR){
+    Serial.printf("ws[%s][%u] error(%u): %s\n", server->url(), client->id(), *((uint16_t*)arg), (char*)data);
+  } else if(type == WS_EVT_PONG){
+    Serial.printf("ws[%s][%u] pong[%u]: %s\n", server->url(), client->id(), len, (len)?(char*)data:"");
+  } else if(type == WS_EVT_DATA){
+    AwsFrameInfo * info = (AwsFrameInfo*)arg;
+    String msg = "";
+    if(info->final && info->index == 0 && info->len == len){
+      //the whole message is in a single frame and we got all of it's data
+      Serial.printf("ws[%s][%u] %s-message[%llu]: ", server->url(), client->id(), (info->opcode == WS_TEXT)?"text":"binary", info->len);
 
+      if(info->opcode == WS_TEXT){
+        for(size_t i=0; i < info->len; i++) {
+          msg += (char) data[i];
+        }
+      } else {
+        char buff[3];
+        for(size_t i=0; i < info->len; i++) {
+          sprintf(buff, "%02x ", (uint8_t) data[i]);
+          msg += buff ;
+        }
+      }
+      Serial.printf("%s\n",msg.c_str());
+
+      if(info->opcode == WS_TEXT)
+        client->text("I got your text message");
+      else
+        client->binary("I got your binary message");
+    } else {
+      //message is comprised of multiple frames or the frame is split into multiple packets
+      if(info->index == 0){
+        if(info->num == 0)
+          Serial.printf("ws[%s][%u] %s-message start\n", server->url(), client->id(), (info->message_opcode == WS_TEXT)?"text":"binary");
+        Serial.printf("ws[%s][%u] frame[%u] start[%llu]\n", server->url(), client->id(), info->num, info->len);
+      }
+
+      Serial.printf("ws[%s][%u] frame[%u] %s[%llu - %llu]: ", server->url(), client->id(), info->num, (info->message_opcode == WS_TEXT)?"text":"binary", info->index, info->index + len);
+
+      if(info->opcode == WS_TEXT){
+        for(size_t i=0; i < info->len; i++) {
+          msg += (char) data[i];
+        }
+      } else {
+        char buff[3];
+        for(size_t i=0; i < info->len; i++) {
+          sprintf(buff, "%02x ", (uint8_t) data[i]);
+          msg += buff ;
+        }
+      }
+      Serial.printf("%s\n",msg.c_str());
+
+      if((info->index + len) == info->len){
+        Serial.printf("ws[%s][%u] frame[%u] end[%llu]\n", server->url(), client->id(), info->num, info->len);
+        if(info->final){
+          Serial.printf("ws[%s][%u] %s-message end\n", server->url(), client->id(), (info->message_opcode == WS_TEXT)?"text":"binary");
+          if(info->message_opcode == WS_TEXT)
+            client->text("I got your text message");
+          else
+            client->binary("I got your binary message");
+        }
+      }
+    }
+  }
+}
+void handleBody(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total){
+    Serial.printf("Void HandleBody:");
+  if(!index){
+    Serial.printf("BodyStart: %u B\n", total);
+  }
+  for(size_t i=0; i<len; i++){
+    Serial.write(data[i]);
+  }
+  if(index + len == total){
+    Serial.printf("BodyEnd: %u B\n", total);
+  }
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -43,15 +43,19 @@
 
 //STATIC IP
 // use commas between number
-#define STATIC_IP 192,168,0,74
+#define STATIC_IP 192,168,1,26
 #define STATIC_SUBNET 255,255,255,0
-#define STATIC_IP_GW 192,168,0,1
+#define STATIC_IP_GW 192,168,1,1
 
 // **** Define the WiFi name and password ****
 //Only for DYNAMIC_CONNECTION = 0
 #define WIFICONF_INSKETCH
 #define WiFi_SSID               "*** toConfigure ***"
 #define WiFi_Password           "*** toConfigure ***"   
+#define http_username           "admin"
+#define http_password           "admin"
+
+
 
 // Define the network configuration according to your router settingsuration according to your router settings
 // and the other on the wireless oneless one
