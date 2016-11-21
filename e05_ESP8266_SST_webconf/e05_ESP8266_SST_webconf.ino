@@ -94,150 +94,6 @@ MenuSystem* myMenu;
 // Use hardware SPI
 Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ 2 , /*cs=*/ 15);
 
-void SST_Reset() {
-  spiffs_Reset();
-  ESP.reset();
-}
-
-void subscribeTopics() {
-  if (sbscrbdata(TOPIC1, mypayload, &mypayload_len)) {
-    float32((uint16_t*) mypayload,  &fTopic_C1_Output);
-    SERIAL_OUT.print("TOPIC1: "); SERIAL_OUT.println(fTopic_C1_Output);
-  } else if (sbscrbdata(TOPIC2, mypayload, &mypayload_len)) {
-    float32((uint16_t*) mypayload,  &fTopic_C2_Output);
-    SERIAL_OUT.print("TOPIC2: "); SERIAL_OUT.println(fTopic_C2_Output);
-  } else if (sbscrbdata(TOPIC3, mypayload, &mypayload_len)) {
-    float32((uint16_t*) mypayload,  &fTopic_C3_Output);
-    SERIAL_OUT.print("TOPIC3: "); SERIAL_OUT.println(fTopic_C3_Output);
-  } else if (sbscrbdata(TOPIC4, mypayload, &mypayload_len)) {
-    float32((uint16_t*) mypayload,  &fTopic_C4_Output);
-    SERIAL_OUT.print("TOPIC4: "); SERIAL_OUT.println(fTopic_C4_Output);
-  } else if (sbscrbdata(TOPIC5, mypayload, &mypayload_len)) {
-    float32((uint16_t*) mypayload,  &fTopic_C5_Output);
-    SERIAL_OUT.print("TOPIC5: "); SERIAL_OUT.println(fTopic_C5_Output);
-  } else if (sbscrbdata(TOPIC6, mypayload, &mypayload_len)) {
-    float32((uint16_t*) mypayload,  &fTopic_C6_Output);
-    SERIAL_OUT.print("TOPIC6: "); SERIAL_OUT.println(fTopic_C6_Output);
-  }
-}
-
-
-void setSoulissDataChanged() {
-  if (data_changed != Souliss_TRIGGED) {
-
-    data_changed = Souliss_TRIGGED;
-  }
-}
-
-void set_ThermostatModeOn(U8 slot) {
-  SERIAL_OUT.println("set_ThermostatModeOn");
-  memory_map[MaCaco_OUT_s + slot] |= Souliss_T3n_SystemOn;
-  memory_map[MaCaco_OUT_s + slot] &= ~Souliss_T3n_HeatingMode;
-
-  // Trig the next change of the state
-  setSoulissDataChanged();
-}
-void set_ThermostatOff(U8 slot) {
-  //memory_map[MaCaco_IN_s + slot] = Souliss_T3n_ShutDown;
-  memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] &= ~ (Souliss_T3n_SystemOn | Souliss_T3n_FanOn1 | Souliss_T3n_FanOn2 | Souliss_T3n_FanOn3 | Souliss_T3n_CoolingOn | Souliss_T3n_HeatingOn);
-  setSoulissDataChanged();
-}
-void set_DisplayMinBright(U8 slot, U8 val) {
-  memory_map[MaCaco_OUT_s + slot + 1] = val;
-  // Trig the next change of the state
-
-  setSoulissDataChanged();
-}
-
-void encoderFunction() {
-  encoder();
-}
-
-boolean getSoulissSystemState() {
-  return memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] & Souliss_T3n_SystemOn;
-}
-
-boolean T_or_H_isNan = false;
-boolean bFlagBegin = false;
-void getTemp() {
-  // Read temperature value from DHT sensor and convert from single-precision to half-precision
-  fVal = dht.readTemperature();
-  SERIAL_OUT.print("acquisizione Temperature: "); SERIAL_OUT.println(fVal);
-  if (!isnan(fVal)) {
-    temperature = fVal; //memorizza temperatura se non è Not A Number
-    //Import temperature into T31 Thermostat
-    ImportAnalog(SLOT_THERMOSTAT + 1, &temperature);
-    ImportAnalog(SLOT_TEMPERATURE, &temperature);
-  } else {
-    bFlagBegin = true;
-  }
-
-  // Read humidity value from DHT sensor and convert from single-precision to half-precision
-  fVal = dht.readHumidity();
-  SERIAL_OUT.print("acquisizione Humidity: "); SERIAL_OUT.println(fVal);
-  if (!isnan(fVal)) {
-    humidity = fVal;
-    ImportAnalog(SLOT_HUMIDITY, &humidity);
-  } else {
-    bFlagBegin = true;
-  }
-
-  if ( bFlagBegin) {
-    //if DHT fail then try to reinit
-    dht.begin();
-    SERIAL_OUT.println(" dht.begin();");
-  }
-}
-
-void initScreen() {
-  ucg.clearScreen();
-  SERIAL_OUT.println("clearScreen ok");
-  if (getLayout1()) {
-    SERIAL_OUT.println("HomeScreen Layout 1");
-
-    display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSoulissSystemState(), bChildLock);
-    getTemp();
-  }
-  else if (getLayout2()) {
-    SERIAL_OUT.println("HomeScreen Layout 2");
-    getTemp();
-    display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
-    display_layout2_print_circle_white(ucg);
-    display_layout2_print_datetime(ucg);
-    if (ACTIVATETOPICSPAGE == 1) {
-      alwaysdisplayTopicsHomePageLayout2(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
-    }
-    display_layout2_print_circle_black(ucg);
-    yield();
-    display_layout2_print_circle_green(ucg);
-  }
-}
-void setSetpoint(float setpoint) {
-  //SERIAL_OUT.print("Away: ");SERIAL_OUT.println(memory_map[MaCaco_OUT_s + SLOT_AWAY]);
-  if (memory_map[MaCaco_OUT_s + SLOT_AWAY]) {
-    //is Away
-
-  } else {
-    //is not Away
-  }
-  Souliss_HalfPrecisionFloating((memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3), &setpoint);
-}
-void bright(int lum) {
-  int val = ((float)lum / 100) * 1023;
-  if (val > 1023) val = 1023;
-  if (val < 0) val = 0;
-  analogWrite(BACKLED, val);
-}
-
-void publishHeating_ON_OFF() {
-  //code from Souliss_nDigOut(...
-  //nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
-
-  if (memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] & Souliss_T3n_HeatingOn)
-    pblshdata(SST_HEAT_ONOFF, &HEAT_ON, 1);
-  else
-    pblshdata(SST_HEAT_ONOFF, &HEAT_OFF, 1);
-}
 
 
 
@@ -806,6 +662,152 @@ void loop()
   // Look for a new sketch to update over the air
   ArduinoOTA.handle();
   yield();
+}
+
+
+void SST_Reset() {
+  spiffs_Reset();
+  ESP.reset();
+}
+
+void subscribeTopics() {
+  if (sbscrbdata(TOPIC1, mypayload, &mypayload_len)) {
+    float32((uint16_t*) mypayload,  &fTopic_C1_Output);
+    SERIAL_OUT.print("TOPIC1: "); SERIAL_OUT.println(fTopic_C1_Output);
+  } else if (sbscrbdata(TOPIC2, mypayload, &mypayload_len)) {
+    float32((uint16_t*) mypayload,  &fTopic_C2_Output);
+    SERIAL_OUT.print("TOPIC2: "); SERIAL_OUT.println(fTopic_C2_Output);
+  } else if (sbscrbdata(TOPIC3, mypayload, &mypayload_len)) {
+    float32((uint16_t*) mypayload,  &fTopic_C3_Output);
+    SERIAL_OUT.print("TOPIC3: "); SERIAL_OUT.println(fTopic_C3_Output);
+  } else if (sbscrbdata(TOPIC4, mypayload, &mypayload_len)) {
+    float32((uint16_t*) mypayload,  &fTopic_C4_Output);
+    SERIAL_OUT.print("TOPIC4: "); SERIAL_OUT.println(fTopic_C4_Output);
+  } else if (sbscrbdata(TOPIC5, mypayload, &mypayload_len)) {
+    float32((uint16_t*) mypayload,  &fTopic_C5_Output);
+    SERIAL_OUT.print("TOPIC5: "); SERIAL_OUT.println(fTopic_C5_Output);
+  } else if (sbscrbdata(TOPIC6, mypayload, &mypayload_len)) {
+    float32((uint16_t*) mypayload,  &fTopic_C6_Output);
+    SERIAL_OUT.print("TOPIC6: "); SERIAL_OUT.println(fTopic_C6_Output);
+  }
+}
+
+
+void setSoulissDataChanged() {
+  if (data_changed != Souliss_TRIGGED) {
+
+    data_changed = Souliss_TRIGGED;
+  }
+}
+
+void set_ThermostatModeOn(U8 slot) {
+  SERIAL_OUT.println("set_ThermostatModeOn");
+  memory_map[MaCaco_OUT_s + slot] |= Souliss_T3n_SystemOn;
+  memory_map[MaCaco_OUT_s + slot] &= ~Souliss_T3n_HeatingMode;
+
+  // Trig the next change of the state
+  setSoulissDataChanged();
+}
+void set_ThermostatOff(U8 slot) {
+  //memory_map[MaCaco_IN_s + slot] = Souliss_T3n_ShutDown;
+  memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] &= ~ (Souliss_T3n_SystemOn | Souliss_T3n_FanOn1 | Souliss_T3n_FanOn2 | Souliss_T3n_FanOn3 | Souliss_T3n_CoolingOn | Souliss_T3n_HeatingOn);
+  setSoulissDataChanged();
+}
+void set_DisplayMinBright(U8 slot, U8 val) {
+  memory_map[MaCaco_OUT_s + slot + 1] = val;
+  // Trig the next change of the state
+
+  setSoulissDataChanged();
+}
+
+void encoderFunction() {
+  encoder();
+}
+
+boolean getSoulissSystemState() {
+  return memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] & Souliss_T3n_SystemOn;
+}
+
+boolean T_or_H_isNan = false;
+boolean bFlagBegin = false;
+void getTemp() {
+  // Read temperature value from DHT sensor and convert from single-precision to half-precision
+  fVal = dht.readTemperature();
+  SERIAL_OUT.print("acquisizione Temperature: "); SERIAL_OUT.println(fVal);
+  if (!isnan(fVal)) {
+    temperature = fVal; //memorizza temperatura se non è Not A Number
+    //Import temperature into T31 Thermostat
+    ImportAnalog(SLOT_THERMOSTAT + 1, &temperature);
+    ImportAnalog(SLOT_TEMPERATURE, &temperature);
+  } else {
+    bFlagBegin = true;
+  }
+
+  // Read humidity value from DHT sensor and convert from single-precision to half-precision
+  fVal = dht.readHumidity();
+  SERIAL_OUT.print("acquisizione Humidity: "); SERIAL_OUT.println(fVal);
+  if (!isnan(fVal)) {
+    humidity = fVal;
+    ImportAnalog(SLOT_HUMIDITY, &humidity);
+  } else {
+    bFlagBegin = true;
+  }
+
+  if ( bFlagBegin) {
+    //if DHT fail then try to reinit
+    dht.begin();
+    SERIAL_OUT.println(" dht.begin();");
+  }
+}
+
+void initScreen() {
+  ucg.clearScreen();
+  SERIAL_OUT.println("clearScreen ok");
+  if (getLayout1()) {
+    SERIAL_OUT.println("HomeScreen Layout 1");
+
+    display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSoulissSystemState(), bChildLock);
+    getTemp();
+  }
+  else if (getLayout2()) {
+    SERIAL_OUT.println("HomeScreen Layout 2");
+    getTemp();
+    display_layout2_HomeScreen(ucg, temperature, humidity, setpoint);
+    display_layout2_print_circle_white(ucg);
+    display_layout2_print_datetime(ucg);
+    if (ACTIVATETOPICSPAGE == 1) {
+      alwaysdisplayTopicsHomePageLayout2(ucg, fTopic_C1_Output, fTopic_C2_Output, fTopic_C3_Output, fTopic_C4_Output, fTopic_C5_Output, fTopic_C6_Output);
+    }
+    display_layout2_print_circle_black(ucg);
+    yield();
+    display_layout2_print_circle_green(ucg);
+  }
+}
+void setSetpoint(float setpoint) {
+  //SERIAL_OUT.print("Away: ");SERIAL_OUT.println(memory_map[MaCaco_OUT_s + SLOT_AWAY]);
+  if (memory_map[MaCaco_OUT_s + SLOT_AWAY]) {
+    //is Away
+
+  } else {
+    //is not Away
+  }
+  Souliss_HalfPrecisionFloating((memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3), &setpoint);
+}
+void bright(int lum) {
+  int val = ((float)lum / 100) * 1023;
+  if (val > 1023) val = 1023;
+  if (val < 0) val = 0;
+  analogWrite(BACKLED, val);
+}
+
+void publishHeating_ON_OFF() {
+  //code from Souliss_nDigOut(...
+  //nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
+
+  if (memory_map[MaCaco_OUT_s + SLOT_THERMOSTAT] & Souliss_T3n_HeatingOn)
+    pblshdata(SST_HEAT_ONOFF, &HEAT_ON, 1);
+  else
+    pblshdata(SST_HEAT_ONOFF, &HEAT_OFF, 1);
 }
 
 
