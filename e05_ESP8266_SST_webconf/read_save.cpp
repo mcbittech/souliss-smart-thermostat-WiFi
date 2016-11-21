@@ -1,7 +1,5 @@
 #include <Arduino.h>
-#include <EEPROM.h>
 #include "constants.h"
-#include "tools/store/store.h"
 #include "read_save.h"
 #include "FS.h"
 #include <ArduinoJson.h>
@@ -65,10 +63,8 @@ int read_spiffs_prefs(const char*  valuedaleggere) {
 
 
 void spiffs_Reset() {
-  Serial.println("Reset EEPROM");
-
+  Serial.println("Reset SST");
   Serial.print("SPIFFS Formatting... ");
-
   if (SPIFFS.format()) {
     Serial.println("OK");
   } else {
