@@ -101,12 +101,20 @@ AsyncWebSocket ws("/ws");
 AsyncEventSource events("/events");
 File fsUploadFile;
 uint8_t buff{};
+/*
 String temp = "20";
 String setTemp= "12";
 String acceso = "1";
 String umidita = "80";
 String nextStep = "12:00";
 String filena = "";
+*/
+String S_temperature_WBS;
+String S_setpoint_WBS;
+String S_relestatus_WBS;
+String S_humidity_WBS;
+String S_nextstep_WBS;
+String S_filena_WBS;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -209,7 +217,7 @@ void setup()
   // Set Hostname.
   String hostNAME(HOSTNAME);
   WiFi.hostname(hostNAME);
-  WiFi.mode(WIFI_AP_STA);
+  //WiFi.mode(WIFI_AP_STA);
   //WiFi.softAP(hostNAME);
   
   //hostname += String(ESP.getChipId(), HEX);
@@ -236,7 +244,7 @@ void setup()
                                                             ///////////////////////////////////////////
   MDNS.addService("http","tcp",80);
 
-    ws.onEvent(onWsEvent);
+  ws.onEvent(onWsEvent);
   server.addHandler(&ws);
 
   events.onConnect([](AsyncEventSourceClient *client){
@@ -254,10 +262,10 @@ void setup()
     Serial.printf("GET /all");
     String json = "{";
     json += "\"heap\":"+String(ESP.getFreeHeap());
-    json += ", \"temp\":"+temp;
-    json += ", \"setTemp\":"+setTemp;
-    json += ", \"umidita\":"+umidita;
-    json += ", \"stato\":" +acceso;
+    json += ", \"temp\":"+S_temperature_WBS;
+    json += ", \"setTemp\":"+S_setpoint_WBS;
+    json += ", \"umidita\":"+S_humidity_WBS;
+    json += ", \"stato\":" +S_relestatus_WBS;
     json += "}";
     Serial.printf("Json: \n");
     request->send(200, "application/json", json);
@@ -326,8 +334,8 @@ void setup()
         Serial.printf("BodyStart: %u\n", index);
         Serial.printf("scrivo file: sst_crono_matrix.json");
         Serial.printf("%s", (const char*)data);
-        String filena = "/sst_crono_matrix.json";
-        fsUploadFile = SPIFFS.open(filena, "w");
+        String S_filena_WBS = "/sst_crono_matrix.json";
+        fsUploadFile = SPIFFS.open(S_filena_WBS, "w");
         if (!fsUploadFile) 
           Serial.println("file open failed");
         fsUploadFile.printf("%s",(const char*)data);  
@@ -433,6 +441,7 @@ void loop()
           setSoulissDataChanged();
         }
       }
+      S_setpoint_WBS=setpoint;
     }
 
 
@@ -574,6 +583,7 @@ void loop()
       Logic_Thermostat(SLOT_THERMOSTAT);
       // Start the heater and the fans
       nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
+      S_relestatus_WBS=RELE;//to WBServer
 
 
       // We are not handling the cooling mode, if enabled by the user, force it back
@@ -883,6 +893,7 @@ void getTemp() {
     //Import temperature into T31 Thermostat
     ImportAnalog(SLOT_THERMOSTAT + 1, &temperature);
     ImportAnalog(SLOT_TEMPERATURE, &temperature);
+    S_temperature_WBS=temperature;//to WBServer
   } else {
     bFlagBegin = true;
   }
@@ -893,6 +904,7 @@ void getTemp() {
   if (!isnan(fVal)) {
     humidity = fVal;
     ImportAnalog(SLOT_HUMIDITY, &humidity);
+    S_humidity_WBS=humidity;//to WBServer
   } else {
     bFlagBegin = true;
   }
