@@ -50,10 +50,10 @@ void setup_OTA_WBServer(){
     Serial.printf("GET /all");
     String json = "{";
     json += "\"heap\":"+String(ESP.getFreeHeap());
-    json += ", \"temp\":"+S_temperature_WBS;
-    json += ", \"setTemp\":"+S_setpoint_WBS;
-    json += ", \"umidita\":"+S_humidity_WBS;
-    json += ", \"stato\":" +S_relestatus_WBS;
+    json += ", \"S_temperature_WBS\":"+S_temperature_WBS;
+    json += ", \"S_setpoint_WBS\":"+S_setpoint_WBS;
+    json += ", \"S_humidity_WBS\":"+S_humidity_WBS;
+    json += ", \"S_relestatus_WBS\":" +S_relestatus_WBS;
     json += "}";
     Serial.printf("Json: \n");
     request->send(200, "application/json", json);
