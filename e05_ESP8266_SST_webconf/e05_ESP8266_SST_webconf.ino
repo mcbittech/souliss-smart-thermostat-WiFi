@@ -53,6 +53,7 @@
 #include <MenuSystem.h>
 #include "menu.h"
 #include "crono.h"
+#include "datalogger.h"
 #include "read_save.h"
 #include "topics.h"
 #include "pagesStruct.h"
@@ -444,8 +445,8 @@ void loop()
       //*************************************************************************
       Logic_Thermostat(SLOT_THERMOSTAT);
       // Start the heater and the fans
-      nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
-      S_relestatus_WBS=RELE;//to WBServer
+      nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater 
+      S_relestatus_WBS=(mOutput(SLOT_THERMOSTAT) & Souliss_T3n_HeatingOn);//to WBServer
 
 
       // We are not handling the cooling mode, if enabled by the user, force it back
@@ -659,14 +660,18 @@ void loop()
             }
           }
       }
+      
+      //DATALOGGER
+      save_datalogger(setpoint,temperature,humidity,(mOutput(SLOT_THERMOSTAT) & Souliss_T3n_HeatingOn));
     }
 
     SLOW_15m() {
       //NTP
-      /////////////////////////////////////////////////////////////////////////////////////////////////////////
       yield();
       initNTP();
-      yield();
+
+      //DATALOGGER
+      save_datalogger(setpoint,temperature,humidity,(mOutput(SLOT_THERMOSTAT) & Souliss_T3n_HeatingOn));
     }
 
 #if(DYNAMIC_CONNECTION==1)
