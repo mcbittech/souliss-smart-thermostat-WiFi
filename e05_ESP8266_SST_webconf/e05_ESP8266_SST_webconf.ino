@@ -101,14 +101,7 @@ AsyncWebSocket ws("/ws");
 AsyncEventSource events("/events");
 File fsUploadFile;
 uint8_t buff{};
-/*
-String temp = "20";
-String setTemp= "12";
-String acceso = "1";
-String umidita = "80";
-String nextStep = "12:00";
-String filena = "";
-*/
+
 String S_temperature_WBS;
 String S_setpoint_WBS;
 String S_relestatus_WBS;
