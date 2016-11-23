@@ -10,12 +10,14 @@ void save_datalogger(float setpoint,float temperature,float humidity,bool relays
   String TimeDate = "";
   TimeDate = digitalClockDisplay();
   
-  File sst_datalogger = SPIFFS.open("/sst_datalogger.csv", "w");
+  File sst_datalogger = SPIFFS.open("/sst_datalogger.csv", "a");
   if (!sst_datalogger) {
     Serial.println("sst_datalogger.csv open failed");
   }
-  sst_datalogger.print(TimeDate);sst_datalogger.print(",");sst_datalogger.print(setpoint);sst_datalogger.print(",");sst_datalogger.print(temperature);sst_datalogger.print(",");sst_datalogger.print(humidity);sst_datalogger.print(",");sst_datalogger.println(relaystatus);
-  Serial.print("Salvo linea datalogger -> ");Serial.print(TimeDate);Serial.print(",");Serial.print(setpoint);Serial.print(",");Serial.print(temperature);Serial.print(",");Serial.print(humidity);Serial.print(",");Serial.println(relaystatus);
+  Serial.print("sst_datalogger size: ");Serial.println(sst_datalogger.size());
+  sst_datalogger.print(TimeDate);sst_datalogger.print(",");sst_datalogger.print(setpoint,1);sst_datalogger.print(",");sst_datalogger.print(temperature,1);sst_datalogger.print(",");sst_datalogger.print(humidity,1);sst_datalogger.print(",");sst_datalogger.println(relaystatus);
+  Serial.print("Salvo linea datalogger -> ");Serial.print(TimeDate);Serial.print(",");Serial.print(setpoint,1);Serial.print(",");Serial.print(temperature,1);Serial.print(",");Serial.print(humidity,1);Serial.print(",");Serial.println(relaystatus);
+  Serial.print("sst_datalogger size: ");Serial.println(sst_datalogger.size());
   delay(1);
   sst_datalogger.close();
 }

@@ -661,6 +661,10 @@ void loop()
           }
       }
       
+
+    }
+
+    SLOW_x10s(60){
       //DATALOGGER
       save_datalogger(setpoint,temperature,humidity,(mOutput(SLOT_THERMOSTAT) & Souliss_T3n_HeatingOn));
     }
@@ -669,9 +673,6 @@ void loop()
       //NTP
       yield();
       initNTP();
-
-      //DATALOGGER
-      save_datalogger(setpoint,temperature,humidity,(mOutput(SLOT_THERMOSTAT) & Souliss_T3n_HeatingOn));
     }
 
 #if(DYNAMIC_CONNECTION==1)
@@ -686,7 +687,7 @@ void loop()
 }
 
 
-void SST_Reset() {
+void SST_Reset() {  
   spiffs_Reset();
   ESP.reset();
 }
