@@ -1,6 +1,10 @@
 #include "constants.h"
 
 void setup_OTA_WBServer(){
+
+
+
+
 // Init the OTA + WebServer
   // Set Hostname.
   String hostNAME(HOSTNAME);
@@ -46,6 +50,16 @@ void setup_OTA_WBServer(){
     Serial.printf("GET /heap");
     request->send(200, "text/plain", String(ESP.getFreeHeap()));
   });
+  server.on("/away_ON", HTTP_GET, [](AsyncWebServerRequest *request){
+    B_away_WBS=1;
+    Serial.printf("GET /away_ON");
+    request->send(200, "text/plain", String(ESP.getFreeHeap()));
+  });
+  server.on("/away_OFF", HTTP_GET, [](AsyncWebServerRequest *request){
+    B_away_WBS=0;
+    Serial.printf("GET /away_OFF");
+    request->send(200, "text/plain", String(ESP.getFreeHeap()));
+  });
   server.on("/all", HTTP_GET, [](AsyncWebServerRequest *request){
     Serial.printf("GET /all");
     String json = "{";
@@ -54,6 +68,7 @@ void setup_OTA_WBServer(){
     json += ", \"S_setpoint_WBS\":"+S_setpoint_WBS;
     json += ", \"S_humidity_WBS\":"+S_humidity_WBS;
     json += ", \"S_relestatus_WBS\":" +S_relestatus_WBS;
+    json += ", \"B_away_WBS\":" +B_is_away_WBS;
     json += "}";
     Serial.printf("Json: \n");
     request->send(200, "application/json", json);
