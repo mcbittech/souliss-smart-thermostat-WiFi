@@ -105,7 +105,7 @@ uint8_t buff{};
 
 String S_temperature_WBS;
 String S_setpoint_WBS;
-String S_relestatus_WBS;
+bool S_relestatus_WBS;
 String S_humidity_WBS;
 String S_nextstep_WBS;
 String S_filena_WBS;

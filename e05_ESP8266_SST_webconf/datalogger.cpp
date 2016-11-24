@@ -10,7 +10,7 @@ void save_datalogger(float setpoint,float temperature,float humidity,bool relays
   String TimeDate = "";
   TimeDate = digitalClockDisplay_WBS();
   
-  File sst_datalogger = SPIFFS.open("/sst_datalogger.csv", "a");
+  File sst_datalogger = SPIFFS.open("/datalog/sst_datalogger.csv", "a");
   if (!sst_datalogger) {
     Serial.println("sst_datalogger.csv open failed");
   }
