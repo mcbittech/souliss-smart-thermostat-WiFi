@@ -664,7 +664,7 @@ void loop()
 
     }
 
-    SLOW_x10s(60){
+    SLOW_x10s(59){
       //DATALOGGER
       save_datalogger(setpoint,temperature,humidity,(mOutput(SLOT_THERMOSTAT) & Souliss_T3n_HeatingOn));
     }

@@ -6,6 +6,7 @@
 time_t getNtpTime();
 void sendNTPpacket(IPAddress);
 
+String digitalClockDisplay_WBS();
 String digitalClockDisplay();
 String digitalClockDisplay_simple();
 String digitalDataDisplay();

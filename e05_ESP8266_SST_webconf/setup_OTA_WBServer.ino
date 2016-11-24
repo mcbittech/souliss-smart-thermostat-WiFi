@@ -5,18 +5,10 @@ void setup_OTA_WBServer(){
 
 
 
-// Init the OTA + WebServer
+  // Init the OTA + WebServer
   // Set Hostname.
   String hostNAME(HOSTNAME);
   WiFi.hostname(hostNAME);
-  //WiFi.mode(WIFI_AP_STA);
-  //WiFi.softAP(hostNAME);
-  
-  //hostname += String(ESP.getChipId(), HEX);
-  //SERIAL_OUT.print("set OTA hostname: "); SERIAL_OUT.println(hostname);
-  //ArduinoOTA.setHostname((const char *)hostNAME.c_str());
-  //ArduinoOTA.begin();
-  //Send OTA events to the browser
   ArduinoOTA.onStart([]() { events.send("Update Start", "ota"); });
   ArduinoOTA.onEnd([]() { events.send("Update End", "ota"); });
   ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
@@ -33,7 +25,7 @@ void setup_OTA_WBServer(){
   });
   ArduinoOTA.setHostname((const char *)hostNAME.c_str());
   ArduinoOTA.begin();
-                                                            ///////////////////////////////////////////
+
   MDNS.addService("http","tcp",80);
 
   ws.onEvent(onWsEvent);

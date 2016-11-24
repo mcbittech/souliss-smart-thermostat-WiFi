@@ -100,19 +100,24 @@ String printDigits(int digits) {
   return s;
 }
 
+String digitalClockDisplay_WBS() {
+  // digital clock display of date + time
+  return printDigits(year()) + "/" + printDigits(month()) + "/" + printDigits(day()) + " " + printDigits(hour()) + ":" + printDigits(minute()) + ":" + printDigits(second()) ;
+}
+
 String digitalClockDisplay() {
-  // digital clock display of the time
+  // digital clock display of time + date
   return printDigits(hour()) + ":" + printDigits(minute()) + ":" + printDigits(second()) +  " " + day() + "/" + month() + "/" + year();
 }
 
 String digitalClockDisplay_simple() {
-  // digital clock display of the time
+  // digital clock display of time
   return printDigits(hour()) + ":" + printDigits(minute());
 }
 
 
 String digitalDataDisplay() {
-  // digital clock display of the time
+  // digital clock display of date
   return printDigits(day()) + "." + (month()) + "." + (year());
 }
 

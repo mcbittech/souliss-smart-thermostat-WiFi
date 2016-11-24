@@ -8,7 +8,7 @@
 void save_datalogger(float setpoint,float temperature,float humidity,bool relaystatus) {
   //NTP
   String TimeDate = "";
-  TimeDate = digitalClockDisplay();
+  TimeDate = digitalClockDisplay_WBS();
   
   File sst_datalogger = SPIFFS.open("/sst_datalogger.csv", "a");
   if (!sst_datalogger) {
