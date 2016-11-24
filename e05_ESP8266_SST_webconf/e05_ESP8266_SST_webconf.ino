@@ -109,8 +109,8 @@ String S_relestatus_WBS;
 String S_humidity_WBS;
 String S_nextstep_WBS;
 String S_filena_WBS;
-bool B_away_WBS;
-bool B_is_away_WBS;
+bool B_away_WBS=0;
+bool B_is_away_WBS=0;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 

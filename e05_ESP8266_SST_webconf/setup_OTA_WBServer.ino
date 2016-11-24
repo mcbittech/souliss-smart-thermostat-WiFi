@@ -63,7 +63,7 @@ void setup_OTA_WBServer(){
     json += ", \"S_setpoint_WBS\":"+S_setpoint_WBS;
     json += ", \"S_humidity_WBS\":"+S_humidity_WBS;
     json += ", \"S_relestatus_WBS\":" +S_relestatus_WBS;
-    json += ", \"B_away_WBS\":" +B_is_away_WBS;
+    json += ", \"B_is_away_WBS\":" +B_is_away_WBS;
     json += "}";
     Serial.printf("Json: \n");
     request->send(200, "application/json", json);
