@@ -103,10 +103,10 @@ AsyncEventSource events("/events");
 File fsUploadFile;
 uint8_t buff{};
 
-String S_temperature_WBS;
-String S_setpoint_WBS;
-bool S_relestatus_WBS;
-String S_humidity_WBS;
+String S_temperature_WBS="22.3";
+String S_setpoint_WBS="22.4";
+bool S_relestatus_WBS=0;
+String S_humidity_WBS="58.8";
 String S_nextstep_WBS;
 String S_filena_WBS;
 bool B_away_WBS=0;
