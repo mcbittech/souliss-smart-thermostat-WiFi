@@ -46,13 +46,13 @@ void setup_OTA_WBServer(){
   server.on("/away_ON", HTTP_GET, [](AsyncWebServerRequest *request){
     B_away_WBS=1;
     Serial.printf("GET /away_ON");
-    request->send(200, "text/plain", String(ESP.getFreeHeap()));
+    request->redirect("/index.htm");
   });
   
   server.on("/away_OFF", HTTP_GET, [](AsyncWebServerRequest *request){
     B_away_WBS=0;
     Serial.printf("GET /away_OFF");
-    request->send(200, "text/plain", String(ESP.getFreeHeap()));
+    request->redirect("/index.htm");
   });
   
   server.on("/all", HTTP_GET, [](AsyncWebServerRequest *request){
