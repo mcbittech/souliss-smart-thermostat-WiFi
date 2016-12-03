@@ -418,8 +418,8 @@ void loop()
             if (getLayout1()) {
               SERIAL_OUT.println("display_setpointPage - layout 1");
               display_layout1_background(ucg, arrotonda(getEncoderValue()) - arrotonda(setpoint));
-			  getTemp();
-              display_layout1_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity, getSoulissSystemState());
+			  
+              display_layout1_setpointPage(ucg, getEncoderValue(), temperature, humidity, getSoulissSystemState());
             }
             else if (getLayout2()) {
               SERIAL_OUT.println("display_setpointPage - layout 2");
