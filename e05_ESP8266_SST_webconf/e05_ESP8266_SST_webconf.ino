@@ -11,6 +11,12 @@
 // Let the IDE point to the Souliss framework
 #include "SoulissFramework.h"
 
+//new customs Souliss_T3n_DeadBand and Souliss_T3n_Hysteresis
+#define T3N_DEADBAND_INSKETCH
+	#define Souliss_T3n_DeadBand      0.1     // Degrees Deadband
+#define T3N_HYSTERESIS_INSKETCH
+	#define Souliss_T3n_Hysteresis      0.1     // Degrees Hysteresis
+
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
@@ -18,6 +24,7 @@
 #include "FS.h" //SPIFFS
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
+#include <MenuSystem.h>
 #include <DHT.h>
 
 // Configure the Souliss framework
@@ -48,7 +55,6 @@
 #include "language.h"
 #include "ntp.h"
 #include <TimeLib.h>
-#include <MenuSystem.h>
 #include "menu.h"
 #include "crono.h"
 #include "read_save.h"
@@ -412,6 +418,7 @@ void loop()
             if (getLayout1()) {
               SERIAL_OUT.println("display_setpointPage - layout 1");
               display_layout1_background(ucg, arrotonda(getEncoderValue()) - arrotonda(setpoint));
+			  getTemp();
               display_layout1_setpointPage(ucg, getEncoderValue(), Souliss_SinglePrecisionFloating(memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 1), humidity, getSoulissSystemState());
             }
             else if (getLayout2()) {
@@ -583,6 +590,7 @@ void loop()
       //*************************************************************************
       //*************************************************************************
       Logic_Thermostat(SLOT_THERMOSTAT);
+            
       // Start the heater and the fans
       nDigOut(RELE, Souliss_T3n_HeatingOn, SLOT_THERMOSTAT);    // Heater
 
