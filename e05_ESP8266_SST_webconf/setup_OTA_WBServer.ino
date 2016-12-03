@@ -2,12 +2,11 @@
 
 void setup_OTA_WBServer(){
 
-
-
-
   // Init the OTA + WebServer
   // Set Hostname.
   String hostNAME(HOSTNAME);
+  hostNAME += String(ESP.getChipId(), HEX);
+  SERIAL_OUT.print("set OTA+WiFi hostname: "); SERIAL_OUT.println(hostNAME);
   WiFi.hostname(hostNAME);
   ArduinoOTA.onStart([]() { events.send("Update Start", "ota"); });
   ArduinoOTA.onEnd([]() { events.send("Update End", "ota"); });
