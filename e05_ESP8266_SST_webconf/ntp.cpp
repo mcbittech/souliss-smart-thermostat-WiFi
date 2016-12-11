@@ -122,7 +122,7 @@ String digitalDataDisplay() {
 }
 
 //Crono var
-//Day of week  Sunday is day 0 
+//Day of week Sunday is day 0 
 int getNTPday(){
   return weekday();  
 }

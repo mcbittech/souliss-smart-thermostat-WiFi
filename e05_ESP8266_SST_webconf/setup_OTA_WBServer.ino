@@ -41,21 +41,21 @@ void setup_OTA_WBServer(){
     Serial.printf("GET /heap");
     request->send(200, "text/plain", String(ESP.getFreeHeap()));
   });
-  
+    
   server.on("/away_ON", HTTP_GET, [](AsyncWebServerRequest *request){
     B_away_WBS=1;
-    Serial.printf("GET /away_ON");
+    Serial.printf("\nGET /away_ON");
     request->redirect("/index.htm");
   });
   
   server.on("/away_OFF", HTTP_GET, [](AsyncWebServerRequest *request){
     B_away_WBS=0;
-    Serial.printf("GET /away_OFF");
+    Serial.printf("\nGET /away_OFF");
     request->redirect("/index.htm");
   });
   
   server.on("/all", HTTP_GET, [](AsyncWebServerRequest *request){
-    Serial.printf("GET /all");
+    Serial.printf("\nGET /all");
     String json = "{";
     json += "\"heap\":"+String(ESP.getFreeHeap());
     json += ", \"S_temperature_WBS\":"+S_temperature_WBS;
@@ -67,8 +67,8 @@ void setup_OTA_WBServer(){
     Serial.printf("Json: \n");
     request->send(200, "application/json", json);
   });
-  
-  server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.htm");
+
+    server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.htm");
 
   server.onNotFound([](AsyncWebServerRequest *request){
     Serial.printf("NOT_FOUND: ");
@@ -125,21 +125,50 @@ void setup_OTA_WBServer(){
       Serial.printf("UploadEnd: %s (%u)\n", filename.c_str(), index+len);
   });
   server.onRequestBody([](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total){
-    if(request->method() == HTTP_POST && request->url() == "/save")
-      if(!index)
-        Serial.printf("Request : %u\n",request);
-        Serial.printf("BodyStart: %u\n", index);
-        Serial.printf("scrivo file: sst_crono_matrix.json");
-        Serial.printf("%s", (const char*)data);
-        String S_filena_WBS = "/sst_crono_matrix.json";
-        fsUploadFile = SPIFFS.open(S_filena_WBS, "w");
-        if (!fsUploadFile) 
-          Serial.println("file open failed");
-        fsUploadFile.printf("%s",(const char*)data);  
-      if(index + len == total)
-        Serial.printf("BodyEnd: %u\n", total);
-        fsUploadFile.close();
-      
+      AsyncWebHeader* h = request->getHeader("Referer");
+      Serial.printf("MyHeader: %s\n", h->value().c_str());
+      String cerca=h->value().c_str();
+      if ( cerca.indexOf("crono")==-1)
+      {
+        Serial.printf("Crono non trovato: %s\n", h->value().c_str());
+      }
+      else {
+        Serial.printf("Crono trovato: %s\n", h->value().c_str());
+        if(!index)
+          Serial.printf("Request : ",request);
+          Serial.printf("BodyStart: %u\n", index);
+          Serial.printf("scrivo file: sst_crono_matrix.json");
+          Serial.printf("%s", (const char*)data);
+          String S_filena_WBS = "/sst_crono_matrix.json";
+          fsUploadFile = SPIFFS.open(S_filena_WBS, "w");
+          if (!fsUploadFile) 
+            Serial.println("file open failed");
+          fsUploadFile.printf("%s",(const char*)data);  
+          if(index + len == total)
+            Serial.printf("BodyEnd: %u\n", total);
+            fsUploadFile.close();
+             //ReadCronoMatrixSPIFFS();
+        }
+        if (cerca.indexOf("setting")==-1)
+        { 
+        Serial.printf("Setting non trovato: %s\n", h->value().c_str());
+        } 
+        else{
+            Serial.printf("Setting trovato: %s\n", h->value().c_str());
+            if(!index)
+            Serial.printf("Request : ",request);
+            Serial.printf("BodyStart: %u\n", index);
+            Serial.printf("scrivo file: sst_setting.json");
+            Serial.printf("%s", (const char*)data);
+            String S_filena_WBS = "/sst_settings.json";
+            fsUploadFile = SPIFFS.open(S_filena_WBS, "w");
+            if (!fsUploadFile) 
+              Serial.println("file open failed");
+            fsUploadFile.printf("%s",(const char*)data);  
+            if(index + len == total)
+              Serial.printf("BodyEnd: %u\n", total);
+              fsUploadFile.close();
+        }
   });
   
   server.begin();
