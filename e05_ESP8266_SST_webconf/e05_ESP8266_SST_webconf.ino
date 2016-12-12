@@ -406,6 +406,7 @@ void loop()
               setUIChanged();
               menu = 0;
             }
+          yield();  
           }
           //restore encoder value
           setEncoderValue(setpoint);
