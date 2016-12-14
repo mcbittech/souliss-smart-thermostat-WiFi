@@ -58,7 +58,13 @@
 #define TIMER_DISPLAY_SETPOINT 1500
 
 //AWAY
-#define TEMP_MINUS 1
+#define AWAY_RELATIVE
+//#define AWAY_FIXED
+
+//POWERFULL
+#define POWERFULL_RELATIVE
+//#define POWERFULL_FIXED
+
 
 #define SERIAL_OUT Serial
 

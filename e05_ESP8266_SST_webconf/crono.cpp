@@ -768,12 +768,23 @@ float checkNTPcrono(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
 
 
 float getAWAYtemperature() {
-  return setP[0] + setP[6];
+  #ifdef AWAY_RELATIVE
+    return setP[0] + setP[6];
+  #endif
+  #ifdef AWAY_FIXED
+    return setP[6];
+  #endif
 }
 
 
 float getPOWERFULLtemperature() {
-  return setP[3] + setP[7];
+  #ifdef POWERFULL_RELATIVE
+    return setP[3] + setP[7];
+  #endif
+  #ifdef POWERFULL_FIXED
+    return setP[7];
+  #endif
+    
 }
 
 
