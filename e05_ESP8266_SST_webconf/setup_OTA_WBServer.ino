@@ -147,7 +147,10 @@ void setup_OTA_WBServer(){
           if(index + len == total)
             Serial.printf("BodyEnd: %u\n", total);
             fsUploadFile.close();
-             //ReadCronoMatrixSPIFFS();
+            delay (1000);
+            request->redirect("/salvato.htm");
+            delay (1000);
+            ReadCronoMatrixSPIFFS();
         }
         if (cerca.indexOf("setting")==-1)
         { 
@@ -168,6 +171,10 @@ void setup_OTA_WBServer(){
             if(index + len == total)
               Serial.printf("BodyEnd: %u\n", total);
               fsUploadFile.close();
+              delay (1000);
+              request->redirect("/salvato.htm");
+              delay (1000);
+              ReadAllSettingsFromSPIFFS();
         }
   });
   
