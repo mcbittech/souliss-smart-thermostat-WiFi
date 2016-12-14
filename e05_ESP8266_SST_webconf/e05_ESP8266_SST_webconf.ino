@@ -110,7 +110,9 @@ String S_humidity_WBS="58.8";
 String S_nextstep_WBS;
 String S_filena_WBS;
 bool B_away_WBS=0;
+bool B_powerfull_WBS=0;
 bool B_is_away_WBS=0;
+bool B_is_powerfull_WBS=0;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -639,13 +641,37 @@ void loop()
 
           }
       }
-      if (getCrono()) {
-        Serial.println("CRONO: aggiornamento");
-        setSetpoint(checkNTPcrono(ucg));
-        setEncoderValue(checkNTPcrono(ucg));
-        Serial.print("CRONO: setpoint: "); Serial.println(setpoint);
+      if ((B_away_WBS==0 && B_powerfull_WBS==0)) {
+        if (getCrono()) {
+          B_is_away_WBS=0;
+          B_is_powerfull_WBS=0;
+          mOutput(SLOT_AWAY)=Souliss_T1n_OffCmd;
+          Serial.println("CRONO: aggiornamento");
+          setSetpoint(checkNTPcrono(ucg));
+          setEncoderValue(checkNTPcrono(ucg));
+          Serial.print("CRONO: setpoint: "); Serial.println(setpoint);
+        }
+      }else{
+        if (B_is_away_WBS==1 && memory_map[MaCaco_OUT_s + SLOT_AWAY]==0) {
+          B_away_WBS=0;
+          B_is_away_WBS=0;
+          mOutput(SLOT_AWAY)=Souliss_T1n_OffCmd;
+          Serial.println("AWAY function OFF");
+        }
+        if (B_away_WBS==1 || memory_map[MaCaco_OUT_s + SLOT_AWAY]==1) {
+          B_is_away_WBS=1;
+          mOutput(SLOT_AWAY)=Souliss_T1n_OnCmd;
+          Serial.println("AWAY function ON");
+        }
+        if (B_powerfull_WBS==1) {
+          B_away_WBS=0;
+          B_is_away_WBS=0;          
+          B_is_powerfull_WBS=1;
+          Serial.println("Powerfull function ON");
+        }
       }
-    }
+      
+    }//end SLOW_50s
 
     SLOW_70s() {
       switch (SSTPage.actualPage) {
@@ -809,13 +835,6 @@ void initScreen() {
   }
 }
 void setSetpoint(float setpoint) {
-  //SERIAL_OUT.print("Away: ");SERIAL_OUT.println(memory_map[MaCaco_OUT_s + SLOT_AWAY]);
-  if (memory_map[MaCaco_OUT_s + SLOT_AWAY]) {
-    //is Away
-
-  } else {
-    //is not Away
-  }
   Souliss_HalfPrecisionFloating((memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3), &setpoint);
 }
 void bright(int lum) {

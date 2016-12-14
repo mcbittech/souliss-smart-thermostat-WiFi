@@ -240,7 +240,7 @@ void calcoloAndamento(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temperature) {
   ///////////////////////////////////////////////////////////////////////////
   SERIAL_OUT.println("Refresh DeltaT & Trend Arrow ");
   deltaT = temperature - pretemperature;
-  Serial.print("DELTAT "); Serial.println(deltaT, DEC);
+  Serial.print("DELTA_T "); Serial.println(deltaT,1);
   if (temperature > pretemperature && deltaT || 0) {
     ucg.setColor(255, 0, 0);              // Rosso
     ucg.drawTriangle(0, 0, 0, 31, 10, 22);
