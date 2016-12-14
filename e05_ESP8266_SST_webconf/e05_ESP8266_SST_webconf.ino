@@ -652,6 +652,8 @@ void loop()
           Serial.print("CRONO: setpoint: "); Serial.println(setpoint);
         }
       }else{
+        //getAWAYtemperature
+        //getPOWERFULLtemperature
         if (B_is_away_WBS==1 && memory_map[MaCaco_OUT_s + SLOT_AWAY]==0) {
           B_away_WBS=0;
           B_is_away_WBS=0;
@@ -661,13 +663,17 @@ void loop()
         if (B_away_WBS==1 || memory_map[MaCaco_OUT_s + SLOT_AWAY]==1) {
           B_is_away_WBS=1;
           mOutput(SLOT_AWAY)=Souliss_T1n_OnCmd;
-          Serial.println("AWAY function ON");
+          setSetpoint(getAWAYtemperature());
+          setEncoderValue(getAWAYtemperature());
+          Serial.print("AWAY function ON, Setpoint to: ");Serial.println(setpoint);
         }
         if (B_powerfull_WBS==1) {
           B_away_WBS=0;
           B_is_away_WBS=0;          
           B_is_powerfull_WBS=1;
-          Serial.println("Powerfull function ON");
+          setSetpoint(getPOWERFULLtemperature());
+          setEncoderValue(getPOWERFULLtemperature());          
+          Serial.print("Powerfull function ON, Setpoint to: ");Serial.println(setpoint);
         }
       }
       

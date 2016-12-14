@@ -58,7 +58,7 @@ byte lastBoxsel = 0;
 byte line = 0;
 byte dHourSel[8][48] = {0};                                                                 //Array Matrix
 byte dHourSelCP[1][48] = {0};                                                               //Array Matrix
-float setP[9] = { 18.0, 20.0, 21.5, 23.0, 0.0, 0.0, 16.5, 24.0};                            //Setpoint Eco,Normal,Comfort,Comfort+,Reserved,Reserved,Away,PowerFull :-)
+float setP[9] = { 18.0, 20.0, 21.5, 23.0, 0.0, 0.0, -1.5, 2.5};                             //Setpoint Eco,Normal,Comfort,Comfort+,Reserved,Reserved,Offset Away,Offset PowerFull :-)
 char* descP[9] = {"Eco", "Normal", "Comfort", "Comfort+"};                                  //Setpoint Eco,Normal,Comfort,Comfort+
 int colour[4][3] = { { 102, 255, 0 }, { 255, 255, 153 }, { 255, 204, 0 }, { 255, 0, 0 } };  //da sx +chiaro a -chiaro
 
@@ -740,7 +740,7 @@ float checkNTPcrono(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
     ucg.setColor(colour[pointernow - 1][0], colour[pointernow - 1][1], colour[pointernow - 1][2]);  //Colore Variabile
     switch (pointernow) {
       case 0:
-        getsetpoint = (setP[0] - 2.0);         //da sistemare con taglio uscita T31
+        getsetpoint = (setP[0] + setP[6]);         
         Serial.println("CRONO: Off");
         break;
       case 1:
@@ -765,6 +765,18 @@ float checkNTPcrono(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   }
   return getsetpoint;
 }
+
+
+float getAWAYtemperature() {
+  return setP[0] + setP[6];
+}
+
+
+float getPOWERFULLtemperature() {
+  return setP[3] + setP[7];
+}
+
+
 float checkCronoStatus(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
   float getsetpoint;
   int deyweek = getNTPday();
