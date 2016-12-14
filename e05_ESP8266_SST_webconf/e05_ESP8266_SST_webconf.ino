@@ -662,6 +662,8 @@ void loop()
         }
         if (B_away_WBS==1 || memory_map[MaCaco_OUT_s + SLOT_AWAY]==1) {
           B_is_away_WBS=1;
+          B_powerfull_WBS=0;
+          B_is_powerfull_WBS=0;
           mOutput(SLOT_AWAY)=Souliss_T1n_OnCmd;
           setSetpoint(getAWAYtemperature());
           setEncoderValue(getAWAYtemperature());
