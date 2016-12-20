@@ -198,17 +198,17 @@ void setup_OTA_WBServer(){
 
   //Client
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
-  HTTPClient clienthttp_SST;
-  const char* host="http://www.google-analytics.com/collect";
-  String eventData = "v=1&t=event&tid=UA-89261240-1&cid=555&ec=SST"+String(VERSION)+"&ea=BOOTUP&el="+String(ESP.getChipId(),HEX);
-  clienthttp_SST.begin(host);
-  clienthttp_SST.addHeader("User-agent", "Mozilla/5.0 (X11; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/21.0");
-  clienthttp_SST.POST(eventData);
-  clienthttp_SST.writeToStream(&Serial);
-  clienthttp_SST.end();
-
-  delay(1000);
-
+  #ifdef TTD
+    HTTPClient clienthttp_SST;
+    const char* host="http://www.google-analytics.com/collect";
+    String eventData = "v=1&t=event&tid=UA-89261240-1&cid=555&ec=SST"+String(VERSION)+"&ea=BOOTUP&el="+String(ESP.getChipId(),HEX);
+    clienthttp_SST.begin(host);
+    clienthttp_SST.addHeader("User-agent", "Mozilla/5.0 (X11; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/21.0");
+    clienthttp_SST.POST(eventData);
+    clienthttp_SST.writeToStream(&Serial);
+    clienthttp_SST.end();
+  #endif
+  delay(100);
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
   server.begin();
   ///////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -44,6 +44,7 @@ void save_datalogger(float setpoint,float temperature,float humidity,bool relays
   sst_datalogger.close();
   iDay_prev = getNTPday();
   ////////////////////////
+  #ifdef TTD
    ///*
       HTTPClient clienthttp_SST;
       const char* host="http://www.google-analytics.com/collect";
@@ -57,5 +58,6 @@ void save_datalogger(float setpoint,float temperature,float humidity,bool relays
       clienthttp_SST.writeToStream(&Serial);
       clienthttp_SST.end();
       //*/
+  #endif    
 }
 
