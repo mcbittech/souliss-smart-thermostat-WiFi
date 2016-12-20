@@ -16,6 +16,7 @@
 #include <ArduinoOTA.h>
 #include <FS.h>
 #include <Hash.h>
+#include <ESP8266HTTPClient.h>
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <SPIFFSEditor.h>
@@ -209,8 +210,9 @@ void setup()
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   initMenu();
   myMenu = getMenu();
+
   
-  //OTA-WBServer
+  //OTA-WBServer  
   setup_OTA_WBServer();
   
   // Init HomeScreen
@@ -702,6 +704,20 @@ void loop()
     SLOW_x10s(59){
       //DATALOGGER
       save_datalogger(setpoint,temperature,humidity,(mOutput(SLOT_THERMOSTAT) & Souliss_T3n_HeatingOn));
+      ///*
+      HTTPClient clienthttp_SST;
+      const char* host="http://www.google-analytics.com/collect";
+      String S_TimeDateANALYTICS = digitalClockDisplay_ANALYTICS();
+      float D_TimeDateANALYTICS = S_TimeDateANALYTICS.toFloat();
+      Serial.print("D_TimeDateANALYTICS ");Serial.println(D_TimeDateANALYTICS);
+      String eventData = "v=1&t=event&tid=UA-89261240-1&cid=555&ec=SST"+String(VERSION)+"&ea=KEEPALIVE&el="+String(ESP.getChipId(), HEX);
+
+      clienthttp_SST.begin(host);
+      clienthttp_SST.addHeader("User-agent", "Mozilla/5.0 (X11; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/21.0");
+      clienthttp_SST.POST(eventData);
+      clienthttp_SST.writeToStream(&Serial);
+      clienthttp_SST.end();
+      //*/
     }
 
     SLOW_15m() {
@@ -819,6 +835,7 @@ void getTemp() {
   }
 }
 
+
 void initScreen() {
   ucg.clearScreen();
   SERIAL_OUT.println("clearScreen ok");
@@ -842,9 +859,13 @@ void initScreen() {
     display_layout2_print_circle_green(ucg);
   }
 }
+
+
 void setSetpoint(float setpoint) {
   Souliss_HalfPrecisionFloating((memory_map + MaCaco_OUT_s + SLOT_THERMOSTAT + 3), &setpoint);
 }
+
+
 void bright(int lum) {
   int val = ((float)lum / 100) * 1023;
   if (val > 1023) val = 1023;
