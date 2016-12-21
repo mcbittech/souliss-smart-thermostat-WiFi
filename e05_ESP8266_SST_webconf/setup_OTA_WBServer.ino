@@ -1,4 +1,5 @@
 #include "constants.h"
+#include "preferences.h"
 #include "ntp.h"
 
 
@@ -199,6 +200,7 @@ void setup_OTA_WBServer(){
   //Client
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
   #ifdef TTD
+    Serial.println("SEND BOOTUP");
     HTTPClient clienthttp_SST;
     const char* host="http://www.google-analytics.com/collect";
     String eventData = "v=1&t=event&tid=UA-89261240-1&cid=555&ec=SST"+String(VERSION)+"&ea=BOOTUP&el="+String(ESP.getChipId(),HEX);
@@ -207,6 +209,7 @@ void setup_OTA_WBServer(){
     clienthttp_SST.POST(eventData);
     clienthttp_SST.writeToStream(&Serial);
     clienthttp_SST.end();
+    Serial.println("BOOTUP CLOSED");
   #endif
   delay(100);
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
