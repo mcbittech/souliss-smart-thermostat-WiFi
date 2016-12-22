@@ -2,7 +2,7 @@
 #include <ESP8266WiFi.h>
 
 #define VERSION "v1.2"
-#define HOSTNAME "SST-Thermostat-OTA_" ///< Hostename. The setup_OTA_WBServer function adds the Chip ID at the end.
+#define HOSTNAME "SST-Thermostat-OTA-" ///< Hostename. The setup_OTA_WBServer function adds the Chip ID at the end.
 
 //DHT22
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

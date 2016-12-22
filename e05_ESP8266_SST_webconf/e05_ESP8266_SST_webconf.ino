@@ -16,13 +16,12 @@
 #include <ArduinoOTA.h>
 #include <FS.h>
 #include <Hash.h>
-#include <ESP8266HTTPClient.h>
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <SPIFFSEditor.h>
 #include <ArduinoJson.h>
-
 #include <WiFiUdp.h>
+#include <ESP8266HTTPClient.h>
 #include <DHT.h>
 
 // Configure the Souliss framework
