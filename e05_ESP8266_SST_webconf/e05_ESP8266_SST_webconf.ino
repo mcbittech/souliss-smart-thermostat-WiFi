@@ -815,8 +815,10 @@ void getTemp() {
 
   if ( bFlagBegin) {
     //if DHT fail then try to reinit
+    yield();
     dht.begin();
     SERIAL_OUT.println(" dht.begin();");
+    yield();
   }
 }
 
@@ -952,6 +954,7 @@ void handleBody(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_
   if(index + len == total){
     Serial.printf("BodyEnd: %u B\n", total);
   }
+  yield();
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
