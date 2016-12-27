@@ -1,4 +1,0 @@
-Menu            KEYWORD1
-MenuItem        KEYWORD1
-MenuSystem      KEYWORD1
-MenuComponent   KEYWORD1
