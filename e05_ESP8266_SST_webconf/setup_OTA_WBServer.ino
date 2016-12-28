@@ -150,6 +150,14 @@ void setup_OTA_WBServer(){
       }
       else {
         Serial.printf("Crono trovato: %s\n", h->value().c_str());
+        cerca=(char*)data;
+        int totale=cerca.indexOf("]}");
+        totale = totale +2;
+        String cerca_stringa=cerca.substring(0,totale)+"\n";
+        Serial.printf("Body: %u\n", total);
+        Serial.printf("Body cerca: %u\n", totale);
+        Serial.println("cerca: "+cerca+"\n");
+        Serial.println("cerca1: "+cerca_stringa+"\n");
         if(!index)
           Serial.printf("Request : ",request);
           Serial.printf("BodyStart: %u\n", index);
@@ -159,14 +167,13 @@ void setup_OTA_WBServer(){
           fsUploadFile = SPIFFS.open(S_filena_WBS, "w");
           if (!fsUploadFile) 
             Serial.println("file open failed");
-          fsUploadFile.printf("%s",(const char*)data);  
-          if(index + len == total)
-            Serial.printf("BodyEnd: %u\n", total);
-            fsUploadFile.close();
-            delay (1000);
-            request->redirect("/salvato.htm");
-            delay (1000);
-            ReadCronoMatrixSPIFFS();
+          fsUploadFile.println(cerca_stringa); 
+          Serial.printf("BodyEnd: %u\n",totale);
+          fsUploadFile.close();
+          delay (1000);
+          request->redirect("/salvato.htm");
+          delay (1000);
+          ReadCronoMatrixSPIFFS();
         }
         if (cerca.indexOf("setting")==-1)
         { 
@@ -215,3 +222,4 @@ void setup_OTA_WBServer(){
   server.begin();
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
 }  
+
