@@ -26,7 +26,9 @@ void save_datalogger(float setpoint,float temperature,float humidity,bool relays
 
   if(iDay_prev > 0 && (iDay != iDay_prev)) {
     if(SPIFFS.exists(S_filename)==1)  {
-      Serial.print("    Delete older file: ");Serial.println(S_filename);
+      #ifdef DEBUG_DEV
+        Serial.print("    Delete older file: ");Serial.println(S_filename);
+      #endif
       SPIFFS.remove(S_filename);
     }
   }
@@ -35,19 +37,27 @@ void save_datalogger(float setpoint,float temperature,float humidity,bool relays
 
   File sst_datalogger = SPIFFS.open(S_filename, "a");
   if (!sst_datalogger) {
+    #ifdef DEBUG_DEV
     Serial.print(S_filename);Serial.println(" open failed");
+    #endif
   }
-  Serial.print(S_filename);Serial.print(" size: ");Serial.println(sst_datalogger.size());
+  #ifdef DEBUG_DEV
+    Serial.print(S_filename);Serial.print(" size: ");Serial.println(sst_datalogger.size());
+  #endif
   sst_datalogger.print(S_TimeDate);sst_datalogger.print(",");sst_datalogger.print(setpoint,1);sst_datalogger.print(",");sst_datalogger.print(temperature,1);sst_datalogger.print(",");sst_datalogger.print(humidity,1);sst_datalogger.print(",");sst_datalogger.println(relaystatus);
-  Serial.print("Salvo linea datalogger -> ");Serial.print(S_TimeDate);Serial.print(",");Serial.print(setpoint,1);Serial.print(",");Serial.print(temperature,1);Serial.print(",");Serial.print(humidity,1);Serial.print(",");Serial.println(relaystatus);
-  Serial.print(S_filename);Serial.print(" size: ");Serial.println(sst_datalogger.size());
+  #ifdef DEBUG_DEV
+    Serial.print("Salvo linea datalogger -> ");Serial.print(S_TimeDate);Serial.print(",");Serial.print(setpoint,1);Serial.print(",");Serial.print(temperature,1);Serial.print(",");Serial.print(humidity,1);Serial.print(",");Serial.println(relaystatus);
+    Serial.print(S_filename);Serial.print(" size: ");Serial.println(sst_datalogger.size());
+  #endif
   yield();
   sst_datalogger.close();
   iDay_prev = getNTPday();
   ////////////////////////
   #ifdef TTD
    ///*
-      Serial.println("SEND KEEPALIVE");
+      #ifdef DEBUG_DEV
+        Serial.println("SEND KEEPALIVE");
+      #endif
       HTTPClient clienthttp_SST;
       const char* host="http://www.google-analytics.com/collect";
       String eventData = "v=1&t=event&tid=UA-89261240-1&cid=555&ec=SST"+String(VERSION)+"&ea=KEEPALIVE&el="+String(ESP.getChipId(), HEX);
@@ -56,7 +66,9 @@ void save_datalogger(float setpoint,float temperature,float humidity,bool relays
       clienthttp_SST.POST(eventData);
       clienthttp_SST.writeToStream(&Serial);
       clienthttp_SST.end();
-      Serial.println("KEEPALIVE CLOSED");
+      #ifdef DEBUG_DEV
+        Serial.println("KEEPALIVE CLOSED");
+      #endif
       //*/
   #endif    
 }
