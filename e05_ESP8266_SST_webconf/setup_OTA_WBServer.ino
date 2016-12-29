@@ -9,7 +9,9 @@ void setup_OTA_WBServer(){
   // Set Hostname.
   String hostNAME(HOSTNAME);
   hostNAME += String(ESP.getChipId(), HEX);
-  SERIAL_OUT.print("set OTA+WiFi hostname: "); SERIAL_OUT.println(hostNAME);
+  #ifdef DEBUG
+    Serial.print("set OTA+WiFi hostname: "); Serial.println(hostNAME);
+  #endif
   WiFi.hostname(hostNAME);
   ArduinoOTA.onStart([]() { events.send("Update Start", "ota"); });
   ArduinoOTA.onEnd([]() { events.send("Update End", "ota"); });
@@ -156,8 +158,10 @@ void setup_OTA_WBServer(){
         String cerca_stringa=cerca.substring(0,totale)+"\n";
         Serial.printf("Body: %u\n", total);
         Serial.printf("Body cerca: %u\n", totale);
-        Serial.println("cerca: "+cerca+"\n");
-        Serial.println("cerca1: "+cerca_stringa+"\n");
+        #ifdef DEBUG_DEV
+          Serial.println("cerca: "+cerca+"\n");
+          Serial.println("cerca1: "+cerca_stringa+"\n");
+        #endif
         if(!index)
           Serial.printf("Request : ",request);
           Serial.printf("BodyStart: %u\n", index);
@@ -166,7 +170,9 @@ void setup_OTA_WBServer(){
           String S_filena_WBS = "/sst_crono_matrix.json";
           fsUploadFile = SPIFFS.open(S_filena_WBS, "w");
           if (!fsUploadFile) 
-            Serial.println("file open failed");
+            #ifdef DEBUG_DEV
+              Serial.println("file open failed");
+            #endif
           fsUploadFile.println(cerca_stringa); 
           Serial.printf("BodyEnd: %u\n",totale);
           fsUploadFile.close();
@@ -207,7 +213,9 @@ void setup_OTA_WBServer(){
   //Client
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
   #ifdef TTD
-    Serial.println("SEND BOOTUP");
+    #ifdef DEBUG_DEV
+      Serial.println("SEND BOOTUP");
+    #endif
     HTTPClient clienthttp_SST;
     const char* host="http://www.google-analytics.com/collect";
     String eventData = "v=1&t=event&tid=UA-89261240-1&cid=555&ec=SST"+String(VERSION)+"&ea=BOOTUP&el="+String(ESP.getChipId(),HEX);
@@ -216,7 +224,9 @@ void setup_OTA_WBServer(){
     clienthttp_SST.POST(eventData);
     clienthttp_SST.writeToStream(&Serial);
     clienthttp_SST.end();
-    Serial.println("BOOTUP CLOSED");
+    #ifdef DEBUG_DEV
+      Serial.println("BOOTUP CLOSED");
+    #endif
   #endif
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
   server.begin();
