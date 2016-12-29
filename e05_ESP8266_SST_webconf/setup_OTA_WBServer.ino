@@ -4,7 +4,6 @@
 
 
 void setup_OTA_WBServer(){
-
   // Init the OTA + WebServer
   // Set Hostname.
   String hostNAME(HOSTNAME);

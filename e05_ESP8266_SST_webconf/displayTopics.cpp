@@ -6,6 +6,7 @@
 #include "Ucglib.h"
 #include "menu.h"
 #include "preferences.h"
+
 int ibaseH = 0;
 boolean bTopicsPageEnabled = false;
 String strVoid = "    "; //4 cifre
@@ -13,9 +14,12 @@ int iPortion = 0;
 int integerPartNumber;
 String sTemp;
 int iLenght;
+
+
 int getHeightPortion(Ucglib_ILI9341_18x240x320_HWSPI *ucg) {
   return ucg->getHeight() / 3 ;
 }
+
 void printNumber(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVal, String sUnity, String sText) {
   
   if (fVal == 0) {

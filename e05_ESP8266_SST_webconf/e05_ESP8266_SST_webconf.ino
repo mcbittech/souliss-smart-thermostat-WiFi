@@ -694,17 +694,15 @@ void loop()
           B_is_powerfull_WBS=0;
           mOutput(SLOT_AWAY)=Souliss_T1n_OffCmd;
           #ifdef DEBUG || DEBUG_DEV
-            Serial.println("CRONO: aggiornamento");
+            Serial.println("CRONO-> aggiornamento");
           #endif
           setSetpoint(checkNTPcrono(ucg));
           setEncoderValue(checkNTPcrono(ucg));
           #ifdef DEBUG || DEBUG_DEV
-            Serial.print("CRONO: setpoint: "); Serial.println(setpoint);
+            Serial.print("CRONO-> setpoint: "); Serial.println(setpoint);
           #endif
         }
       }else{
-        //getAWAYtemperature
-        //getPOWERFULLtemperature
         if (B_is_away_WBS==1 && memory_map[MaCaco_OUT_s + SLOT_AWAY]==0) {
           B_away_WBS=0;
           B_is_away_WBS=0;
@@ -891,7 +889,7 @@ void getTemp() {
     yield();
     dht.begin();
     #ifdef DEBUG || DEBUG_DEV
-      Serial.println(" dht.begin();");
+      Serial.println(">>>>dht.begin();");
     #endif
     yield();
   }

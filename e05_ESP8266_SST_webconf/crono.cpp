@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "Ucglib.h"
 #include "constants.h"
+#include "preferences.h"
 #include "menu.h"
 #include "crono.h"
 #include "ntp.h"
