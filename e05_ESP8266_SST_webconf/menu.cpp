@@ -76,6 +76,7 @@ MenuItem muMenu_mi_System_1(MENU_TEXT_SYSTEM_1);
 MenuSystem* getMenu() {
   return &ms;
 }
+
 boolean getMenuEnabled() {
   return bMenuEnabled;
 }
@@ -83,6 +84,7 @@ boolean getMenuEnabled() {
 void setMenuEnabled() {
   bMenuEnabled = true;
 }
+
 void resetMenuEnabled() {
   bMenuEnabled = false;
 }
@@ -90,24 +92,36 @@ void resetMenuEnabled() {
 boolean getUIChanged() {
   return bUIChanged;
 }
+
 boolean getSystemChanged() {
   return bSystemChanged;
 }
+
 void setSystemChanged() {
-  SERIAL_OUT.println("setSystemChanged()");
+  #ifdef DEBUG_DEV
+    Serial.println("setSystemChanged()");
+  #endif
   bSystemChanged = true;
 }
+
 void setUIChanged() {
-  SERIAL_OUT.println("setUIChanged()");
+  #ifdef DEBUG_DEV
+    Serial.println("setUIChanged()");
+  #endif
   bUIChanged = true;
 }
 
 void resetUIChanged() {
-  SERIAL_OUT.println("resetUIChanged()");
+  #ifdef DEBUG_DEV
+    Serial.println("resetUIChanged()");
+  #endif
   bUIChanged = false;
 }
+
 void resetSystemChanged() {
-  SERIAL_OUT.println("resetSystemChanged()");
+  #ifdef DEBUG_DEV
+    Serial.println("resetSystemChanged()");
+  #endif
   bSystemChanged = false;
 }
 
@@ -116,200 +130,226 @@ boolean getLocalSystem() {
 }
 
 void setSystem(boolean bVal) {
-  SERIAL_OUT.print("Actual System State: "); SERIAL_OUT.println(getLocalSystem());
+  #ifdef DEBUG_DEV
+    Serial.print("Actual System State: "); Serial.println(getLocalSystem());
+  #endif
   if (getLocalSystem() != bVal) {
     bSystem = bVal;
-    SERIAL_OUT.print("System setted to "); SERIAL_OUT.println(bVal);
+    #ifdef DEBUG_DEV
+      Serial.print("System setted to "); Serial.println(bVal);
+    #endif
     setSystemChanged();
   }
 }
-void on_item_MenuExit_selected(MenuItem* p_menu_item)
-{
-  SERIAL_OUT.println("Exit Selected");
+
+void on_item_MenuExit_selected(MenuItem* p_menu_item){ 
+  #ifdef DEBUG_DEV
+    Serial.println("Exit Selected");
+  #endif
   resetMenuEnabled();
 }
 
-void on_itemBack_selected(MenuItem* p_menu_item)
-{
-  SERIAL_OUT.println("Back Selected");
+void on_itemBack_selected(MenuItem* p_menu_item){ 
+  #ifdef DEBUG_DEV
+    Serial.println("Back Selected");
+  #endif
   ms.back();
 }
 
-void on_item_perc100_selected(MenuItem* p_menu_item)
-{
+void on_item_perc100_selected(MenuItem* p_menu_item){
   iDisplayBright = 100;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
 }
 
-void on_item_perc80_selected(MenuItem* p_menu_item)
-{
+void on_item_perc80_selected(MenuItem* p_menu_item){
   iDisplayBright = 80;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
 }
 
-void on_item_perc60_selected(MenuItem* p_menu_item)
-{
+void on_item_perc60_selected(MenuItem* p_menu_item){
   iDisplayBright = 60;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
-
 }
 
-void on_item_perc50_selected(MenuItem* p_menu_item)
-{
+void on_item_perc50_selected(MenuItem* p_menu_item){
   iDisplayBright = 50;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
 }
 
-void on_item_perc30_selected(MenuItem* p_menu_item)
-{
+void on_item_perc30_selected(MenuItem* p_menu_item){
   iDisplayBright = 30;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
 }
 
-void on_item_perc5_selected(MenuItem* p_menu_item)
-{
+void on_item_perc5_selected(MenuItem* p_menu_item){
   iDisplayBright = 5;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
 }
 
-void on_item_perc2_selected(MenuItem* p_menu_item)
-{
+void on_item_perc2_selected(MenuItem* p_menu_item){
   iDisplayBright = 2;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
 }
 
-void on_item_clockON_selected(MenuItem* p_menu_item)
-{
-  SERIAL_OUT.println("on_item_clockON_selected");
+void on_item_clockON_selected(MenuItem* p_menu_item){ 
+  #ifdef DEBUG_DEV
+    Serial.println("on_item_clockON_selected");
+  #endif
   bClock = true;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
 }
-void on_item_clockOFF_selected(MenuItem* p_menu_item)
-{
-  SERIAL_OUT.println("on_item_clockOFF_selected");
+
+void on_item_clockOFF_selected(MenuItem* p_menu_item){ 
+  #ifdef DEBUG_DEV
+    Serial.println("on_item_clockOFF_selected");
+  #endif
   bClock = false;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
 }
 
-void on_item_Timezone0_selected(MenuItem* p_menu_item)
-{
-  SERIAL_OUT.println("on_item_Timezone0_selected");
+void on_item_Timezone0_selected(MenuItem* p_menu_item){ 
+  #ifdef DEBUG_DEV
+    Serial.println("on_item_Timezone0_selected");
+  #endif
   tZone = 0;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
   initNTP();
 }
 
-void on_item_Timezone1_selected(MenuItem* p_menu_item)
-{
-  SERIAL_OUT.println("on_item_Timezone1_selected");
+void on_item_Timezone1_selected(MenuItem* p_menu_item){ 
+  #ifdef DEBUG_DEV
+    Serial.println("on_item_Timezone1_selected");
+  #endif
   tZone = 1;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
   initNTP();
 }
-void on_item_Timezone2_selected(MenuItem* p_menu_item)
-{
-  SERIAL_OUT.println("on_item_Timezone2_selected");
+
+void on_item_Timezone2_selected(MenuItem* p_menu_item){ 
+  #ifdef DEBUG_DEV
+    Serial.println("on_item_Timezone2_selected");
+  #endif
   tZone = 2;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
   initNTP();
 }
-void on_item_Timezone3_selected(MenuItem* p_menu_item)
-{
-  SERIAL_OUT.println("on_item_Timezone3_selected");
+
+void on_item_Timezone3_selected(MenuItem* p_menu_item){ 
+  #ifdef DEBUG_DEV
+    Serial.println("on_item_Timezone3_selected");
+  #endif
   tZone = 3;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
   initNTP();
 }
-void on_item_Timezone4_selected(MenuItem* p_menu_item)
-{
-  SERIAL_OUT.println("on_item_Timezone4_selected");
+
+void on_item_Timezone4_selected(MenuItem* p_menu_item){ 
+  #ifdef DEBUG_DEV
+    Serial.println("on_item_Timezone4_selected");
+  #endif
   tZone = 4;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
   initNTP();
 }
 
-void on_item_DayLightSavingTimeON_selected(MenuItem* p_menu_item)
-{
-  SERIAL_OUT.println("on_item_DayLightSavingTimeON");
+void on_item_DayLightSavingTimeON_selected(MenuItem* p_menu_item){ 
+  #ifdef DEBUG_DEV
+    Serial.println("on_item_DayLightSavingTimeON");
+  #endif
   bDayLightSavingTime = true;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
   initNTP();
 }
 
-void on_item_DaylightSavingTimeOFF_selected(MenuItem* p_menu_item)
-{
-  SERIAL_OUT.println("on_item_DaylightSavingTimeOFF");
+void on_item_DaylightSavingTimeOFF_selected(MenuItem* p_menu_item){ 
+  #ifdef DEBUG_DEV
+    Serial.println("on_item_DaylightSavingTimeOFF");
+  #endif
   bDayLightSavingTime = false;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
   initNTP();
 }
 
 
-void on_item_cronoON_selected(MenuItem* p_menu_item)
-{
-  SERIAL_OUT.println("on_item_cronoON_selected");
+void on_item_cronoON_selected(MenuItem* p_menu_item){ 
+  #ifdef DEBUG_DEV
+    Serial.println("on_item_cronoON_selected");
+  #endif
   bCrono = true;
-  SERIAL_OUT.print("Variabile bCrono:");
-  SERIAL_OUT.println(bCrono);
+  #ifdef DEBUG_DEV
+    Serial.print("Variabile bCrono:");Serial.println(bCrono);
+  #endif
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
-}
-void on_item_cronoOFF_selected(MenuItem* p_menu_item)
-{
-  SERIAL_OUT.println("on_item_cronoOFF_selected");
-  bCrono = false;
-  SERIAL_OUT.print("Variabile bCrono:");
-  SERIAL_OUT.println(bCrono);
-  save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
-}
-void on_item_cronoSET_selected(MenuItem* p_menu_item)
-{
-  SERIAL_OUT.println("on_item_cronoSET_selected");
 }
 
-void on_item_ProgCrono_selected(MenuItem* p_menu_item)
-{
-  SERIAL_OUT.println("on_item_ProgCrono_selected");
+void on_item_cronoOFF_selected(MenuItem* p_menu_item){ 
+  #ifdef DEBUG_DEV
+    Serial.println("on_item_cronoOFF_selected");
+  #endif
+  bCrono = false;
+  #ifdef DEBUG_DEV
+    Serial.print("Variabile bCrono:");Serial.println(bCrono);
+  #endif
+  save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
+}
+
+void on_item_cronoSET_selected(MenuItem* p_menu_item){ 
+  #ifdef DEBUG_DEV
+    Serial.println("on_item_cronoSET_selected");
+  #endif
+}
+
+void on_item_ProgCrono_selected(MenuItem* p_menu_item){ 
+  #ifdef DEBUG_DEV
+    Serial.println("on_item_ProgCrono_selected");
+  #endif
   bProgCrono = true;
   resetMenuEnabled();
 }
 
-void on_item_ProgCrono_deselected()
-{
-  SERIAL_OUT.println("on_item_ProgCrono_deselected");
+void on_item_ProgCrono_deselected(){ 
+  #ifdef DEBUG_DEV
+    Serial.println("on_item_ProgCrono_deselected");
+  #endif
   bProgCrono = false;
 }
 
-void on_item_cronoLEARN_selected(MenuItem* p_menu_item)
-{
-  SERIAL_OUT.println("on_item_cronoLEARN_selected");
+void on_item_cronoLEARN_selected(MenuItem* p_menu_item){ 
+  #ifdef DEBUG_DEV
+    Serial.println("on_item_cronoLEARN_selected");
+  #endif
   bCronoLearn = true;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
 }
 
-void on_item_systemEnabledON_selected(MenuItem* p_menu_item)
-{
-  SERIAL_OUT.println("on_item_systemEnabledON_selected");
+void on_item_systemEnabledON_selected(MenuItem* p_menu_item){ 
+  #ifdef DEBUG_DEV
+    Serial.println("on_item_systemEnabledON_selected");
+  #endif
   setSystem(true);
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
 }
-void on_item_systemEnabledOFF_selected(MenuItem* p_menu_item)
-{
-  SERIAL_OUT.println("on_item_systemEnabledOFF_selected");
+void on_item_systemEnabledOFF_selected(MenuItem* p_menu_item){ 
+  #ifdef DEBUG_DEV
+    Serial.println("on_item_systemEnabledOFF_selected");
+  #endif
   setSystem(false);
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
 }
 
 
-void on_item_layout1_selected(MenuItem* p_menu_item)
-{
-  SERIAL_OUT.println("on_item_layout1_selected");
+void on_item_layout1_selected(MenuItem* p_menu_item){ 
+  #ifdef DEBUG_DEV
+    Serial.println("on_item_layout1_selected");
+  #endif
   bLayout1 = true;
   bLayout2 = false;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
 }
-void on_item_layout2_selected(MenuItem* p_menu_item)
-{
-  SERIAL_OUT.println("on_item_layout2_selected");
+void on_item_layout2_selected(MenuItem* p_menu_item){ 
+  #ifdef DEBUG_DEV
+    Serial.println("on_item_layout2_selected");
+  #endif
   bLayout1 = false;
   bLayout2 = true;
   save_spiffs_prefs(iDisplayBright, bClock, tZone, bDayLightSavingTime, bCrono, bCronoLearn, bSystem, bLayout1, bLayout2);
@@ -486,7 +526,9 @@ boolean getDoSystemReset() {
 }
 
 void ReadAllSettingsFromPreferences() {
-  SERIAL_OUT.println("Read ALL Preferences value....");
+  #ifdef DEBUG_DEV
+    Serial.println("Read ALL Preferences value....");
+  #endif
   iDisplayBright = BRIGHT_MIN_DEFAULT;
   bClock = CLOCK;
   bCrono = CRONO;
@@ -501,8 +543,10 @@ void ReadAllSettingsFromPreferences() {
 }
 void ReadAllSettingsFromSPIFFS() {
   //SPIFFS
-  SERIAL_OUT.println(" ");
-  SERIAL_OUT.print("Read All Settings From SPIFFS.... ");
+  #ifdef DEBUG_DEV
+    Serial.println(" ");
+    Serial.print("Read All Settings From SPIFFS.... ");
+  #endif
   iDisplayBright = read_spiffs_prefs("Luminosita");
   bClock = read_spiffs_prefs("Orologio");
   bCrono = read_spiffs_prefs("Crono");
