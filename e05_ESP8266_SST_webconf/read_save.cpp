@@ -26,11 +26,15 @@ void save_spiffs_prefs(int json_iDisplayBright, int json_bClock, int json_timeZo
   // open file for writing
   File sst_spiffs = SPIFFS.open("/sst_settings.json", "w");
   if (!sst_spiffs) {
-    Serial.println("sst_settings.json open failed");
+    #ifdef DEBUG_DEV
+      Serial.println("sst_settings.json open failed");
+    #endif
   }
   //qui salvo il buffer su file
   sst_spiffs.println(buffer);
-  Serial.print("Salvo in SPIFFS il buffer con i settings :"); Serial.println(buffer);
+  #ifdef DEBUG_DEV
+    Serial.print("Salvo in SPIFFS il buffer con i settings :"); Serial.println(buffer);
+  #endif
   delay(1);
   //chiudo il file
   sst_spiffs.close();
@@ -39,7 +43,9 @@ void save_spiffs_prefs(int json_iDisplayBright, int json_bClock, int json_timeZo
 int read_spiffs_prefs(const char*  valuedaleggere) {
   File  sst_spiffs_inlettura = SPIFFS.open("/sst_settings.json", "r");
   if (!sst_spiffs_inlettura) {
-    Serial.println("sst_settings.json open failed");
+    #ifdef DEBUG_DEV
+      Serial.println("sst_settings.json open failed");
+    #endif
     return 0;
   }
   String risultato = sst_spiffs_inlettura.readStringUntil('\n');
@@ -50,27 +56,35 @@ int read_spiffs_prefs(const char*  valuedaleggere) {
   StaticJsonBuffer<200> jsonBuffer_inlettura;
   JsonObject& root_inlettura = jsonBuffer_inlettura.parseObject(json);
   if (!root_inlettura.success()) {
-    Serial.println("parseObject() failed");
+    #ifdef DEBUG_DEV
+      Serial.println("parseObject() failed");
+    #endif
     return 0;
   }
   //leggo il valore e lo parso:
   int risultatoparsed = root_inlettura[valuedaleggere];
-  Serial.print("Spiffs Json parsed value of "); Serial.print(valuedaleggere); Serial.print(" :");
-  Serial.println(risultatoparsed);
+  #ifdef DEBUG_DEV
+    Serial.print("Spiffs Json parsed value of "); Serial.print(valuedaleggere); Serial.print(" :");Serial.println(risultatoparsed);
+  #endif
   sst_spiffs_inlettura.close();
   return risultatoparsed;
 }
 
 
 void spiffs_Reset() {
-  Serial.println("Reset SST");
-  Serial.print("SPIFFS Formatting... ");
+  #ifdef DEBUG_DEV
+    Serial.println("Reset SST");
+    Serial.println("SPIFFS Formatting... ");
+  #endif
   if (SPIFFS.format()) {
-    Serial.println("OK");
+    #ifdef DEBUG_DEV
+      Serial.println("OK");
+    #endif
   } else {
-    Serial.println("Fail");
+    #ifdef DEBUG_DEV
+      Serial.println("Fail");
+    #endif
   }
-
 }
 
 
