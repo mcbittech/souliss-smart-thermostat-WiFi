@@ -101,16 +101,22 @@ void display_layout1_printBigChar(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVa
   if (((int) fValTemp) <= -10) {
     sTempToPrint = "-- ";
     ucg.print(sTempToPrint);
-    SERIAL_OUT.print("sTempToPrint: "); SERIAL_OUT.println(sTempToPrint);
+    #ifdef DEBUG_DEV
+      Serial.print("sTempToPrint: "); Serial.println(sTempToPrint);
+    #endif
   } else if (((int) fValTemp) >= 100) {
     sTempToPrint = "++ ";
     ucg.print(sTempToPrint);
-    SERIAL_OUT.print("sTempToPrint: "); SERIAL_OUT.println(sTempToPrint);
+    #ifdef DEBUG_DEV
+      Serial.print("sTempToPrint: "); Serial.println(sTempToPrint);
+    #endif
   } else {
 
     if ((((int) fValTemp) < 10) && ((int) fValTemp > 0)) {
       sTempToPrint = " " + sTempToPrint;
-      SERIAL_OUT.print("sTempToPrint: "); SERIAL_OUT.println(sTempToPrint);
+      #ifdef DEBUG_DEV
+        Serial.print("sTempToPrint: "); Serial.println(sTempToPrint);
+      #endif
     }
 
     ucg.print(sTempToPrint);
@@ -136,14 +142,18 @@ void display_layout1_printBigChar(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVa
 
 //Stampa soltanto il setpoint grande al centro del display
 void display_layout1_print_setpoint(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint) {
-  SERIAL_OUT.println("display_print_setpoint");
+  #ifdef DEBUG_DEV
+    Serial.println("display_print_setpoint");
+  #endif
   ucg.setColor(102, 255, 0);    // Verde Chiaro
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   display_layout1_printBigChar(ucg, setpoint);
 }
 
 void display_layout1_print_B3(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text, float temp) {
-  SERIAL_OUT.println("display_print_B3");
+  #ifdef DEBUG_DEV
+    Serial.println("display_print_B3");
+  #endif
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SMALL);
   ucg.setFontPosBaseline();
@@ -159,8 +169,10 @@ void display_layout1_print_B3(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text, 
 }
 
 void display_layout1_print_B3_ChildLock(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text) {
-  SERIAL_OUT.println("display_print_B4 [ChildClocked]");
-  SERIAL_OUT.println("display_print_B3");
+  #ifdef DEBUG_DEV
+    Serial.println("display_print_B4 [ChildClocked]");
+    Serial.println("display_print_B3");
+  #endif
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SMALL);
   ucg.setFontPosBaseline();
@@ -172,8 +184,10 @@ void display_layout1_print_B3_ChildLock(Ucglib_ILI9341_18x240x320_HWSPI ucg, Str
 }
 
 void display_layout1_print_B4_Hum(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text, float temp) {
-  SERIAL_OUT.println("display_print_B4 [Humidity]");
-  SERIAL_OUT.println("display_print_B4 [Humidity]");
+  #ifdef DEBUG_DEV
+    Serial.println("display_print_B4 [Humidity]");
+    Serial.println("display_print_B4 [Humidity]");
+  #endif
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SMALL);
   ucg.setFontPosBaseline();
@@ -185,7 +199,9 @@ void display_layout1_print_B4_Hum(Ucglib_ILI9341_18x240x320_HWSPI ucg, String te
 }
 
 void display_layout1_print_B4_SystemOff(Ucglib_ILI9341_18x240x320_HWSPI ucg, String text) {
-  SERIAL_OUT.println("display_print_B4 [SystemOff]");
+  #ifdef DEBUG_DEV
+    Serial.println("display_print_B4 [SystemOff]");
+  #endif
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SMALL);
   ucg.setFontPosBaseline();
@@ -203,8 +219,10 @@ void setOnetime_clear_SetpointPage() {
 
 //compone la pagina dedicata al setpoint
 void display_layout1_setpointPage(Ucglib_ILI9341_18x240x320_HWSPI ucg, float setpoint, float temp, float hum, boolean bSystemOn) {
-  SERIAL_OUT.println("display_setpointPage");
-
+  #ifdef DEBUG_DEV
+    Serial.println("display_setpointPage");
+  #endif
+  
   if (!flag_onetime_clear_SetpointPage) {
     //viene ripristinata in homepage
     flag_onetime_clear_SetpointPage = true;
@@ -238,7 +256,9 @@ void display_print_splash_screen(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
 }
 
 void display_print_splash_waiting_need_configuration(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
-  SERIAL_OUT.println("display_print_splash_waiting_need_configuration");
+  #ifdef DEBUG_DEV
+    Serial.println("display_print_splash_waiting_need_configuration");
+  #endif
   ucg.setColor(0, 255, 255, 255);    // Bianco
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SPLASH_SCREEN);
@@ -254,7 +274,9 @@ void display_print_splash_waiting_need_configuration(Ucglib_ILI9341_18x240x320_H
 }
 
 void display_print_splash_waiting_connection_gateway(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
-  SERIAL_OUT.println("display_print_splash_waiting_connection_gateway");
+  #ifdef DEBUG_DEV
+    Serial.println("display_print_splash_waiting_connection_gateway");
+  #endif
   ucg.setColor(0, 255, 255, 255);    // Bianco
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SPLASH_SCREEN);
@@ -268,7 +290,9 @@ void display_print_splash_waiting_connection_gateway(Ucglib_ILI9341_18x240x320_H
 }
 
 void display_print_splash_waiting_connection_peer(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
-  SERIAL_OUT.println("display_print_splash_waiting_connection_peer");
+  #ifdef DEBUG_DEV
+    Serial.println("display_print_splash_waiting_connection_peer");
+  #endif
   ucg.setColor(0, 255, 255, 255);    // Bianco
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SPLASH_SCREEN);
@@ -282,7 +306,9 @@ void display_print_splash_waiting_connection_peer(Ucglib_ILI9341_18x240x320_HWSP
 }
 
 void display_print_splash_connection_to_home_wifi(Ucglib_ILI9341_18x240x320_HWSPI ucg) {
-  SERIAL_OUT.println("display_print_splash_connection_to_home_wifi");
+  #ifdef DEBUG_DEV
+    Serial.println("display_print_splash_connection_to_home_wifi");
+  #endif
   setBianco(&ucg);    // Bianco
   ucg.setFontMode(UCG_FONT_MODE_SOLID);
   ucg.setFont(FONT_SPLASH_SCREEN);
@@ -367,14 +393,20 @@ void display_layout1_HomeScreen(Ucglib_ILI9341_18x240x320_HWSPI ucg, float temp,
 }
 
 void display_layout1_background(Ucglib_ILI9341_18x240x320_HWSPI ucg, float diff) {
-  SERIAL_OUT.print("diff:"); SERIAL_OUT.println(diff);
+  #ifdef DEBUG_DEV
+    Serial.print("diff:"); Serial.println(diff);
+  #endif
   if (diff > 0) {
     //SFONDO ROSSO
-    SERIAL_OUT.println("SFONDO ROSSO");
+    #ifdef DEBUG_DEV
+      Serial.println("SFONDO ROSSO");
+    #endif
     ucg.setColor(1, 159, 33, 33); // RED for the background
   } else {
     //SFONDO BLU
-    SERIAL_OUT.println("SFONDO BLU");
+    #ifdef DEBUG_DEV
+      Serial.println("SFONDO BLU");
+    #endif
     ucg.setColor(1, 0, 73, 221); // BLUE for the background
   }
 }
