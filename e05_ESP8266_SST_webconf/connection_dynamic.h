@@ -17,13 +17,13 @@
 
 ***************************************************************************/
 #define DYNAMIC_CONNECTION_Init()              /** Read the IP configuration from the EEPROM, if not available start the node as access point */ \
-  SERIAL_OUT.println("start DYNAMIC_CONNECTION_Init"); \
+  Serial.println("start DYNAMIC_CONNECTION_Init"); \
   if (!ReadIPConfiguration()) \
   { \
     /** Start the node as access point with a configuration WebServer */ \
     SetAccessPoint();\
     startWebServer();\
-    SERIAL_OUT.println("display_print_splash_waiting_need_configuration"); \
+    Serial.println("display_print_splash_waiting_need_configuration"); \
     display_print_splash_waiting_need_configuration(ucg); \
     /** We have nothing more than the WebServer for the configuration */ \
     /** to run, once configured the node will quit this. */ \
@@ -35,7 +35,7 @@
   } \
   if (IsRuntimeGateway())  \
   { \
-    SERIAL_OUT.println("display_print_splash_waiting_connection_gateway"); \
+    Serial.println("display_print_splash_waiting_connection_gateway"); \
     /** Connect to the WiFi network and get an address from DHCP*/ \
     SetAsGateway(myvNet_dhcp);       /** Set this node as gateway for SoulissApp */ \
     display_print_splash_waiting_connection_gateway(ucg); \
@@ -44,13 +44,13 @@
   } \
   else \
   { \
-    SERIAL_OUT.println("display_print_splash_waiting_connection_peer"); \
+    Serial.println("display_print_splash_waiting_connection_peer"); \
     /** This board request an address to the gateway at runtime, no need */ \
     /** to configure any parameter here. */ \
     SetDynamicAddressing(); \
     display_print_splash_waiting_connection_peer(ucg); \
     GetAddress(); \
-    SERIAL_OUT.println("Address received"); \
+    Serial.println("Address received"); \
     display_print_splash_waiting_connection_peer(ucg); \
   } \
 

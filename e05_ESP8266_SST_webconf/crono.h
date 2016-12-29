@@ -1,9 +1,6 @@
 #include <Arduino.h>
 #include "Ucglib.h"
 
-
-
-
 void drawCrono(Ucglib_ILI9341_18x240x320_HWSPI);
 void drawSetpoint(Ucglib_ILI9341_18x240x320_HWSPI);
 void setSetpoint(Ucglib_ILI9341_18x240x320_HWSPI);
