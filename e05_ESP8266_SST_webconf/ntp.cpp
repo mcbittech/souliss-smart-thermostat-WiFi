@@ -67,13 +67,13 @@ time_t getNtpTime()
       int tDayLighttemp = read_spiffs_prefs("DayLightSavingTime");
 
       if (tDayLighttemp == 0){
-        #ifdef DEBUG
-          SERIAL_OUT.print("This is NTP Response with tzone: ");SERIAL_OUT.print(tZonetemp);SERIAL_OUT.println(" and tDayLighttemp OFF");
+        #ifdef DEBUG_DEV
+          Serial.print("This is NTP Response with tzone: ");Serial.print(tZonetemp);Serial.println(" and tDayLighttemp OFF");
         #endif
         return secsSince1900 - 2208988800UL + tZonetemp * SECS_PER_HOUR;       
         } else {
-        #ifdef DEBUG
-          SERIAL_OUT.print("This is NTP Response with tzone: ");SERIAL_OUT.print(tZonetemp);SERIAL_OUT.println(" and tDayLighttemp ON");
+        #ifdef DEBUG_DEV
+          Serial.print("This is NTP Response with tzone: ");Serial.print(tZonetemp);Serial.println(" and tDayLighttemp ON");
         #endif
         return secsSince1900 - 2208988800UL + (tZonetemp + 1) * SECS_PER_HOUR;
         } 
@@ -143,7 +143,9 @@ int getNTPminute(){
 void initNTP() {
 
   udp_NTP.begin(localPort);
-  SERIAL_OUT.print("waiting for sync");
+  #ifdef DEBUG_DEV
+    Serial.print("waiting for sync");
+  #endif
   setSyncProvider(getNtpTime);
 }
 
