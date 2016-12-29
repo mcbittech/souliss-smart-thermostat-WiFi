@@ -68,7 +68,7 @@ void display_print_C1(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVal) {
   //  ucg.clearScreen();
 
   printNumber(ucg, fVal, C1_AREA_UNITY, C1_AREA_TEXT);
-  // SERIAL_OUT.print("C1_AREA: "); SERIAL_OUT.print(fVal); SERIAL_OUT.print(C1_AREA_UNITY); SERIAL_OUT.println(C1_AREA_TEXT);
+  // Serial.print("C1_AREA: "); Serial.print(fVal); Serial.print(C1_AREA_UNITY); Serial.println(C1_AREA_TEXT);
 }
 
 float fPrecC2;
@@ -87,7 +87,7 @@ void display_print_C2(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVal) {
 
   printNumber(ucg, fVal, C2_AREA_UNITY, C2_AREA_TEXT);
 
-  //  SERIAL_OUT.print("C2_AREA: "); SERIAL_OUT.print(fVal); SERIAL_OUT.print(C2_AREA_UNITY); SERIAL_OUT.println(C2_AREA_TEXT);
+  //  Serial.print("C2_AREA: "); Serial.print(fVal); Serial.print(C2_AREA_UNITY); Serial.println(C2_AREA_TEXT);
 }
 
 
@@ -108,7 +108,7 @@ void display_print_C3(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVal) {
 
   printNumber(ucg, fVal, C3_AREA_UNITY, C3_AREA_TEXT);
 
-  //  SERIAL_OUT.print("C3_AREA: "); SERIAL_OUT.print(fVal); SERIAL_OUT.print(C3_AREA_UNITY); SERIAL_OUT.println(C3_AREA_TEXT);
+  //  Serial.print("C3_AREA: "); Serial.print(fVal); Serial.print(C3_AREA_UNITY); Serial.println(C3_AREA_TEXT);
 }
 float fPrecC4;
 void display_print_C4(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVal) {
@@ -127,7 +127,7 @@ void display_print_C4(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVal) {
 
   printNumber(ucg, fVal, C4_AREA_UNITY, C4_AREA_TEXT);
 
-  // SERIAL_OUT.print("C4_AREA: "); SERIAL_OUT.print(fVal); SERIAL_OUT.print(C4_AREA_UNITY); SERIAL_OUT.println(C4_AREA_TEXT);
+  // Serial.print("C4_AREA: "); Serial.print(fVal); Serial.print(C4_AREA_UNITY); Serial.println(C4_AREA_TEXT);
 }
 
 float fPrecC5;
@@ -147,7 +147,7 @@ void display_print_C5(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVal) {
 
   printNumber(ucg, fVal, C5_AREA_UNITY, C5_AREA_TEXT);
 
-  //  SERIAL_OUT.print("C5_AREA: "); SERIAL_OUT.print(fVal); SERIAL_OUT.print(C5_AREA_UNITY); SERIAL_OUT.println(C5_AREA_TEXT);
+  //  Serial.print("C5_AREA: "); Serial.print(fVal); Serial.print(C5_AREA_UNITY); Serial.println(C5_AREA_TEXT);
 }
 
 float fPrecC6;
@@ -168,7 +168,7 @@ void display_print_C6(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fVal) {
 
   printNumber(ucg, fVal, C6_AREA_UNITY, C6_AREA_TEXT);
 
-  // SERIAL_OUT.print("C6_AREA: "); SERIAL_OUT.print(fVal); SERIAL_OUT.print(C6_AREA_UNITY); SERIAL_OUT.println(C6_AREA_TEXT);
+  // Serial.print("C6_AREA: "); Serial.print(fVal); Serial.print(C6_AREA_UNITY); Serial.println(C6_AREA_TEXT);
 }
 
 float fC1_Value, fC2_Value, fC3_Value, fC4_Value, fC5_Value, fC6_Value;
@@ -179,7 +179,9 @@ void displayTopics(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fC1_Value, float f
   setOnetime_clear_SetpointPage();
   if ( getUIChanged()) {
     ucg.clearScreen();
-    SERIAL_OUT.println("TOPICS PAGE 1 - ClearScreen");
+    #ifdef DEBUG_DEV
+      Serial.println("TOPICS PAGE 1 - ClearScreen");
+    #endif
     display_print_C1(ucg, fC1_Value);
     display_print_C2(ucg, fC2_Value);
     display_print_C3(ucg, fC3_Value);
@@ -199,7 +201,9 @@ void displayTopicsPage2(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fC4_Value, fl
   setOnetime_clear_SetpointPage();
   if ( getUIChanged()) {
     ucg.clearScreen();
-    SERIAL_OUT.println("TOPICS PAGE 2 - ClearScreen");
+    #ifdef DEBUG_DEV
+      Serial.println("TOPICS PAGE 2 - ClearScreen");
+    #endif
     display_print_C4(ucg, fC4_Value);
     display_print_C5(ucg, fC5_Value);
     display_print_C6(ucg, fC6_Value);
@@ -217,7 +221,7 @@ void displayTopicsPage2(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fC4_Value, fl
 
 void displayTopicsHomePageLayout2(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fC1_Value, float fC2_Value, float fC3_Value, float fC4_Value, float fC5_Value, float fC6_Value) {
 
-  //SERIAL_OUT.println("displayTopics Home Page Layout2");
+  //Serial.println("displayTopics Home Page Layout2");
           
           ucg.setFontMode(UCG_FONT_MODE_SOLID);
           ucg.setFont(FONT_SMALL);
@@ -359,7 +363,7 @@ if (TOPICSPAGESNUMBER == 2) {
 
 void alwaysdisplayTopicsHomePageLayout2(Ucglib_ILI9341_18x240x320_HWSPI ucg, float fC1_Value, float fC2_Value, float fC3_Value, float fC4_Value, float fC5_Value, float fC6_Value) {
 
-  //SERIAL_OUT.println("displayTopics Home Page Layout2");
+  //Serial.println("displayTopics Home Page Layout2");
           
           ucg.setFontMode(UCG_FONT_MODE_SOLID);
           ucg.setFont(FONT_SMALL);
