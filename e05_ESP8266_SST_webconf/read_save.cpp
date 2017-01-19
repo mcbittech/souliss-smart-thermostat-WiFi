@@ -4,7 +4,7 @@
 #include "FS.h"
 #include <ArduinoJson.h>
 
-void save_spiffs_prefs(int json_iDisplayBright, int json_bClock, int json_timeZone, int json_DayLightSavingTime, int json_bCrono, int json_bCronoLearn, int json_bSystem, int json_bLayout1, int json_bLayout2) {
+void save_spiffs_prefs(int json_iDisplayBright, int json_bClock, int json_timeZone, int json_DayLightSavingTime, int json_bCrono, int json_bCronoLearn, int json_bSystem, int json_bLayout1, int json_bLayout2, float json_fOffsetDHT) {
   SPIFFS.begin();
   StaticJsonBuffer<200> jsonBuffer;
   JsonObject& root = jsonBuffer.createObject();
@@ -17,6 +17,7 @@ void save_spiffs_prefs(int json_iDisplayBright, int json_bClock, int json_timeZo
   root["Dispositivo"] = json_bSystem;
   root["Layout1"] = json_bLayout1;
   root["Layout2"] = json_bLayout2;
+  root["OffsetDHT"] = json_fOffsetDHT;
   //Serial.print("Ecco i dati in json: ");
   //root.printTo(Serial);
   char buffer[256];

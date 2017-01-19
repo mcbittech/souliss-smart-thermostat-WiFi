@@ -793,7 +793,7 @@ void getTemp() {
   fVal = dht.readTemperature();
   SERIAL_OUT.print("acquisizione Temperature: "); SERIAL_OUT.println(fVal);
   if (!isnan(fVal)) {
-    temperature = fVal; //memorizza temperatura se non è Not A Number
+    temperature = fVal + getOffsetDHT(); //memorizza temperatura se non è Not A Number + Offset DHT
     //Import temperature into T31 Thermostat
     ImportAnalog(SLOT_THERMOSTAT + 1, &temperature);
     ImportAnalog(SLOT_TEMPERATURE, &temperature);

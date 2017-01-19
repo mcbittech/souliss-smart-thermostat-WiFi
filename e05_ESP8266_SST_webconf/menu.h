@@ -15,6 +15,7 @@ int getDisplayBright();
 boolean getClock();
 int getTimeZone();
 boolean getDayLightSavingTime();
+float getOffsetDHT();
 
 boolean getLocalSystem();
 boolean getCrono();
