@@ -1,0 +1,186 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
+<head>
+	<meta charset="UTF-8"> 	
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>SST Home</title>
+	<meta id="viewport" name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<script src="javascript/jquery.js"></script>
+	<link href="https://fonts.googleapis.com/css?family=Comfortaa" rel="stylesheet"> 
+
+<script type="text/javascript">
+    var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+	if (isMobile) {
+		document.write("<LINK rel=stylesheet href='css/home_mobile.css'");
+	}
+	else{
+		document.write("<LINK rel=stylesheet href='css/home_desktop.css'");
+	}
+    //creo le variabili e le setto
+    var setTemp,temp,umidita,stato;
+    temp=20;
+    setTemp=15;
+    umidita=45;
+    stato=1;
+    var reloadPeriod = 1000;
+    var running = false;
+    //inizio la lettura da esp8266
+    $(document).ready(function() {
+    //function loadValues(){
+      //if(!running) return;
+      var xh = new XMLHttpRequest();
+      console.log(xh)
+      xh.onreadystatechange = function(){
+        if (xh.readyState == 4){
+          if(xh.status == 200) {
+            console.log("Entrati",xh.responseText)
+            var res = JSON.parse(xh.responseText);
+	    console.log(res);
+	    document.getElementById ("temp0").innerHTML = parseFloat(res.S_temperature_WBS).toFixed(1);
+	    document.getElementById ("temp1").innerHTML = parseFloat(res.S_setpoint_WBS).toFixed(1);
+            document.getElementById ("temp2").innerHTML = parseFloat(res.S_humidity_WBS).toFixed(0);
+            if (res.S_relestatus_WBS==1){
+			document.getElementById ("temp3").innerHTML = "Stato: On";
+			}
+		else document.getElementById ("temp3").innerHTML= "Stato: Off"; 
+	    if (res.B_is_away_WBS==0){
+			$("#away_off").attr("selected", true);
+			document.getElementByID("away_off").selected="selected";	
+		}
+		else {
+			$("#away_on").attr("selected", true);
+			document.getElementById("away_on").selected="selected";	
+			
+			}
+	    if (res.B_is_powerfull_WBS==0){
+			$("#power_off").attr("selected", true);
+			document.getElementByID("power_off").selected="selected";	
+		}
+		else {
+			$("#power_on").attr("selected", true);
+			document.getElementById("power_on").selected="selected";	
+			
+			}
+		//loadValues();//if(running) setTimeout(loadValues, reloadPeriod);
+          } else running = false;
+        }
+      };
+      xh.open("GET", "/all", true);
+      xh.send(null);
+    });
+    function run(){
+      if(!running){
+	running = true;
+	/*document.getElementById ("temp0").innerHTML = parseFloat(temp).toFixed(1);
+        document.getElementById ("temp1").innerHTML = parseFloat(setTemp).toFixed(1);
+        document.getElementById ("temp2").innerHTML = parseFloat(umidita).toFixed(0);
+	if (stato==1){
+			document.getElementById("temp3").innerHTML = "Stato: On";
+			$("#away_on").attr("selected", true);
+			document.getElementById("away_on").selected="selected";	
+			$("#power_on").attr("selected", true);
+			document.getElementById("power_on").selected="selected";	
+			
+			}
+		else{
+			document.getElementById("temp3").innerHTML = "Stato: Off";
+			$("#away_off").attr("selected", true);
+			document.getElementByID("away_off").selected="selected";
+			$("#power_off").attr("selected", true);
+			document.getElementById("power_off").selected="selected";	
+			}*/
+		// creo la data
+		var data = new Date();
+		var gg, mm, aaaa;
+		gg = data.getDate() + ".";
+		mm = data.getMonth() + 1 + ".";
+		aaaa = data.getFullYear();
+		document.getElementById("oggi").innerHTML =  gg + mm + aaaa;
+		//loadValues();
+      }
+    }
+    function crono(){
+    var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+	if (isMobile) {
+		window.location = './crono1.htm';
+	}
+	else{
+		window.location = './crono.htm';
+	}
+    }
+    function func_away(){
+	if (document.getElementById("away").value=="On"){
+		window.location = '/away_ON';
+			}
+	else {
+		window.location = '/away_OFF';
+		}
+    }
+    function func_power(){
+	if (document.getElementById("power").value=="On"){
+		window.location = '/powerfull_ON';
+			}
+	else {
+		window.location = '/powerfull_OFF';
+		}
+    }
+  
+</script>
+</head>
+<body onload="run()">
+		<p align="center" id="intesta" >SST Home
+			
+		
+		 <div style="background-image:url('img/sfondo.png');">
+			
+		        <table >
+				<tr>
+					<td width="40%" id="temp2" name="temp2"></td>
+					<td width="60%" id="oggi"></td>
+				
+				</tr>
+				<tr>
+					<td width="40%"></td>
+					<td width="60%" id="temp1" name="temp1"></td>	
+				</tr>
+				<tr>
+					<td width="40%"></td>
+					<td width="60%" id="temp0" name="temp0"></td>	
+				</tr>
+				<tr>
+					<td width="40%"></td>
+					<td width="60%" id="temp3" name="temp3"></td>
+				</tr>
+				
+			</table>
+			<br></br>
+			<table id="pulsanti" style="margin:0 auto;">
+				<tr>
+				<td>	
+					<input type="submit" value="Setting" onclick="window.location = './setting.htm';">
+				</td>
+				<td>		
+					<input type="submit" value="Grafico" onclick="window.location = './graph.htm';">				
+				</td>
+				<td>		
+					<input type="submit" value="Crono" onclick=crono()>
+				</td>	
+				<td> 
+					<select id="away" onchange="func_away()">
+						<option id= "away_on" value="On">Away on</option>
+						<option id= "away_off" value="Off">Away off</option>
+					</select>
+				</td>
+				<td> 
+					<select id="power" onchange="func_power()">
+						<option id="power_on" value="On">PowerFull On</option>
+						<option id="power_off" value="Off">PowerFull Off</option>
+					</select>
+				</td>
+				</tr>	
+			</table>
+		</div>	     
+</body>
+</html>

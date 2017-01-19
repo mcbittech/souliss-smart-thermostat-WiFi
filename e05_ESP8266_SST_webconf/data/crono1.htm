@@ -1,0 +1,241 @@
+<html><!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+    
+	<meta charset="UTF-8"> 
+	<link rel="stylesheet" href="css/styles1.css"> 
+	<title>CronoTermostato Souliss</title>
+	<script src="javascript/jquery.js"></script>
+	<link href="https://fonts.googleapis.com/css?family=Comfortaa" rel="stylesheet">
+	
+      <script type = "text/javascript" language = "javascript">
+         $(document).ready(function() {
+		var days = [ "Domenica", "Lunedi", "Martedi", "Mercoledi", "Giovedi", "Venerdi", "Sabato"];	
+		var table = [];
+		$.ajaxSetup( { cache: false } );
+		//importo file e divido i valori 
+		$.getJSON('sst_crono_matrix.json', function(jd) {
+			//console.log (jd);
+			for( i = 0; i < days.length; i++ ) {
+				table[i] = (jd.cronomatrix.splice(0,48));
+				};
+			document.getElementById ("temp0").value = parseFloat(jd.Sp0).toFixed(1);
+			document.getElementById ("temp1").value = parseFloat(jd.Sp1).toFixed(1);
+			document.getElementById ("temp2").value = parseFloat(jd.Sp2).toFixed(1);
+			document.getElementById ("temp3").value = parseFloat(jd.Sp3).toFixed(1);			
+			// creo taelle	
+			for( i = 0; i < 14; i +=2 ) {
+				tabo= "tb"+(i/2);
+				var poz = document.getElementById (tabo);
+				tab = document.createElement('table');
+				poz.appendChild(tab);
+				/*
+				var intesta = tab.createCaption();
+				intesta.innerHTML= days[i/2];
+				*/
+				var row0 = tab.insertRow(0);
+				var row1 = tab.insertRow(1);
+				var row2 = tab.insertRow(2);
+				var row3 = tab.insertRow(3);
+					for(var k=0;k<24;k ++){                
+						img_sopra=new Image();
+						img_sopra.src= "img/"+table[i/2][k] + ".png";
+						var cell = row0.insertCell(k);
+						var cell1= row1.insertCell(k);
+						cell.style.color = 'white';
+						cell.style.height = '50px';
+						cell.style.width = '25px';							
+						cell1.style.color = 'black';
+						cell1.style.height = '50px';
+						cell1.style.width = '25px';
+						if (k%2==0){
+							if ( k >= 1){
+								
+								cell1.innerHTML = k/2;
+								}
+							else {
+								cell1.innerHTML = "0";
+								};
+						}
+						else {
+							cell1.innerHTML = " ";
+							
+							};
+						
+						cell.innerHTML = "<img src="+img_sopra.src+">";
+						cell.id = days[i/2]+k
+						//cell.name = days[i]+k
+						cell.onclick = function() { clickTest(this.id);};
+      
+						};          
+					for ( var k=24; k<=47;k++){
+						img_sopra=new Image();
+						img_sopra.src= "img/"+table[i/2][k] + ".png";
+						var cell = row2.insertCell(k-24);
+						var cell1= row3.insertCell(k-24);
+						cell.style.color = 'white';
+						cell.style.height = '50px';
+						cell.style.width = '20px'; 
+						cell1.style.color = 'black';
+						cell1.style.height = '50px';
+						cell1.style.width = '25px';
+						if (k%2==0){
+							cell1.innerHTML = k/2;
+							}
+						else {
+							cell1.innerHTML = " ";
+							
+							};				
+						
+						cell.innerHTML = "<img src="+img_sopra.src+">";
+						cell.id = days[i/2]+k
+						//cell.name = days[i]+k
+						cell.onclick = function() { clickTest(this.id);};
+						
+						};          
+					};
+				document.getElementById("default").click();			
+				});
+	});
+			
+    function isNumberKey(evt){
+		var charCode = (evt.which) ? evt.which : evt.keyCode;
+		if (charCode > 14 && (charCode < 46 || charCode > 57) )
+			return false;
+		return true;
+	}
+    function validate(evt) {
+		var theEvent = evt || window.event;
+		var key = theEvent.keyCode || theEvent.which;
+		key = String.fromCharCode( key );
+		var regex = /[0-9]|\./;
+		if( !regex.test(key) ) {
+			theEvent.returnValue = false;
+			if(theEvent.preventDefault) theEvent.preventDefault();
+				}
+		}
+	function clickTest(memo){
+		//Recupero l'indice
+		cell =  document.getElementById(memo); 
+		//alert (memo);
+		testo = cell.innerHTML;
+		//console.log(testo)
+		testo1 = testo.match(/\d(?=.png)/g)
+		testo2= (parseInt(testo1) + 1);
+		if (testo2 > 4) {
+			testo2 = 0;
+			}
+		sourcecode = "<img src=img/"+testo2+".png>";
+		cell.innerHTML = sourcecode;
+		} 
+	function saveSchedule(){
+		// variabile per salvare
+		sched_json="";
+		sched1_json="";
+		//recuperiamo i dati dal Documento
+		t0 = parseFloat(document.getElementById("temp0").value). toFixed(2);
+		t1 = parseFloat(document.getElementById("temp1").value). toFixed(2);
+		t2 = parseFloat(document.getElementById("temp2").value). toFixed(2);
+		t3 = parseFloat(document.getElementById("temp3").value). toFixed(2);
+		//console.log (t0,t1,t2,t3)
+		var days = [ "Domenica", "Lunedi", "Martedi", "Mercoledi", "Giovedi", "Venerdi", "Sabato"];	
+		var table = [];
+		var c= 0;
+		sched_json = "{'Sp0':"+t0+",'Sp1':"+t1+",'Sp2':"+t2+",'Sp3':"+t3+",'cronomatrix':[";
+		//console.log(sched_json);
+		for( i = 0; i < days.length; i++ ) {
+			for( k=0;k<48;k ++){    
+				var testo= days[i]+k;
+				cell = document.getElementById(testo);
+				testo1 = cell.innerHTML;
+				testo2 = testo1.match(/\d(?=.png)/g);
+				testo3 = parseInt(testo2);
+				testo4 = "" + testo3;
+				sched1_json = sched_json + testo4 +",";
+				sched_json = sched1_json;
+				//console.log(testo,testo1,testo2,testo3,sched_json)
+				}
+			}
+		sched_json= sched_json.substring(0,sched_json.length-1) +"]}\n";
+		sched_json = sched_json.replace(/'/g, "\"");
+		//console.log(sched_json);
+		//salviamo m andando in POST
+		$.ajax( "save", {
+			data: sched_json,
+			contentType: 'application/json',
+			async: false,
+			type : 'POST', 
+			success: function( html ) {
+				window.document.write( html );
+				}		
+			});
+		//window.location.reload();
+		}
+		function openday(evt, day) {
+		// Dichiaro le variabili
+    		var i, tabcontent, tablinks;
+    		//nascondo tutto
+    		tabcontent = document.getElementsByClassName("tabcontent");  		
+			for (i = 0; i < tabcontent.length; i++) {
+        		tabcontent[i].style.display = "none";
+    			};
+
+    		// prendo elementi
+    		tablinks = document.getElementsByClassName("tablinks");
+			for (i = 0; i < tablinks.length; i++) {
+        		tablinks[i].className = tablinks[i].className.replace(" active", "");
+    			};
+    		// presento il tab
+    		document.getElementById(day).style.display = "block";
+    		evt.currentTarget.className += " active";
+			};
+
+	 
+      </script>
+   </head>
+	
+   <body>
+      <p style = "margin:auto; text-align:center; width:800px; font-family:Segoe UI; font-size:20pt; color:blue; background-color:white">
+	Crono SST
+      </p>
+      <p></p>
+		
+	
+      <div align="center" style = " width:800px; background-position:center; margin:0 auto;" >
+      
+      <table id = "temp" style ="width:750px;" >
+		<td> &nbspT0 (Eco)&nbsp <input type="text" id='temp0' name='temp0' maxlength = 4 onkeypress='return isNumberKey(event)' style=" color:#000000; font-weight:bold; font-size:12pt; width:80px ; background-color:#00ff21; text-align:center;"></td>
+		<td> &nbspT1 (Normal)&nbsp<input type="text" id='temp1' name='temp1' maxlength = 4 onkeypress='return isNumberKey(event)' style= "color:#000000; font-weight:bold; font-size:12pt; width:80px ;background-color:#DAFF7F;text-align:center;"></td>
+		<td> &nbspT2 (Confort)&nbsp<input type="text" id="temp2" name="temp2" maxlength = 4 onkeypress='return isNumberKey(event)' style="color:#000000; font-weight:bold; font-size:12pt; width:80px ;background-color:FFD800;text-align:center;"></td>
+		<td> &nbspT3 (Conf.+)&nbsp<input type="text" id="temp3" name="temp3" maxlength = 4 onkeypress='return isNumberKey(event)' style="color:#000000; font-weight:bold; font-size:12pt; width:80px ;background-color:#ff0000;text-align:center;"></td>
+      </table>
+      <p></p>
+      <div id="area" class="area_style" style = "margin:auto; width:700px;">
+      <ul class="tab" ">
+  		<li><a href="javascript:void(0)" class="tablinks" id="default" onclick="openday(event, 'tb0')">Domenica</a></li>
+  		<li><a href="javascript:void(0)" class="tablinks" onclick="openday(event, 'tb1')">Lunedi</a></li>
+  		<li><a href="javascript:void(0)" class="tablinks" onclick="openday(event, 'tb2')">Martedi</a></li>
+		<li><a href="javascript:void(0)" class="tablinks" onclick="openday(event, 'tb3')">Mercoledi</a></li>
+		<li><a href="javascript:void(0)" class="tablinks" onclick="openday(event, 'tb4')">Giovedi</a></li>
+		<li><a href="javascript:void(0)" class="tablinks" onclick="openday(event, 'tb5')">Venerdi</a></li>
+		<li><a href="javascript:void(0)" class="tablinks" onclick="openday(event, 'tb6')">Sabato</a></li>		
+      </ul>
+      <div id="tb0" class="tabcontent"></div>
+      <div id="tb1" class="tabcontent"></div>
+      <div id="tb2" class="tabcontent"></div>
+      <div id="tb3" class="tabcontent"></div>
+      <div id="tb4" class="tabcontent"></div>	
+      <div id="tb5" class="tabcontent"></div>
+      <div id="tb6" class="tabcontent"></div>
+      </div>    
+      </div>
+     
+       <div align="center" style = " width:400px; background-position:center; margin:0 auto;" >
+		<p></p>
+		<input type="submit" value="SST Home" onclick="window.location = './index.htm';" /				>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;		
+		<input type="submit" value="Salva" onclick="saveSchedule();" />
+		<p></p>
+       </div>   
+</body>
+	
+</html>

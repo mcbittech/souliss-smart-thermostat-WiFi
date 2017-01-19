@@ -1,0 +1,118 @@
+body{
+	font-family: 'Comfortaa', cursive;
+}
+div {
+    font-family: 'Comfortaa', cursive;
+    width:500px;
+    height:800px;
+    padding:0;
+    text-align:center;
+    margin:0 auto;
+    background-position:top;
+    background-repeat:no-repeat;
+    background-size: contain; 
+}
+table{
+	margin:10px ;
+	text-align:center;
+	padding:10px;
+	width:480px;
+	font-family: 'Comfortaa', cursive;
+	
+}
+input[type="submit"] {
+   border: 0 !important;  /*Removes border*/
+   -webkit-appearance: none;  /*Removes default chrome and safari style*/
+   -moz-appearance: none; /* Removes Default Firefox style*/
+        /*background-color: #0088cc /*url(img/select-arrow.png) no-repeat 90% center;*/
+        width: 100px; /*Width of select dropdown to give space for arrow image*/
+        height:30px;
+	text-indent: 0.01px; /* Removes default arrow from firefox*/
+        text-overflow: "";  /*Removes default arrow from firefox*/ /*My custom style for fonts*/
+        color: #000;
+        border-radius: 15px;
+        padding: 1px;
+        box-shadow: inset 0 0 5px rgba(000,000,000, 1);
+	background-color:rgba(21,199,238,1); /* colore di sfondo    testo    */
+	font-family: 'Comfortaa', cursive;
+	font-size:0.8em;
+	font-weight: bold;         /* testo in grassetto  */
+
+}
+input[type="submit"]:hover{
+	background-color: #F3AC25;
+}
+
+
+select {
+        border: 0 !important;  /*Removes border*/
+        -webkit-appearance: none;  /*Removes default chrome and safari style*/
+        -moz-appearance: none; /* Removes Default Firefox style*/
+        /*background: #0088cc /*url(img/select-arrow.png) no-repeat 90% center;*/
+        width: 100px; /*Width of select dropdown to give space for arrow image*/
+        height:30px;
+	text-indent: 0.01px; /* Removes default arrow from firefox*/
+        text-overflow: "";  /*Removes default arrow from firefox*/ /*My custom style for fonts*/
+        background-color:rgba(21,199,238,1); /* colore di sfondo    testo    */
+	color: #000;
+        border-radius: 15px;
+        padding: 5px;
+        box-shadow: inset 0 0 5px rgba(000,000,000, 1);
+	font-family: 'Comfortaa', cursive;
+	font-size:0.8em;
+	font-weight: bold;         /* testo in grassetto  */
+    }
+select:hover{
+	background-color: #F3AC25;
+}
+
+#temp0{
+	font-size:8em;
+	border:0;
+	position:relative;
+	top:0px;
+	left:-32px;
+	color:rgba(229,116,46,1);
+	background-color:rgba(1,1,1,0);	
+}
+#temp1{
+	font-size:2.5em;
+	border:0;
+	position:relative;
+	top:-32px;
+	left: 30px;
+	color:rgba(148,148,148,1);
+	background-color:rgba(1,1,1,0);	
+}
+#temp2{
+	font-size:4em;
+	border:0;
+	position:relative;
+	top:14px;
+	right:35px;
+	color:rgba(21,199,238,1);
+	background-color:rgba(1,1,1,0);	
+}
+
+#temp3{
+	font-size:2em;
+	border:0;
+	position:relative;
+	bottom:-50px;
+	right:1px;
+	color:rgba(128,128,128,1);
+	background-color:rgba(1,1,1,0);	
+}
+#oggi{
+	font-size:2em;
+	color:rgba(21,199,238,1);
+	position:relative;
+	bottom:25px;
+	left:40px;
+}
+#intesta{
+	height:20px;
+	font-size:3em;
+	color:rgba(21,199,238,1);
+}	
+	

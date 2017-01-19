@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>SST Graph</title>
+	<meta name="GENERATOR" content="mcedit">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="Keywords" content="termoregolatore, thermo, temperatura, python">
+	<meta id="viewport" name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<meta name="Author" content="Jpnos">
+	
+	<script src="javascript/jquery.js"></script>
+	<script src="javascript/dygraph-combined.js"></script>
+	<link href="https://fonts.googleapis.com/css?family=Comfortaa" rel="stylesheet">
+
+<script type="text/javascript">
+ var data;
+ var access
+ jQuery.ajaxSetup({async:false});
+ $(document).ready(function() {
+	console.log("ci entro");
+	var c;
+	var results=[];
+	var conta = 0
+	for (c=1; c<=7;c++){
+		access="datalog/sst_datalogger"+c+".csv"
+		$.get(access, function(data) {
+			var lines = data.split('\n');
+			var i = 0;
+			for(i=0; i<lines.length-1; i++)
+			{
+				var linea = lines[i].toString();
+				//results.push(linea);
+				results += linea+"\r\n";
+			}
+			/*rows.forEach( function getvalues(ourrow) {
+				var columns = ourrow.split(",");
+				var linea= columns(0)+","+columns(1)+","+columns(2)+","+columns(3)+","+columns(4)+"\n"
+				
+				console.log(ourrow);
+			});*/
+		}, "text");
+		}
+	console.log("results_letto \n",results);
+	//results.sort();
+	//console.log("results_sorted \n",results);
+	g = new Dygraph(document.getElementById("graphdiv"),
+		results,
+		{
+			//showRoller: false,
+			title: 'Grafico ',
+			ylabel: 'Temperature (C)',
+			xlabel: 'Time',
+			labels:["Data","set","letta","Umidita","switch"],
+			labelsSeparateLines: true,
+			legend: 'always',
+			yRangePad: '50',
+			xRangePad: '30',
+			colors: ['#284785', '#FF1111','#000000' ],
+			labelsDiv: document.getElementById("labels")
+		} );
+ });
+	
+</script>
+</head>
+<body>
+<title>Temperature Graphic</title>
+<table align = center>
+<tr>
+<td valign=top><div id="graphdiv" style="width:1024px; height:400px; font-family:Comfortaa; background-color:#eee; padding:0.1em 0.1em 0em 0.1em; border: 1px solid black; margin: 0 auto; "></div></td>
+</tr><tr>
+<td valign=top><div id="labels" style="width:1024px; height:120px; font-family:Comfortaa; background-color:#eee; padding:0.1em 0.1em 0em 0.1em; border: 1px solid black; font-size:10pt; margin: 0 auto; "></div></td>
+</tr>
+
+<tr>
+<td valign=top align=center ><div id="testo" style="width:320px; height:100px; font-family:Comfortaa; margin: 0 auto; font-size:14px; ">
+    <input type="submit" value="SST Home " style="font-family:Comfortaa;" onclick="window.location = './index.htm';"/>
+</tr>
+
+</table>
+</body>
+</html>

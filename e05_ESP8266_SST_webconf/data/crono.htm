@@ -1,0 +1,214 @@
+<html><!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+    
+	<meta charset="UTF-8"> 
+	<link rel="stylesheet" href="css/styles.css"> 
+	<title>CronoTermostato Souliss</title>
+	<script src="javascript/jquery.js"></script>
+	<link href="https://fonts.googleapis.com/css?family=Comfortaa" rel="stylesheet">	
+      <script type = "text/javascript" language = "javascript">
+         $(document).ready(function() {
+		var days = [ "Domenica", "Lunedi", "Martedi", "Mercoledi", "Giovedi", "Venerdi", "Sabato"];	
+		var table = [];
+		$.ajaxSetup( { cache: false } );
+		//importo file e divido i valori 
+		$.getJSON('sst_crono_matrix.json', function(jd) {
+			console.log (jd);
+			for( i = 0; i < days.length; i++ ) {
+				table[i] = (jd.cronomatrix.splice(0,48));
+				};
+			document.getElementById ("temp0").value = parseFloat(jd.Sp0).toFixed(1);
+			document.getElementById ("temp1").value = parseFloat(jd.Sp1).toFixed(1);
+			document.getElementById ("temp2").value = parseFloat(jd.Sp2).toFixed(1);
+			document.getElementById ("temp3").value = parseFloat(jd.Sp3).toFixed(1);			
+			// creo taelle	
+			for( i = 0; i < 14; i +=2 ) {
+				tabo= "tb"+(i/2);
+				var poz = document.getElementById (tabo);
+				tab = document.createElement('table');
+				poz.appendChild(tab);
+				var intesta = tab.createCaption();
+				intesta.innerHTML= days[i/2];
+				var row = tab.insertRow(0);
+				var row1 = tab.insertRow(1);
+				for(var k=0;k<48;k ++){                
+						console.log("k:",k);
+						img=new Image();
+						img.src= "img/"+table[i/2][k] + ".png";
+						var cell = row.insertCell(k);
+						var cell1 = row1.insertCell(k);
+						cell1.style.color = 'black';
+						cell1.style.height = '40px';
+						cell.style.color = 'white';
+						cell.style.height = '40px';
+						if (k == 0){
+							cell1.innerHTML = "0";
+							console.log("scrivo lo 0");
+							
+							
+							}
+						else{	
+							if (k%2==0){
+								if (k<=10){
+									cell1.innerHTML = k/2;
+								}
+								else {
+									cell1.innerHTML = k/2;
+								}
+								console.log("scrivo: ",k/2);
+								
+								}
+							else {
+								cell1.innerHTML = "";
+								console.log("scrivo spazio");
+								
+							}
+						}
+						cell.style.color = 'white';
+						cell.style.height = '40px';
+						cell.innerHTML = "<img src="+img.src+">"; 
+						cell.id = days[i/2]+k
+						//cell.name = days[i]+k
+						cell.onclick = function() { clickTest(this.id);};
+					}/*
+					for(var k=0;k<72;k ++){                
+						var cell1 = row1.insertCell(k);
+						
+						if (k == 0){
+							cell1.innerHTML = "0";
+							console.log("scrivo lo 0");
+							}
+						else{	
+							if (k%2==0){
+								cell1.innerHTML = k/2;
+								console.log("scrivo: ",k/2);
+								}
+							else {
+								cell1.innerHTML = "&nbsp";
+								console.log("scrivo spazio");
+							}
+						}
+						
+						
+						
+						} ; */             
+			}
+		});
+		
+			
+							
+         });
+    function isNumberKey(evt){
+		var charCode = (evt.which) ? evt.which : evt.keyCode;
+		if (charCode > 14 && (charCode < 46 || charCode > 57) )
+			return false;
+		return true;
+	}
+    function validate(evt) {
+		var theEvent = evt || window.event;
+		var key = theEvent.keyCode || theEvent.which;
+		key = String.fromCharCode( key );
+		var regex = /[0-9]|\./;
+		if( !regex.test(key) ) {
+			theEvent.returnValue = false;
+			if(theEvent.preventDefault) theEvent.preventDefault();
+				}
+		}
+	function clickTest(memo){
+		//Recupero l'indice
+		cell =  document.getElementById(memo); 
+		//alert (memo);
+		testo = cell.innerHTML;
+		//console.log(testo)
+		testo1 = testo.match(/\d(?=.png)/g)
+		testo2= (parseInt(testo1) + 1);
+		if (testo2 > 4) {
+			testo2 = 0;
+			}
+		sourcecode = "<img src=img/"+testo2+".png>";
+		cell.innerHTML = sourcecode;
+		} 
+	function saveSchedule(){
+		// variabile per salvare
+		sched_json="";
+		sched1_json="";
+		//recuperiamo i dati dal Documento
+		t0 = parseFloat(document.getElementById("temp0").value). toFixed(2);
+		t1 = parseFloat(document.getElementById("temp1").value). toFixed(2);
+		t2 = parseFloat(document.getElementById("temp2").value). toFixed(2);
+		t3 = parseFloat(document.getElementById("temp3").value). toFixed(2);
+		//console.log (t0,t1,t2,t3)
+		var days = [ "Domenica", "Lunedi", "Martedi", "Mercoledi", "Giovedi", "Venerdi", "Sabato"];	
+		var table = [];
+		var c= 0;
+		sched_json = "{'Sp0':"+t0+",'Sp1':"+t1+",'Sp2':"+t2+",'Sp3':"+t3+",'cronomatrix':[";
+		//console.log(sched_json);
+		for( i = 0; i < days.length; i++ ) {
+			for( k=0;k<48;k ++){    
+				var testo= days[i]+k;
+				cell = document.getElementById(testo);
+				testo1 = cell.innerHTML;
+				testo2 = testo1.match(/\d(?=.png)/g);
+				testo3 = parseInt(testo2);
+				testo4 = "" + testo3;
+				sched1_json = sched_json + testo4 +",";
+				sched_json = sched1_json;
+				//console.log(testo,testo1,testo2,testo3,sched_json)
+				}
+			}
+		sched_json= sched_json.substring(0,sched_json.length-1) +"]}\n";
+		sched_json = sched_json.replace(/'/g, "\"");
+		//console.log(sched_json);
+		//salviamo m andando in POST
+		$.ajax( "save", {
+			data: sched_json,
+			contentType: 'application/json',
+			async: false,
+			type : 'POST', 
+			success: function( html ) {
+				window.document.write( html );
+				}		
+			});
+		window.location.reload();
+		}
+		
+	 
+      </script>
+   </head>
+	
+   <body>
+      <p style = "margin:auto; text-align:center; width:1024px; font-family:Segoe UI; font-size:20pt; font-weight:bold; color:rgba(21,199,238,1); background-color:white">
+	SST Crono 
+      </p>
+      <p></p>
+      <div align="center" style = " width:1024px; background-position:center; margin:0 auto;" >
+      
+      <table id = "temp" style =  "width:1024px;" >
+		<td>&nbsp T0 (Eco)&nbsp <input type="text" id='temp0' name='temp0' maxlength = 4 onkeypress='return isNumberKey(event)' style=" color:#000000; background-color:#00ff21; text-align:center;"></td>
+		<td> &nbspT1 (Normal)&nbsp<input type="text" id='temp1' name='temp1' maxlength = 4 onkeypress='return isNumberKey(event)' style= "color:#000000; background-color:#DAFF7F;text-align:center;"></td>
+		<td> &nbspT2 (Confort)&nbsp<input type="text" id="temp2" name="temp2" maxlength = 4 onkeypress='return isNumberKey(event)' style="color:#000000; background-color:FFD800;text-align:center;"></td>
+		<td> &nbspT3 (Confort+)&nbsp<input type="text" id="temp3" name="temp3" maxlength = 4 onkeypress='return isNumberKey(event)' style="color:#000000; background-color:#ff0000;text-align:center;"></td>
+      </table>
+      <div style=" color:rgba(21,199,238,1);">
+    
+	<table id="tb0"></table>
+	<div id="tb1"></div>
+	<div id="tb2"></div>
+	<div id="tb3"></div>
+	<div id="tb4"></div>	
+	<div id="tb5"></div>
+	<div id="tb6"></div>
+      
+      </div>
+      </div>
+     
+       <div align="center" style = " width:950px; background-position:center; margin:0 auto;" >
+		<p></p>
+		<input type="submit" value="SST Home" onclick="window.location = './index.htm';" /				>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;		
+		<input type="submit" value="Salva" onclick="saveSchedule();" />
+		<p></p>
+       </div>
+   </body>
+	
+</html>

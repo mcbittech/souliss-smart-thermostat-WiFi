@@ -1,0 +1,124 @@
+body {
+    font-size: 20pt;
+    font-family: 'Comfortaa', cursive;
+}
+#body {
+    clear: both;
+    margin: 0 auto;
+    max-width: 1000px;
+}
+div {
+	font-family: 'Comfortaa', cursive;
+	font-weight:bold; 
+	font-size:14pt; 
+}
+table {
+    font-family: 'Comfortaa', cursive;
+    border-collapse: collapse;
+    border-spacing: 1px;
+    margin-top: 1em;
+    /*border: double #666666;*/
+    margin-top:5px;
+    padding: 10px 1px 10px 1px;
+    background-color:#FFFFFF;
+}
+body td {
+    padding:10px 1px 5px 1px;
+}
+input {
+	font-family: 'Comfortaa', cursive;
+	font-weight:bold; 
+	font-size:16pt; 
+	width:70px ;
+	border-radius: 5px;
+	box-shadow: inset 0 0 5px rgba(000,000,000, 1);
+}
+input[type="submit"] {
+   border: 0 !important;  /*Removes border*/
+   -webkit-appearance: none;  /*Removes default chrome and safari style*/
+   -moz-appearance: none; /* Removes Default Firefox style*/
+        /*background-color: #0088cc /*url(img/select-arrow.png) no-repeat 90% center;*/
+        width: 100px; /*Width of select dropdown to give space for arrow image*/
+        height:30px;
+	text-indent: 0.01px; /* Removes default arrow from firefox*/
+        text-overflow: "";  /*Removes default arrow from firefox*/ /*My custom style for fonts*/
+        color: #000;
+        border-radius: 15px;
+        padding: 1px;
+        box-shadow: inset 0 0 5px rgba(000,000,000, 1);
+	background-color:rgba(21,199,238,1); /* colore di sfondo    testo    */
+	font-family: 'Comfortaa', cursive;
+	font-size:0.8em;
+	font-weight: bold;         /* testo in grassetto  */
+
+}
+input[type="submit"]:hover{
+	background-color: #F3AC25;
+}	
+caption {
+  font-family: 'Comfortaa', cursive;
+  font-size:20px;
+  text-align: center;
+  border-style: none;
+  border-width: 1px;
+  border-color: #666666;
+  background-color:#FFFFFF;
+  
+}
+ /* Style the list */
+ul.tab {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    background-color: #ffffff;
+    margin-top:0px;
+    margin-bottom:10px;
+}
+
+/* Float the list items side by side */
+ul.tab li {float: left;}
+
+/* Style the links inside the list items */
+ul.tab li a {
+    display:inline-block;
+    color: black;
+    text-align: center;
+    padding: 4px 8px;
+    text-decoration: none;
+    transition: 0.5s;
+    font-size:12pt;
+    font-weight:bold; 
+    border-radius: 5px;   
+}
+
+/* Change background color of links on hover */
+ul.tab li a:hover {background-color: #F3AC25;}
+
+/* Create an active/current tablink class */
+ul.tab li a:focus, .active {
+background-color:rgba(21,199,238,1);
+}
+
+.area_style {
+    background-color:rgba(21,199,238,1);
+    padding:0px 0px 2px 0px; 
+    border-radius: 5px;     
+}
+/* Style the tab content */
+.tabcontent {
+    display: none;
+    padding: 2px 4px;
+    border: 0;
+    border-top: none;
+    border-radius: 5px;  
+}
+
+img{
+    height: 100%;
+    width: 100%; 
+}
+td:nth-child(2n) {
+    padding-right: 7px;
+}

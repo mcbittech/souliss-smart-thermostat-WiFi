@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+  		<meta charset="utf-8">
+  		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  		<meta id="viewport" name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<script src="javascript/jquery.js"></script>
+		<link href="https://fonts.googleapis.com/css?family=Comfortaa" rel="stylesheet">
+		<title>SST Souliss Save</title>
+	
+    
+    </head>
+    <body>
+		<div align="center">
+				<table width="320px" border=double frame="box" rules="none" cellpadding="10" cellspacing="0" style="font-family:Comfortaa; font-size:12pt;" >
+					<tr>
+						<td valign="center" align="center" width="30px"><img src="favicon.ico" width="30px" height="30px"></td>	
+						<td valign="center" style="font-family:Comfortaa;" align="center"><b>SST Salvataggio in corso....<br><br></td>
+					</tr>
+					</table>
+					<table width="320px" border=double frame="box" rules="none"style="font-family:Comfortaa;">
+					<tr>	
+						<td width="60%">
+						<div id="countdown1" style="font-family:Comfortaa;">
+						<p>Sarai reindirizzato in:</p>
+						</td><td width="40%" style="font-family:Comfortaa; font-size:20pt;"></div>
+						<div id="countdown">
+						<div id="minutes" style="float:left; font-family:Comfortaa;">00</div>
+						<div style="float:left">:</div>
+						<div id="seconds" style="float:left; font-family:Comfortaa;">00</div>
+						</div>
+						</td>
+						</tr><tr>
+							<div id="aftercount" style="display:none; font-family:Comfortaa;">
+							<br >click here: <a href='index.htm'>SST home page</a></p>
+							</div>
+						</tr>
+					</tr>
+				</table>
+			</p>
+			
+		</div>
+    <script type-"text/javascript">
+		var sTime = new Date().getTime();
+		var countDown = 5;
+		function UpdateTime() {
+		var cTime = new Date().getTime();
+		var diff = cTime - sTime;
+		var seconds = countDown - Math.floor(diff / 1000);
+		if (seconds >= 0) {
+		var minutes = Math.floor(seconds / 60);
+		seconds -= minutes * 60;
+		$("#minutes").text(minutes < 10 ? "0" + minutes : minutes);
+		$("#seconds").text(seconds < 10 ? "0" + seconds : seconds);
+		} else {
+			window.location = './index.htm';
+			$("#countdown").hide();
+			$("#countdown1").hide();
+			$("#aftercount").show();
+			clearInterval(counter);
+			}
+		}
+		UpdateTime();
+		var counter = setInterval(UpdateTime, 500);
+	</script>
+    </body>
+</html>
