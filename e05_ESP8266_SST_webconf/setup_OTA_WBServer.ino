@@ -40,6 +40,80 @@ void setup_OTA_WBServer(){
 
   server.addHandler(new SPIFFSEditor(http_username,http_password));
 
+  server.on("/", [](AsyncWebServerRequest *request)
+    {       
+        if (!request->authenticate(http_username,http_password))          
+            {
+            Serial.printf("Autentication required \n");
+            return request->requestAuthentication();//request->redirect("/login");
+            }
+        else{
+        AsyncWebServerResponse *response = request->beginResponse(SPIFFS, "/index.htm", "text/html");
+       request->send(response);
+        }
+    }); 
+    
+   server.on("/index.htm", [](AsyncWebServerRequest *request)
+    {       
+        if (!request->authenticate(http_username,http_password))          
+            {
+            Serial.printf("Autentication required \n");
+            return request->requestAuthentication();//request->redirect("/login");
+            }
+        else{
+        AsyncWebServerResponse *response = request->beginResponse(SPIFFS, "/index.htm", "text/html");
+       request->send(response);
+        }
+    });
+     server.on("/crono.htm", [](AsyncWebServerRequest *request)
+    {       
+        if (!request->authenticate(http_username,http_password))          
+            {
+            Serial.printf("Autentication required \n");
+            return request->requestAuthentication();//request->redirect("/login");
+            }
+        else{
+        AsyncWebServerResponse *response = request->beginResponse(SPIFFS, "/crono.htm", "text/html");
+       request->send(response);
+        }
+    });
+     server.on("/crono1.htm", [](AsyncWebServerRequest *request)
+    {       
+        if (!request->authenticate(http_username,http_password))          
+            {
+            Serial.printf("Autentication required \n");
+            return request->requestAuthentication();//request->redirect("/login");
+            }
+        else{
+        AsyncWebServerResponse *response = request->beginResponse(SPIFFS, "/crono1.htm", "text/html");
+       request->send(response);
+        }
+    });
+    server.on("/setting.htm", [](AsyncWebServerRequest *request)
+    {       
+        if (!request->authenticate(http_username,http_password))          
+            {
+            Serial.printf("Autentication required \n");
+            return request->requestAuthentication();//request->redirect("/login");
+            }
+        else{
+        AsyncWebServerResponse *response = request->beginResponse(SPIFFS, "/setting.htm", "text/html");
+       request->send(response);
+        }
+    });
+    server.on("/graph.htm", [](AsyncWebServerRequest *request)
+    {       
+        if (!request->authenticate(http_username,http_password))          
+            {
+            Serial.printf("Autentication required \n");
+            return request->requestAuthentication();//request->redirect("/login");
+            }
+        else{
+        AsyncWebServerResponse *response = request->beginResponse(SPIFFS, "/graph.htm", "text/html");
+       request->send(response);
+        }
+    });
+  
   server.on("/heap", HTTP_GET, [](AsyncWebServerRequest *request){
     Serial.printf("GET /heap");
     request->send(200, "text/plain", String(ESP.getFreeHeap()));
@@ -84,7 +158,7 @@ void setup_OTA_WBServer(){
     request->send(200, "application/json", json);
   });
 
-    server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.htm");
+    server.serveStatic("/", SPIFFS, "/"); //.setDefaultFile("index.htm");
 
   server.onNotFound([](AsyncWebServerRequest *request){
     Serial.printf("NOT_FOUND: ");
@@ -157,7 +231,7 @@ void setup_OTA_WBServer(){
         Serial.printf("Body: %u\n", total);
         Serial.printf("Body cerca: %u\n", totale);
         Serial.println("cerca: "+cerca+"\n");
-        Serial.println("cerca1: "+cerca_stringa+"\n");
+        Serial.println("cerca_stringa: "+cerca_stringa+"\n");
         if(!index)
           Serial.printf("Request : ",request);
           Serial.printf("BodyStart: %u\n", index);
@@ -222,4 +296,3 @@ void setup_OTA_WBServer(){
   server.begin();
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
 }  
-
