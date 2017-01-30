@@ -3,12 +3,12 @@
 <head> 
     
 	<meta charset="utf-8">
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>SST Setting</title>
 	<link rel="stylesheet" href="css/jquery-ui.min.css">
 	<script src="javascript/jquery.js"></script>
 	<script src="javascript/jquery-ui.min.js"></script>
-	<link href="https://fonts.googleapis.com/css?family=Comfortaa" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Comfortaa" rel="stylesheet"> 
 
 	<meta id="viewport" name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />	
       <script>
@@ -63,28 +63,43 @@
 					document.getElementById("layout2").checked="checked";
 					$("#layout1").attr("checked", false);
 					}
-				document.getElementById ("temp").value = jd.Luminosita;	
+				document.getElementById ("temp").value = jd.Luminosita;
+				document.getElementById ("offs").value = jd.OffsetDHT;		
 				document.getElementById ("timezone").value=jd.Tzone;	
-				$("#slider-orizontal").slider('value',jd.Luminosita);
+				$("#lumi").slider('value',jd.Luminosita);
+				$("#offset").slider('value',jd.OffsetDHT);
 			// creo taelle		
 				});
 								
 			});
       $(function() {
-	$("#slider-orizontal").slider({
-	  orientation: "orizontal",
-	  range: "min",
-	  min: 1,
-	  max: 100,
-	  step: 1,
-	  value: document.getElementById ("temp").value,
-	  slide: function( event, ui ) {
-		$( "#temp" ).val( ui.value);
+		$("#lumi").slider({
+	  	orientation: "orizontal",
+	  	range: "min",
+	  	min: 1,
+	  	max: 100,
+	  	step: 1,
+	  	value: document.getElementById ("temp").value,
+	  	slide: function( event, ui ) {
+			$( "#temp" ).val( ui.value);
 		
-		}
-	});
-	$( "#temp" ).val( $( "#slider-orizontal" ).slider( "value" ));
-      });
+			}
+		});
+		$("#offset").slider({
+	  	orientation: "orizontal",
+	  	range: "min",
+	  	min: -2.5,
+	  	max: 2.5,
+	  	step: 0.1,
+	  	value: document.getElementById ("offs").value,
+	  	slide: function( event, ui ) {
+			$( "#offs" ).val( ui.value);
+		
+			}
+		});		
+		$( "#temp" ).val( $( "#lumi" ).slider( "value" ));
+		$( "#offs" ).val( $( "#offset" ).slider( "value" ));
+      	});
       
     
     function saveSchedule(){
@@ -122,9 +137,10 @@
 		if(document.getElementById("layout2").checked){
 			Layout2=1;
 			}
-		Luminosita = document.getElementById ("temp").value;
+		Luminosita 	= document.getElementById ("temp").value;
+		dhtoffset	= document.getElementById ("offs").value;	
 		Tzone=document.getElementById("timezone").value;
-		sched_json="{ \"Luminosita\": "+Luminosita+", \"Orologio\": "+Orologio+" , \"Tzone\": "+Tzone+", \"DayLightSavingTime\": "+DayLightSavingTime+", \"Crono\": "+Crono+", \"CronoLearn\": "+CronoLearn+", \"Dispositivo\": "+Dispositivo+", \"Layout1\": "+Layout1+", \"Layout2\": "+Layout2+" }\n";
+		sched_json="{ \"Luminosita\": "+Luminosita+", \"Orologio\": "+Orologio+" , \"Tzone\": "+Tzone+", \"DayLightSavingTime\": "+DayLightSavingTime+", \"Crono\": "+Crono+", \"CronoLearn\": "+CronoLearn+", \"Dispositivo\": "+Dispositivo+", \"Layout1\": "+Layout1+", \"Layout2\": "+Layout2+",\"OffsetDHT\": "+dhtoffset+" }\n";
 		console.log(sched_json);
 				
 		//salviamo m andando in POST
@@ -141,9 +157,25 @@
 	 }
       </script>
    <style>
-   input[type="submit"]:hover{
-	background-color: #F3AC25;
-	}
+  		input[type="submit"] {
+   		border: 0 !important;  /*Removes border*/
+   		-webkit-appearance: none;  /*Removes default chrome and safari style*/
+   		-moz-appearance: none; /* Removes Default Firefox style*/
+        /*background-color: #0088cc /*url(img/select-arrow.png) no-repeat 90% center;*/
+        width: 100px; /*Width of select dropdown to give space for arrow image*/
+        height:30px;
+		text-indent: 0.01px; /* Removes default arrow from firefox*/
+        text-overflow: "";  /*Removes default arrow from firefox*/ /*My custom style for fonts*/
+        color: #000;
+        border-radius: 15px;
+        padding: 1px;
+        box-shadow: inset 0 0 5px rgba(000,000,000, 1);
+		background-color:rgba(21,199,238,1); /* colore di sfondo    testo    */
+		font-family: 'Comfortaa', cursive;
+		font-size:0.8em;
+		font-weight: bold;         /* testo in grassetto  */
+		}
+		
    </style>
    
    </head>
@@ -151,54 +183,62 @@
    <body style="font-family:Comfortaa;">
   
       <div id="corpo" align="center" style = " width:320px; background-position:center; margin:0 auto;" >
-	<p style = "margin:0 auto; font-family:Comfortaa;text-align:center; width:320px;font-family:Segoe UI; font-size:20pt; color:blue; background-color:white">
+	<p style = "margin:0 auto; text-align:center; width:320px;font-family:Comfortaa; font-size:20pt; color:blue; background-color:white">
 	SST Setting 
 	</p>
 	<p></p>
-	<table id = "temp" style =  "width:320px; border:2px;">
+	<table id = "temp" style =  "width:320px; border:2px; font-family:Comfortaa;">
 		<tr>
 			<fieldset>
 			<legend align="center" style="font-family:Comfortaa;">Dispositivo</legend>
-					Orologio<input type="checkbox" id="orologio" name="orologio" value="off" />
-					Cronolearn<input type="checkbox" id="cronolearn" name="cronolearn" value="off" />&nbsp&nbsp&nbsp&nbsp&nbsp
-					Dispositivo<input type="checkbox" id="dispositivo" name="dispositivo" value="off" /> &nbsp&nbsp
-					Ora Solare<input type="checkbox" id="orasolare" name="orasolare" value="off" /> &nbsp&nbsp&nbsp&nbsp
-					Crono<input type="checkbox" id="crono" name="crono" value="off" /> 					
+					Orologio<input type="checkbox" id="orologio" name="orologio" value="off" style="font-family:Comfortaa;"/>
+					Cronolearn<input type="checkbox" id="cronolearn" name="cronolearn" value="off" style="font-family:Comfortaa;"/>&nbsp&nbsp&nbsp&nbsp&nbsp
+					Dispositivo<input type="checkbox" id="dispositivo" name="dispositivo" value="off" style="font-family:Comfortaa;"/> &nbsp&nbsp
+					Ora Solare<input type="checkbox" id="orasolare" name="orasolare" value="off" style="font-family:Comfortaa;" /> &nbsp&nbsp&nbsp&nbsp
+					Crono<input type="checkbox" id="crono" name="crono" value="off" style="font-family:Comfortaa;"/> 					
 			</fieldset>	
 		</tr>
 		<tr>
 			<fieldset>
 			<legend align="center" style="font-family:Comfortaa;">Interfaccia</legend>
-				 Layout1 <input id="layout1" type="radio" name="Layout1" value="1"/>
-				 Layout2  <input id="layout2" type="radio" name="Layout1" value="0"/>
+				 Layout1 <input id="layout1" type="radio" name="Layout1" value="1" style="font-family:Comfortaa;"/>
+				 Layout2  <input id="layout2" type="radio" name="Layout1" value="0" style="font-family:Comfortaa;"/>
 			</fieldset>
 		</tr>
 		<tr>
 			<fieldset>
 			<legend align="center" style="font-family:Comfortaa;">TimeZone</legend>
 			<select name="zone" id="timezone">
-				<option style="font-family:Comfortaa;" value="1" >Central European Time  </option>
-				<option style="font-family:Comfortaa;" value="-5" >Eastern Standard Time (USA)</option>
-				<option style="font-family:Comfortaa;" value="-4" >Eastern Daylight Time (USA)</option>
-				<option style="font-family:Comfortaa;" value="-8" >Pacific Standard Time (USA)</option>
-				<option style="font-family:Comfortaa;" value="-7" >Pacific Daylight Time (USA)</option>
+				<option value="1" style="font-family:Comfortaa;">Central European Time  </option>
+				<option value="-5" style="font-family:Comfortaa;" >Eastern Standard Time (USA)</option>
+				<option value="-4" style="font-family:Comfortaa;">Eastern Daylight Time (USA)</option>
+				<option value="-8" style="font-family:Comfortaa;">Pacific Standard Time (USA)</option>
+				<option value="-7" style="font-family:Comfortaa;">Pacific Daylight Time (USA)</option>
 			</select>
 		</tr>
 		<tr>
 			<fieldset>
 			<legend align="center" style="font-family:Comfortaa;">Luminosita</legend>
-				<p id="slider-orizontal" style="width:200px; height:14px; font-family:Comfortaa;"></p>
-				<input type="text" style="font-family:Comfortaa;" id="temp" name="temp" readonly style="border:1; color:#ff0000; font-family:Comfortaa; font-weight:bold; font-size:x-large; width: 2em;" size="4">
+				<p id="lumi" style="width:200px; height:14px;font-family:Confortaa;"></p>
+				<input type="text" id="temp" name="temp" readonly style="border:1; color:#ff9900; font-weight:bold; font-size:x-large; width: 2.5em; text-align:center" size="4">
+			</fieldset>
+		</tr>
+		<tr>
+			<fieldset>
+			<legend align="center" style="font-family:Comfortaa;">Offset DHT</legend>
+				<p id="offset" style="width:200px; height:14px;"></p>
+				<input type="text" id="offs" name="offs" readonly style="border:1; color:#349900; font-family:Comfortaa; font-weight:bold; font-size:x-large; width:2.7em; text-align:center" size"5">
+				
 			</fieldset>
 		</tr>
 	</table>
       
       </div>
      
-       <div align="center" style = " width:320px; background-position:center; margin:0 auto; font-family:Comfortaa;" >
+       <div align="center" style = " width:320px; background-position:center; margin:0 auto;" >
 		<p></p>
-		<input type="submit" style="font-family:Comfortaa;" value="Cancel" onclick="window.location = './index.htm';" /				>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;		
-		<input type="submit" style="font-family:Comfortaa;" value="Salva" onclick="saveSchedule();" />
+		<input type="submit" value="Cancel" onclick="window.location = './index.htm';" /				>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;		
+		<input type="submit" value="Salva" onclick="saveSchedule();" />
 		<p></p>
        </div>
    </body>

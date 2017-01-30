@@ -24,7 +24,7 @@ input[type="submit"] {
    border: 0 !important;  /*Removes border*/
    -webkit-appearance: none;  /*Removes default chrome and safari style*/
    -moz-appearance: none; /* Removes Default Firefox style*/
-        /*background-color: #0088cc /*url(img/select-arrow.png) no-repeat 90% center;*/
+        /*background-color: #0088cc url(img/select-arrow.png) no-repeat 90% center;*/
         width: 100px; /*Width of select dropdown to give space for arrow image*/
         height:30px;
 	text-indent: 0.01px; /* Removes default arrow from firefox*/
@@ -48,7 +48,7 @@ select {
         border: 0 !important;  /*Removes border*/
         -webkit-appearance: none;  /*Removes default chrome and safari style*/
         -moz-appearance: none; /* Removes Default Firefox style*/
-        /*background: #0088cc /*url(img/select-arrow.png) no-repeat 90% center;*/
+        /*background: #0088cc url(img/select-arrow.png) no-repeat 90% center;*/
         width: 100px; /*Width of select dropdown to give space for arrow image*/
         height:30px;
 	text-indent: 0.01px; /* Removes default arrow from firefox*/
@@ -70,7 +70,7 @@ select:hover{
 	font-size:8em;
 	border:0;
 	position:relative;
-	top:0px;
+	top:25px;
 	left:-32px;
 	color:rgba(229,116,46,1);
 	background-color:rgba(1,1,1,0);	
@@ -79,7 +79,7 @@ select:hover{
 	font-size:2.5em;
 	border:0;
 	position:relative;
-	top:-32px;
+	top:-18px;
 	left: 30px;
 	color:rgba(148,148,148,1);
 	background-color:rgba(1,1,1,0);	
@@ -88,7 +88,7 @@ select:hover{
 	font-size:4em;
 	border:0;
 	position:relative;
-	top:14px;
+	top:25px;
 	right:35px;
 	color:rgba(21,199,238,1);
 	background-color:rgba(1,1,1,0);	
@@ -98,7 +98,7 @@ select:hover{
 	font-size:2em;
 	border:0;
 	position:relative;
-	bottom:-50px;
+	bottom:-80px;
 	right:1px;
 	color:rgba(128,128,128,1);
 	background-color:rgba(1,1,1,0);	
@@ -115,4 +115,9 @@ select:hover{
 	font-size:3em;
 	color:rgba(21,199,238,1);
 }	
+#pulsanti{
+	position:relative;
+	bottom:-60px;
+}
+
 	
