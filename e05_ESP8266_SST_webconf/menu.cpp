@@ -382,9 +382,69 @@ Menu const* prec_cp_menu;
 Menu const* cp_menu;
 MenuComponent const* cp_menu_sel;
 MenuComponent const* cp_m_comp;
-boolean bFlagColour = true;
 boolean bFirstPrint = true;
 int x, y, y_step_plus , y_step;
+
+boolean isSelected(String current_menu_name){
+	 if  (
+			 (
+					current_menu_name.equals(MENU_TEXT_BRIGHT) && (
+							 (String(cp_m_comp->get_name()).equals("100%") && iDisplayBright == 100) ||
+							 (String(cp_m_comp->get_name()).equals("80%") && iDisplayBright == 80) ||
+							 (String(cp_m_comp->get_name()).equals("50%") && iDisplayBright == 60) ||
+							 (String(cp_m_comp->get_name()).equals("50%") && iDisplayBright == 50) ||
+							 (String(cp_m_comp->get_name()).equals("30%") && iDisplayBright == 30) ||
+							 (String(cp_m_comp->get_name()).equals("5%") && iDisplayBright == 5) ||
+							 (String(cp_m_comp->get_name()).equals("2%") && iDisplayBright == 2)
+							)
+			 ) ||
+			 (
+			 		 current_menu_name.equals(MENU_TEXT_LAYOUTS) && (
+			 				 (String(cp_m_comp->get_name()).equals(MENU_TEXT_LAYOUT_1) && bLayout1) ||
+							 (String(cp_m_comp->get_name()).equals(MENU_TEXT_LAYOUT_2) && bLayout2)
+			 				)
+			 ) ||
+			 (
+		    		 current_menu_name.equals(MENU_TEXT_CLOCK) && (
+		    				 (String(cp_m_comp->get_name()).equals(MENU_TEXT_ON) && bClock) ||
+							 (String(cp_m_comp->get_name()).equals(MENU_TEXT_OFF) && !bClock)
+		    				)
+			 ) ||
+			 (
+		    		 current_menu_name.equals(MENU_TEXT_CRONO_ENABLE) && (
+		    				 (String(cp_m_comp->get_name()).equals(MENU_TEXT_LEARN) && bCronoLearn) ||
+							 (String(cp_m_comp->get_name()).equals(MENU_TEXT_ON) && bCrono) ||
+							 (String(cp_m_comp->get_name()).equals(MENU_TEXT_OFF) && !bCrono)
+		    				)
+			 ) ||
+			 (
+		    		 current_menu_name.equals(MENU_TEXT_SYSTEM_ENABLED) && (
+							 (String(cp_m_comp->get_name()).equals(MENU_TEXT_ON) && bSystem) ||
+							 (String(cp_m_comp->get_name()).equals(MENU_TEXT_OFF) && !bSystem)
+		    				)
+			 ) ||
+			 (
+		    		 current_menu_name.equals(MENU_TEXT_DAYLIGHTSAVINGTIME_SET) && (
+							 (String(cp_m_comp->get_name()).equals(MENU_DAYLIGHTSAVINGTIME_ON) && bDayLightSavingTime) ||
+							 (String(cp_m_comp->get_name()).equals(MENU_DAYLIGHTSAVINGTIME_OFF) && !bDayLightSavingTime)
+		    				)
+			 ) ||
+			 (
+		    		 current_menu_name.equals(MENU_TEXT_TIMEZONE_SET) && (
+							 (String(cp_m_comp->get_name()).equals(MENU_TIMEZONE_0) && tZone == 0) ||
+							 (String(cp_m_comp->get_name()).equals(MENU_TIMEZONE_1) && tZone == 1) ||
+							 (String(cp_m_comp->get_name()).equals(MENU_TIMEZONE_2) && tZone == 2) ||
+							 (String(cp_m_comp->get_name()).equals(MENU_TIMEZONE_3) && tZone == 3) ||
+							 (String(cp_m_comp->get_name()).equals(MENU_TIMEZONE_4) && tZone == 4)
+		    				)
+			 )
+
+
+		 ) {
+		 	 return true;
+	 	 }
+	 	 return false;
+}
 
 void printMenuBody(Ucglib_ILI9341_18x240x320_HWSPI ucg, boolean bFlagFirstPrint) {
   x = 2;
@@ -398,7 +458,6 @@ void printMenuBody(Ucglib_ILI9341_18x240x320_HWSPI ucg, boolean bFlagFirstPrint)
   if (cp_menu != prec_cp_menu) {
     ucg.clearScreen();
     prec_cp_menu = cp_menu;
-    bFlagColour = true;
     ucg.setColor(0, 255, 255, 255);    // Bianco
     ucg.setFontMode(UCG_FONT_MODE_SOLID);
   }
@@ -409,10 +468,11 @@ void printMenuBody(Ucglib_ILI9341_18x240x320_HWSPI ucg, boolean bFlagFirstPrint)
   ucg.setFont(FONT_SMALL);
 
   //Current menu name
+  String current_menu_name = cp_menu->get_name();
   y_step = ucg.getFontAscent();
   y = y + y_step;
   ucg.setPrintPos(x, y);
-  ucg.print(cp_menu->get_name());
+  ucg.print(current_menu_name);
 
   //One line space
   y = y + y_step;
@@ -427,16 +487,15 @@ void printMenuBody(Ucglib_ILI9341_18x240x320_HWSPI ucg, boolean bFlagFirstPrint)
     if (cp_menu_sel == cp_m_comp)
     {
       ucg.print("> ");
-      if (bFlagFirstPrint) ucg.print(cp_m_comp->get_name());
-      if (bFlagColour) {
-        ucg.print("  *");
-        bFlagColour = false;
-      }
     }
     else
     {
       ucg.print("  ");
-      if (bFlagFirstPrint) ucg.print(cp_m_comp->get_name());
+    }
+	if (bFlagFirstPrint || isSelected(current_menu_name)) ucg.print(cp_m_comp->get_name());
+
+    if (isSelected(current_menu_name)) {
+        ucg.print("  *");
     }
   }
 }
