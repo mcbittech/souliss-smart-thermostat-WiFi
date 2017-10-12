@@ -14,6 +14,7 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
 #include <ArduinoOTA.h>
+#include <EEPROM.h>
 #include <FS.h>
 #include <Hash.h>
 #include <ESPAsyncTCP.h>
@@ -30,9 +31,12 @@
 #include "multiClick.h"
 
 #if(DYNAMIC_CONNECTION)
+#define USEEEPROM_INSKETCH
+#define USEEEPROM             1
 #include "conf/RuntimeGateway.h"            // This node is a Peer and can became a Gateway at runtime
 #include "conf/DynamicAddressing.h"         // Use dynamically assigned addresses
-#include "conf/WEBCONFinterface.h"          // Enable the WebConfig interface
+//#include "conf/WEBCONFinterface.h"          // Enable the WebConfig interface
+#include "conf/WEBCONFASYNCinterface.h"     // Enable the WebConfig interface
 #include "connection_dynamic.h"
 #else
 #include "conf/IPBroadcast.h"
@@ -97,7 +101,9 @@ Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ 2 , /*cs=*/ 15);
 
 //WBServer
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-AsyncWebServer server(80);
+//#ifndef DYNAMIC_CONNECTION
+ AsyncWebServer server(80);
+//#endif
 AsyncWebSocket ws("/ws");
 AsyncEventSource events("/events");
 File fsUploadFile;
@@ -158,7 +164,7 @@ void setup()
 
   display_print_splash_screen(ucg);
   Initialize();
-
+  extern AsyncWebServer server;
 #if(DYNAMIC_CONNECTION)
   DYNAMIC_CONNECTION_Init();
 #else
@@ -957,4 +963,5 @@ void handleBody(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_
   yield();
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
