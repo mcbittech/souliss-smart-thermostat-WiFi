@@ -3,6 +3,7 @@
 #include <Arduino.h>
 
 float getEncoderValue();
+float getEncoderValueSlow();
 void setEncoderValue(float);
 void encoder();
 

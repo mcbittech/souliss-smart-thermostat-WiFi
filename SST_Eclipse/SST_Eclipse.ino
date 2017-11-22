@@ -384,7 +384,7 @@ void loop()
               myMenu->prev();
             }
             printMenuMove(ucg);
-            encoderValue_prec = getEncoderValue();
+            encoderValue_prec = getEncoderValueSlow();
           }
         }
         if (getMenuEnabled() && !digitalRead(ENCODER_SWITCH)) {
@@ -411,7 +411,7 @@ void loop()
         case PAGE_CRONO :
           break;
         default:
-          if (arrotonda(getEncoderValue()) != arrotonda(encoderValue_prec) && !bChildLock) {
+          if (arrotonda(getEncoderValueSlow()) != arrotonda(encoderValue_prec) && !bChildLock) {
             FADE = 1;
             //TICK TIMER
             timerDisplay_setpoint_Tick();
@@ -419,13 +419,13 @@ void loop()
 
             if (getLayout1()) {
               SERIAL_OUT.println("display_setpointPage - layout 1");
-              display_layout1_background(ucg, arrotonda(getEncoderValue()) - arrotonda(setpoint));
+              display_layout1_background(ucg, arrotonda(getEncoderValueSlow()) - arrotonda(setpoint));
 			  
-              display_layout1_setpointPage(ucg, getEncoderValue(), temperature, humidity, getSoulissSystemState());
+              display_layout1_setpointPage(ucg, getEncoderValueSlow(), temperature, humidity, getSoulissSystemState());
             }
             else if (getLayout2()) {
               SERIAL_OUT.println("display_setpointPage - layout 2");
-              display_layout2_Setpoint(ucg, getEncoderValue(), getSoulissSystemState(), bChildLock);
+              display_layout2_Setpoint(ucg, getEncoderValueSlow(), getSoulissSystemState(), bChildLock);
             }
           }
           encoderValue_prec = getEncoderValue();
@@ -445,7 +445,7 @@ void loop()
           setEncoderValue(setpoint);
         } else {
           //timer non scaduto. Memorizzo
-          setpoint = getEncoderValue();
+          setpoint = getEncoderValueSlow();
           //memorizza il setpoint nel T31
           setSetpoint(setpoint);
 
@@ -541,7 +541,7 @@ void loop()
           SERIAL_OUT.println("drawCrono ok");
           menu = 1;
           //save encoder value before crono programmation
-          setpoint = getEncoderValue();
+          setpoint = getEncoderValueSlow();
           while (menu == 1 && exitmainmenu() == 0) {
             setDay(ucg);
             drawBoxes(ucg);
@@ -716,7 +716,7 @@ void loop()
             if (getLayout1()) {
               display_layout1_HomeScreen(ucg, temperature, humidity, setpoint, getSoulissSystemState(), bChildLock);
             } else if (getLayout2()) {
-              display_layout2_Setpoint(ucg, getEncoderValue(), getSoulissSystemState(), bChildLock);
+              display_layout2_Setpoint(ucg, getEncoderValueSlow(), getSoulissSystemState(), bChildLock);
             }
             break;
           case PAGE_TOPICS1:

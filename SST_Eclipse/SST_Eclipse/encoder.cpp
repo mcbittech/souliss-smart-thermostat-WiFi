@@ -32,3 +32,7 @@ void setEncoderValue(float val) {
 float getEncoderValue() {
   return encoderValue;
 }
+
+float getEncoderValueSlow() {
+  return encoderValue / 2.0;
+}
