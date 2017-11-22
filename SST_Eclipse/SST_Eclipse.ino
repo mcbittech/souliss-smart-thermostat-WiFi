@@ -293,7 +293,8 @@ void setup()
   ucg.setRotate90();
   //BACK LED
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
-  digitalWrite(BACKLED, HIGH);
+  //digitalWrite(BACKLED, HIGH);
+  bright(BRIGHT_MAX);
   pinMode(BACKLED, OUTPUT);                     // Background Display LED
 
   display_print_splash_screen(ucg);
@@ -333,7 +334,8 @@ void setup()
   attachInterrupt(digitalPinToInterrupt(ENCODER_PIN_A), encoderFunction, CHANGE);
   attachInterrupt(digitalPinToInterrupt(ENCODER_PIN_B), encoderFunction, CHANGE);
   // SWITCH ENCODER
-  digitalWrite(BACKLED, HIGH);
+  //digitalWrite(BACKLED, HIGH);
+  bright(BRIGHT_MAX);
   pinMode(ENCODER_SWITCH, INPUT);
 
   //NTP
