@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+	<storageModule moduleId="org.eclipse.cdt.core.settings">
+		<cconfiguration id="io.sloeber.core.toolChain.release.1797069121">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="io.sloeber.core.toolChain.release.1797069121" moduleId="org.eclipse.cdt.core.settings" name="Release">
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.MakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="${ProjName}" buildProperties="" description="" id="io.sloeber.core.toolChain.release.1797069121" name="Release" parent="org.eclipse.cdt.build.core.emptycfg">
+					<folderInfo id="io.sloeber.core.toolChain.release.1797069121.73562172" name="/" resourcePath="">
+						<toolChain id="io.sloeber.core.toolChain.release.1315702766" name="Arduino Toolchain( Sloeber edition)" superClass="io.sloeber.core.toolChain.release">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="io.sloeber.targetplatform.614571111" name="Arduino Target" osList="all" superClass="io.sloeber.targetplatform"/>
+							<builder buildPath="${workspace_loc:/SST}/Release" id="io.sloeber.sketch.builder.1841687476" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Arduino sketch builder" superClass="io.sloeber.sketch.builder"/>
+							<tool id="io.sloeber.tool.sketch.compiler.cpp.760158653" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp">
+								<option id="io.sloeber.compiler.cpp.sketch.option.incpath.1763380932" name="Include Paths (-I)" superClass="io.sloeber.compiler.cpp.sketch.option.incpath" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/core/core}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/core/variant}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/ArduinoOTA}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/EEPROM}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/esp8266}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/esp8266/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/souliss}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/ESP8266mDNS}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/ESP8266WiFi}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/ESP8266WiFi/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/e05_ESP8266_SST_webconf}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/ESP8266WebServer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/ESP8266WebServer/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/arduino-menusystem}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/ArduinoJson-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/ArduinoJson-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/DHT_sensor_library}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/Time-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/Ucglib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/Ucglib/utility}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/SPI}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/core/core}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/core/variant}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/arduino-menusystem}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/ArduinoJson-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/ArduinoJson-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/ArduinoOTA}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/DHT_sensor_library}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/EEPROM}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/esp8266}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/esp8266/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/ESP8266mDNS}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/ESP8266WebServer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/ESP8266WebServer/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/ESP8266WiFi}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/ESP8266WiFi/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/souliss}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/SPI}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/Time-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/Ucglib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/Ucglib/utility}&quot;"/>
+								</option>
+								<inputType id="io.sloeber.compiler.cpp.sketch.input.588595032" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
+							</tool>
+							<tool id="io.sloeber.tool.compiler.c.1317134019" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c">
+								<option id="io.sloeber.compiler.c.sketch.option.incpath.166627806" name="Include Paths (-I)" superClass="io.sloeber.compiler.c.sketch.option.incpath" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/core/core}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/core/variant}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/ArduinoOTA}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/EEPROM}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/esp8266}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/esp8266/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/souliss}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/ESP8266mDNS}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/ESP8266WiFi}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/ESP8266WiFi/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/e05_ESP8266_SST_webconf}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/ESP8266WebServer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/ESP8266WebServer/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/arduino-menusystem}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/ArduinoJson-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/ArduinoJson-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/DHT_sensor_library}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/Time-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/Ucglib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/Ucglib/utility}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/SPI}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/core/core}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/core/variant}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/arduino-menusystem}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/ArduinoJson-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/ArduinoJson-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/ArduinoOTA}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/DHT_sensor_library}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/EEPROM}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/esp8266}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/esp8266/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/ESP8266mDNS}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/ESP8266WebServer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/ESP8266WebServer/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/ESP8266WiFi}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/ESP8266WiFi/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/souliss}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/SPI}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/Time-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/Ucglib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/Ucglib/utility}&quot;"/>
+								</option>
+								<inputType id="io.sloeber.compiler.c.sketch.input.1217591444" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
+							</tool>
+							<tool id="io.sloeber.tool.sketch.compiler.s.1697384888" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s">
+								<option id="io.sloeber.compiler.asm.sketch.option.incpath.403804488" name="Include Paths (-I)" superClass="io.sloeber.compiler.asm.sketch.option.incpath" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/core/core}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/core/variant}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/ArduinoOTA}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/EEPROM}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/esp8266}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/esp8266/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/souliss}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/ESP8266mDNS}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/ESP8266WiFi}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/ESP8266WiFi/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/e05_ESP8266_SST_webconf}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/ESP8266WebServer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/ESP8266WebServer/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/arduino-menusystem}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/ArduinoJson-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/ArduinoJson-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/DHT_sensor_library}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/Time-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/Ucglib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/Ucglib/utility}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST/libraries/SPI}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/core/core}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/core/variant}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/arduino-menusystem}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/ArduinoJson-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/ArduinoJson-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/ArduinoOTA}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/DHT_sensor_library}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/EEPROM}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/esp8266}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/esp8266/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/ESP8266mDNS}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/ESP8266WebServer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/ESP8266WebServer/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/ESP8266WiFi}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/ESP8266WiFi/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/souliss}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/SPI}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/Time-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/Ucglib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SST_Eclipse/libraries/Ucglib/utility}&quot;"/>
+								</option>
+								<inputType id="io.sloeber.compiler.S.sketch.input.17557056" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
+							</tool>
+							<tool id="io.sloeber.tool.ar.1227438056" name="Arduino archiver" superClass="io.sloeber.tool.ar"/>
+							<tool id="io.sloeber.tool.combine.1780575088" name="Arduino combiner" superClass="io.sloeber.tool.combine"/>
+							<tool id="io.sloeber.tool.objcopy.eep.1119782896" name="Arduino tool objcopy command" superClass="io.sloeber.tool.objcopy.eep"/>
+							<tool id="io.sloeber.tool.size.1116927650" name="Arduino tool Print Size" superClass="io.sloeber.tool.size"/>
+						</toolChain>
+					</folderInfo>
+					<sourceEntries>
+						<entry excluding="libraries/?*/**/test*/**|libraries/souliss/tools|libraries**/._*|libraries/souliss/user|libraries/souliss/hardware|libraries/souliss/webhook|libraries/?*/**/?xamples/**|libraries/souliss/interfaces|libraries/?*/**/?xtras/**|libraries/?*/d*/?*|libraries/souliss/conf|libraries/?*/**/third-party/**|libraries/souliss/base|libraries/?*/c*/?*|libraries/souliss/frame|libraries/souliss/bconf|libraries/?*/D*/?*" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name=""/>
+					</sourceEntries>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+	</storageModule>
+	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+		<project id="SST.null.564396724" name="SST"/>
+	</storageModule>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+</cproject>
