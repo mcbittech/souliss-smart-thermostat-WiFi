@@ -32,11 +32,6 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>SST_Eclipse</name>
-			<type>2</type>
-			<location>C:/Users/notif/Downloads/souliss-smart-thermostat-WiFi-master/e05_ESP8266_SST_webconf</location>
-		</link>
-		<link>
 			<name>core/core</name>
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.3.0/cores/esp8266</locationURI>
