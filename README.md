@@ -9,6 +9,10 @@ https://youtu.be/Pk9kK5DvYXE
 
 [Wiki-How to Compile & Upload](https://github.com/mcbittech/souliss-smart-thermostat-WiFi/wiki/SST---WiFi-Souliss-Smart-Thermostat-Wiki)
 
+# Example of SST with 3D printed support & cover:
+![layout2](https://github.com/mcbittech/souliss-smart-thermostat-WiFi/blob/master/Libraries-Core-Docs/SST_Cover.JPG?raw=true "layout2")
+![layout2](https://github.com/mcbittech/souliss-smart-thermostat-WiFi/blob/master/Libraries-Core-Docs/SST_Support_Cover.JPG?raw=true "layout2")
+
 # Example of layout 2:
 ![layout2](https://github.com/mcbittech/souliss-smart-thermostat-WiFi/blob/master/Libraries-Core-Docs/layout2_assembled.png?raw=true "layout2")
 
@@ -29,5 +33,5 @@ https://youtu.be/Pk9kK5DvYXE
 ![scheme](https://github.com/mcbittech/souliss-smart-thermostat-WiFi/blob/master/Libraries-Core-Docs/Connection/SST_Connection.png?raw=true "scheme")
 
 # Power up your system:
-All the system require maximum about 200mA @5vdc, with relay ON and maximum brightness of the screen. 
+All the system require maximum about 200mA @5vdc, with relay ON and maximum brightness of the screen.
 Minimum power required about 65mA, with relay OFF and minimum brightness.
