@@ -1,0 +1,14 @@
+"Id";"Riferimento";"Contenitore";"Quantità";"Valore";"Produttore";
+1;"*R9,R3,R5,R6,R10,R13,R14,R16";"R_0805_HandSoldering";8;"10k";;;
+2;"C1";"C_0805_HandSoldering";1;"100n";;;
+3;"D1";"LED_0805";1;"LED Rosso";;;
+4;"D4";"LED_0805";1;"LED Verde";;;
+5;"DHT1";"DHT22";1;"DHT22";;;
+6;"DISPLAY1";"ILI9341";1;"ILI9341";;;
+7;"POT1";"Encoder_potentiometer";1;"EC12PL";;;
+8;"Q1";"SOT-23";1;"BC818-40";;;
+9;"R1,R4";"R_0805_HandSoldering";2;"1k";;;
+10;"R2,R7,R8,R15";"R_0805_HandSoldering";4;"2.2k";;;
+11;"RL1";"Relay_1RT";1;"RELAY_1RT";;;
+12;"T1";"VTX-214-005-105";1;"VTX-214-005-105";;;
+13;"U1";"ESP-12E";1;"ESP-12E";;;
